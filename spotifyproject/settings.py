@@ -120,6 +120,9 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 # Default primary key field type
+SPOTIFY_CLIENT_ID = "your_client_id"
+SPOTIFY_CLIENT_SECRET = "your_client_secret"
+SPOTIFY_REDIRECT_URI = "http://127.0.0.1:8000/spotify/callback/"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
