@@ -1,0 +1,47 @@
+{% load static %}
+<!DOCTYPE html>
+
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login to Your Account!</title>
+    <link rel="stylesheet" href="{% static 'spotifywrapped/style.css' %}">
+</head>
+<body>
+<div class="container">
+    <div class="wrapper">
+        <div class="title"><span>Login to Your Account!</span></div>
+        <form name="LoginForm" action="{% url 'login' %}" method="post">
+            <div class="row">
+                <i class="fas fa-user"></i>
+                <label>
+                    <input type="text" id="id_username" name="username" placeholder="Enter your username" required>
+                </label>
+            </div>
+            {% csrf_token %}
+            <div class="row">
+                <i class="fas fa-lock"></i>
+                <label>
+                    <input type="password" id='id_password' name="password" placeholder="Enter your password" required>
+                </label>
+            </div>
+            <div class="pass"><a href="{% url 'reset' %}">Forgot password?</a></div>
+            <div class="row button">
+                <input type="submit">
+            </div>
+            {% if messages %}
+            <div class="error">
+                <ul>
+                    {% for message in messages %}
+                        <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+            <div class="signup-link">Don't have an account? <a href="{% url 'register' %}">Join now!</a></div>
+        </form>
+    </div>
+</div>
+
+</body>
