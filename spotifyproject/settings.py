@@ -133,4 +133,4 @@ SPOTIFY_CLIENT_SECRET = os.getenv("c65ef22fcbe5446b8c9a8b544903192c")
 SPOTIFY_REDIRECT_URI = os.getenv("http://127.0.0.1:8000/spotify/callback/")
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DEFAULT_AUTO_FIELD ='django.db.models.BigAutoField'
