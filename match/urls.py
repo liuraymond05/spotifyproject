@@ -1,5 +1,5 @@
 from django.urls import path
-from . import views
+from spotifywrapper import views
 
 urlpatterns = [
     path('login/spotify/', views.spotify_login, name='spotify_login'),
