@@ -126,8 +126,8 @@ STATICFILES_DIRS = [
 ]
 
 # Default primary key field type
-SPOTIFY_CLIENT_ID = "your_client_id"
-SPOTIFY_CLIENT_SECRET = "your_client_secret"
+SPOTIFY_CLIENT_ID = "a2d6cdc5da4e402a9995a228ae3c4b86"
+SPOTIFY_CLIENT_SECRET = "c65ef22fcbe5446b8c9a8b544903192c"
 SPOTIFY_REDIRECT_URI = "http://127.0.0.1:8000/spotify/callback/"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
