@@ -11,6 +11,22 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 import os
 from pathlib import Path
+import environ
+
+import os
+from dotenv import load_dotenv
+
+load_dotenv()  # Load environment variables from .env file
+
+# Now you can access the variables like this
+DATABASE_URL = os.getenv('DATABASE_URL')
+
+
+env = environ.Env()
+environ.Env.read_env()
+
+LOGIN_URL = '/login/'
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -126,9 +142,9 @@ STATICFILES_DIRS = [
 ]
 
 # Default primary key field type
-SPOTIFY_CLIENT_ID = "a2d6cdc5da4e402a9995a228ae3c4b86"
-SPOTIFY_CLIENT_SECRET = "c65ef22fcbe5446b8c9a8b544903192c"
-SPOTIFY_REDIRECT_URI = "http://127.0.0.1:8000/spotify/callback/"
+SPOTIPY_CLIENT_ID = "a2d6cdc5da4e402a9995a228ae3c4b86"
+SPOTIPY_CLIENT_SECRET = "c65ef22fcbe5446b8c9a8b544903192c"
+SPOTIPY_REDIRECT_URI = "http://127.0.0.1:8000/spotify/callback/"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

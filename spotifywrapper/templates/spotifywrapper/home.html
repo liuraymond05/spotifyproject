@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Spotify Wrapped</title>
+    <link rel="stylesheet" href="homestyle.css">
+    <script src="script.js" defer></script> <!-- Include the JavaScript file -->
+</head>
+
+<script>
+    function toggleMenu() {
+        const dropdown = document.getElementById("dropdownMenu");
+        dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+    }
+
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const cards = document.querySelectorAll(".card");
+
+        function revealCards() {
+            cards.forEach(card => {
+                const cardTop = card.getBoundingClientRect().top;
+                const windowHeight = window.innerHeight;
+
+                if (cardTop < windowHeight - 50) {
+                    card.classList.add("visible"); // Add visible class to animate
+                } else {
+                    card.classList.remove("visible"); // Remove visible class if scrolled past
+                }
+            });
+        }
+
+        // Trigger the reveal on scroll
+        window.addEventListener("scroll", revealCards);
+
+        // Initial check to reveal cards already in view on load
+        revealCards();
+    });
+
+</script>
+
+
+<body>
+    <header>
+        <div class="logo">
+            <img src="images/spotify.png" alt="Spotify Logo">
+            <h1>My Spotify Wrapped</h1>
+        </div>
+
+        <div class="menu-icon" onclick="toggleMenu()">
+            <div class="line"></div>
+            <div class="line"></div>
+            <div class="line"></div>
+        </div>
+    </header>
+
+
+    <div class="dropdown-menu" id="dropdownMenu">
+        <ul>
+            <li><a href="#">Settings</a></li>
+            <li><a href="#">Log Out</a></li>
+        </ul>
+    </div>
+
+    <section class="intro">
+
+
+        <h2>Your 2024 Wrapped is Here!</h2>
+        <p>You’ve had a long year and we have your soundtrack to go with it...</p>
+
+
+    </section>
+
+
+    <div class="pic-container">
+        <div id="blue-squiggle">
+                <img src="images/bluesquiggle.png" alt="Flower">
+        </div>
+
+        <div id="silver-squiggle">
+            <img src="images/silversquiggle.png" alt="Flower">
+        </div>
+
+        <div id="lavender">
+            <img src="images/lavender.png" alt="Flower">
+        </div>
+
+    </div>
+
+
+
+    <section class="content">
+        <div class="card hidden" id="artist">
+            <p>My Top Artists</p>
+        </div>
+
+        <!-- Loop through artists -->
+        <div class="spotify-section">
+            <h3>Top 3 Artists</h3>
+            <ul>
+                {% for artist in top_artists %}
+                    <li>{{ artist.name }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+
+
+        <div class="card hidden" id="songs">
+            <p>My Top Songs</p>
+        </div>
+
+
+
+        <!-- Loop through songs -->
+        <div class="spotify-section">
+            <h3>Top 3 Songs</h3>
+            <ul>
+                {% for track in top_tracks %}
+                    <li>{{ track.name }} by {{ track.artists|join:", " }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="card hidden" id="albums">
+            <p>My Top Albums</p>
+        </div>
+
+
+
+
+
+        <!-- Loop through albums -->
+        <div class="spotify-section">
+            <h3>Top 3 Albums</h3>
+            <ul>
+                {% for album in top_albums %}
+                    <li>{{ album.name }} by {{ album.artists|join:", " }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="card hidden" id="minutes">
+            <p>Minutes Listened</p>
+        </div>
+    </section>
+
+
+
+    <div class="spotify-section">
+        <h3>Minutes Listened</h3>
+        <p>{{ minutes_listened }}</p>
+    </div>
+
+
+</section>
+
+
+
+    <section class="rating">
+        <h3>2024</h3>
+        <p>We give you 5 stars for your music taste this year!!</p>
+        <div class="stars">★ ★ ★ ★ ★</div>
+    </section>
+</body>
+</html>

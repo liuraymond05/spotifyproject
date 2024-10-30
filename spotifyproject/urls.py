@@ -20,5 +20,5 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('spotifywrapper.urls')),
-    path('match/', include('match.urls')),
+    #path('match/', include('match.urls')),
 ]
