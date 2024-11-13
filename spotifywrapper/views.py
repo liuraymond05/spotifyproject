@@ -1,8 +1,11 @@
+from django.contrib.auth.models import User
 from django.shortcuts import redirect, render
 from django.contrib import messages
 from django.utils import timezone
 import datetime
 import requests
+
+from .forms import PasswordResetCustomForm, CustomUserForm
 from .models import UserProfile
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -137,3 +140,40 @@ def get_spotify_access_token(user_profile):
     else:
         # Return the existing token
         return user_profile.spotify_access_token
+
+
+def register_view(request):
+    """Handles the user's ability to make an account."""
+    form = CustomUserForm()
+
+    if request.method == 'POST':
+        form = CustomUserForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'You have successfully created an account!')
+            return redirect('login')
+    else:
+        messages.error(request, 'Please complete the entire form.')
+    return render(request, 'spotifywrapper/register.html', {'form': form})
+
+
+
+def reset_password_view(request):
+    """Handles the user's ability to reset their password."""
+    if request.method == 'POST':
+        form = PasswordResetCustomForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            password_new = form.cleaned_data['new_password1']
+
+            try:
+                user = User.objects.get(username=username)
+                user.set_password(password_new)
+                user.save()
+                messages.success(request, 'Your password was successfully updated!')
+                return redirect('login')
+            except User.DoesNotExist:
+                messages.error(request, 'This user does not exist.')
+    else:
+        form = PasswordResetCustomForm()
+    return render(request, 'spotifywrapper/reset.html', {"form": form})
