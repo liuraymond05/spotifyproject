@@ -58,7 +58,46 @@
             </div>
             <div class="signup-link">Know your password? <a href="{% url 'login' %}">Login here!!</a></div>
         </form>
+        <div class="mode-switcher">
+            <label for="modeSwitch">ChooseMode:</label>
+            <select id="modeSwitch">
+                <option value="light">Light Mode</option>
+                <option value="dark">Dark Mode</option>
+                <option value="neon">Neon Mode</option>
+            </select>
+        </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const modeSwitch = document.getElementById('modeSwitch');
+
+        const currentMode = localStorage.getItem('siteMode') || 'light';
+
+        if (!localStorage.getItem('siteMode')) {
+            localStorage.setItem('siteMode', 'light');
+        }
+
+        setMode(currentMode);
+        modeSwitch.value = currentMode;
+
+        modeSwitch.addEventListener('change', (event) => {
+            const selectedMode = event.target.value;
+            setMode(selectedMode);
+            localStorage.setItem('siteMode', selectedMode);
+        });
+
+        function setMode(mode) {
+            document.body.classList.remove('light-mode', 'dark-mode', 'neon-mode');
+            document.body.classList.add(`${mode}-mode`);
+
+            const wrapper = document.querySelector('.wrapper');
+            if (wrapper) {
+                wrapper.classList.remove('light-mode', 'dark-mode', 'neon-mode');
+                wrapper.classList.add(`${mode}-mode`);
+            }
+        }
+    });
+</script>
 </body>
-</html>
