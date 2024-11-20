@@ -1,17 +1,67 @@
 /* Login Form Styles */
-.container {
+body.light-mode .container {
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh; /* Full viewport height */
-    background-color: #f0f8ff; /* Light Blue background */
     background-image: url("lightmode.png");
     background-size: cover;
     background-position: center;
 }
 
-.wrapper {
-    background-color: #899c86; /* White background for the form */
+body.light-mode {
+    background-color: #97c9af; /* Green background */
+}
+
+body.dark-mode .container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Full viewport height */
+    background-image: url("darkmode.png");
+    background-size: cover;
+    background-position: center;
+}
+
+body.dark-mode {
+    background-color: #1b2945; /* Dark Blue background */
+}
+
+body.neon-mode .container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Full viewport height */
+    background-image: url("neonmode.png");
+    background-size: cover;
+    background-position: center;
+}
+
+body.neon-mode {
+    background-color: #e62287; /* Hot pink background */
+}
+
+
+body.light-mode .wrapper {
+    background-color: #899c86; /* Green background for the form */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add shadow for depth */
+    width: 300px; /* Set a max width for the form */
+    text-align: center; /* Center text inside the form */
+}
+
+body.dark-mode .wrapper {
+    background-color: #68a8ad; /* Blue background for the form */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add shadow for depth */
+    width: 300px; /* Set a max width for the form */
+    text-align: center; /* Center text inside the form */
+}
+
+body.neon-mode .wrapper {
+    background-color: #d993d6; /* Pink background for the form */
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add shadow for depth */
@@ -43,7 +93,7 @@ label {
 
 input[type="text"],
 input[type="password"],
-input[type="email"]{
+input[type="email"] {
     border: 1px solid #ccc; /* Light gray border */
     border-radius: 4px;
     padding: 10px;
@@ -52,7 +102,7 @@ input[type="email"]{
 }
 
 input[type="submit"] {
-    background-color: #324d3c; /* DodgerBlue */
+    background-color: lightslategrey; /* DodgerBlue */
     color: white;
     border: none;
     padding: 10px;
@@ -95,3 +145,24 @@ footer {
     height: 40px;
     bottom: 0;
 }
+
+.mode-switcher {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    padding: 5px;
+}
+
+.mode-switcher label {
+    margin-right: 5px;
+    font-weight: bold;
+}
+
+.mode-switcher select {
+    padding: 5px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    background-color: #f0f0f0;
+}
+

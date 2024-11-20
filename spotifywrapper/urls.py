@@ -9,4 +9,7 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout'),  # Ensure you have a logout view
     path('register/', views.register_view, name='register'), # Ensure you have a register view
     path('reset/', views.reset_password_view, name='reset'), # Ensure you have a reset-password view
+    path('spotify/access/', views.get_spotify_access_token, name='get_spotify_access_token'),
+    path('spotify/profile/', views.get_spotify_profile, name='get_spotify_profile'),
+    path('spotify/refresh/', views.refresh_spotify_token, name='refresh_spotify_token')
 ]

@@ -1,13 +1,16 @@
 from django.contrib.auth.models import User
+from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.contrib import messages
 from django.utils import timezone
 import datetime
 import requests
+import base64
 
+
+from spotifyproject.settings import SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, SPOTIFY_REDIRECT_URI
 from .forms import PasswordResetCustomForm, CustomUserForm
 from .models import UserProfile
-from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm
@@ -20,6 +23,16 @@ def login_view(request):
         if form.is_valid():
             user = form.get_user()
             login(request, user)
+
+            user_profile = UserProfile.objects.filter(user=user).first()
+
+            if user_profile is None:
+                user_profile = UserProfile(user=user)
+                user_profile.save()
+
+            if not user_profile.spotify_access_token:
+                return redirect('spotify_login')
+
             return redirect('home')
         else:
             messages.error(request, "Invalid username or password.")
@@ -33,11 +46,32 @@ def logout_view(request):
     logout(request)
     return redirect('login')
 
-
 @login_required
 def home(request):
-    """Renders the home page after login and Spotify authentication."""
-    return render(request, 'home.html')
+    """Renders the home page with Spotify profile information."""
+    user_profile = UserProfile.objects.filter(user=request.user).first()
+
+    if not user_profile or not user_profile.spotify_access_token:
+        # Redirect to Spotify login if the user hasn't authenticated with Spotify
+        return redirect('spotify_login')
+
+    try:
+        access_token = get_spotify_access_token(user_profile)
+        profile_response = requests.get(
+            'https://api.spotify.com/v1/me',
+            headers={'Authorization': f'Bearer {access_token}'},
+        )
+        profile_data = profile_response.json()
+
+        if profile_response.status_code == 200:
+            return render(request, 'home.html', {'profile': profile_data})
+        else:
+            messages.error(request, "Failed to fetch Spotify profile information.")
+            return redirect('spotify_login')
+
+    except Exception as e:
+        messages.error(request, f"An error occurred: {str(e)}")
+        return redirect('login')
 
 
 # Spotify API credentials and URLs
@@ -45,44 +79,57 @@ SPOTIFY_AUTH_URL = "https://accounts.spotify.com/authorize"
 SPOTIFY_TOKEN_URL = "https://accounts.spotify.com/api/token"
 
 
-
 def spotify_login(request):
-    """Initiates Spotify login and authorization flow."""
+
+    """Initiates Spotify login and authorization flow"""
     if not request.user.is_authenticated:
         return redirect('login')
 
-    user_profile = UserProfile.objects.filter(user=request.user).first()
+    try:
+        user_profile = UserProfile.objects.get(user=request.user)
+    except UserProfile.DoesNotExist:
+        user_profile = None
 
     # If user doesn't have a valid Spotify token, start the authentication flow
     if user_profile is None or not user_profile.spotify_access_token:
+        redirect_uri = SPOTIFY_REDIRECT_URI
         scope = "user-top-read user-read-recently-played user-library-read"
         auth_url = (
             f"{SPOTIFY_AUTH_URL}?response_type=code&client_id={SPOTIFY_CLIENT_ID}"
+            f"&redirect_uri={redirect_uri}&scope={scope}"
 
         )
         return redirect(auth_url)
-
     return redirect('home')
 
-
+@login_required
 def spotify_callback(request):
-    """Handles Spotify's callback with the authorization code."""
+    """Handles Spotify's callback with the authorization code"""
     code = request.GET.get('code')
     if code:
         # Exchange the authorization code for an access token
+        redirect_uri = SPOTIFY_REDIRECT_URI
+
+        auth_str = f"{SPOTIFY_CLIENT_ID}:{SPOTIFY_CLIENT_SECRET}"
+        b64 = base64.b64encode(auth_str.encode()).decode()
+
+        token_request_data = {
+            "grant_type": "authorization_code",
+            "code": code,
+            "redirect_uri": redirect_uri,
+        }
+
         token_response = requests.post(
             SPOTIFY_TOKEN_URL,
-            data={
-                "grant_type": "authorization_code",
-                "code": code,
-
-                "client_id": SPOTIFY_CLIENT_ID,
-                "client_secret": SPOTIFY_CLIENT_SECRET,
+            data=token_request_data,
+            headers={
+                "Authorization": f"Basic {b64}",
+                "Content-Type": "application/x-www-form-urlencoded"
             },
         )
-        token_data = token_response.json()
 
-        # Check if we have the access and refresh tokens
+
+        token_data = token_response.json()
         access_token = token_data.get('access_token')
         refresh_token = token_data.get('refresh_token')
         expires_in = token_data.get('expires_in')
@@ -95,12 +142,8 @@ def spotify_callback(request):
             user_profile.save()
             return redirect('home')
 
-        messages.error(request, "Spotify authentication failed. Missing tokens.")
-        return redirect('login')
-
     messages.error(request, "Spotify authentication failed. No code provided.")
     return redirect('login')
-
 
 def refresh_spotify_token(user_profile):
     """Refreshes the Spotify access token if expired."""
@@ -140,6 +183,37 @@ def get_spotify_access_token(user_profile):
     else:
         # Return the existing token
         return user_profile.spotify_access_token
+
+
+
+@login_required
+def get_spotify_profile(request):
+    "Fetches the access token from the Spotify API and the User's Profile."
+
+    user_profile = UserProfile.objects.filter(user=request.user).first()
+    if not user_profile or not user_profile.spotify_access_token:
+        messages.error(request, "Spotify authentication failed.")
+        return redirect('spotify_login')
+    try:
+        access_token = get_spotify_access_token(user_profile)
+        profile_response = requests.get(
+            'https://api.spotify.com/v1/me',
+            headers={
+                "Authorization": f"Bearer {access_token}"
+            },
+        )
+        profile_data = profile_response.json()
+        if profile_response.status_code == 200:
+            return render(request, 'home.html', {'profile': profile_data})
+        else:
+            error_message = profile_data.get('error', {}).get('message', 'Failed to fetch Spotify profile')
+            messages.error(request, error_message)
+            return redirect('home')
+    except Exception as e:
+        messages.error(request, "Spotify authentication failed.")
+        return redirect('home')
+
+
 
 
 def register_view(request):
