@@ -63,8 +63,24 @@ def home(request):
         )
         profile_data = profile_response.json()
 
+        top_tracks_response = requests.get(
+            'https://api.spotify.com/v1/me/top/tracks?limit=10',  # Limit to top 5 tracks for example
+            headers={'Authorization': f'Bearer {access_token}'}
+        )
+        top_tracks_data = top_tracks_response.json()
+        top_tracks = []
+        for track in top_tracks_data['items']:
+            top_tracks.append({
+                'name': track['name'],
+                'artist': ', '.join([artist['name'] for artist in track['artists']]),
+                'preview_url': track['preview_url']
+            })
+
         if profile_response.status_code == 200:
-            return render(request, 'home.html', {'profile': profile_data})
+            return render(request, 'home.html', {
+                'profile': profile_data,
+                'top_tracks': top_tracks  # Pass top tracks with preview URLs
+            })
         else:
             messages.error(request, "Failed to fetch Spotify profile information.")
             return redirect('spotify_login')
