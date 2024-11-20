@@ -72,7 +72,7 @@ def home(request):
         for track in top_tracks_data['items']:
             top_tracks.append({
                 'name': track['name'],
-                'artist': ', '.join([artist['name'] for artist in track['artists']]),
+                'artist': track['artists'][0]['name'],
                 'preview_url': track['preview_url']
             })
 

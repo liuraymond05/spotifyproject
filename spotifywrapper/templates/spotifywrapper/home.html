@@ -114,15 +114,13 @@
 
 
 
-        <!-- Loop through songs -->
         <div class="spotify-section">
             <h3>Top 3 Songs</h3>
             <ul>
                 {% for track in top_tracks %}
                     <li>
-                        {{ track.name }} by {{ track.artists|join:", " }}
+                        {{ track.name }} by {{ track.artist }}
                         {% if track.preview_url %}
-                            <br>
                             <audio controls>
                                 <source src="{{ track.preview_url }}" type="audio/mpeg">
                                 Your browser does not support the audio element.
