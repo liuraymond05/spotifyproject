@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv  # We will use dotenv to load environment variables
 
-load_dotenv()  # Load environment variables from .env file
+load_dotenv()
 
 # Django settings
 BASE_DIR = Path(__file__).resolve().parent.parent
