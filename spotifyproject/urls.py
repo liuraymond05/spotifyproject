@@ -17,8 +17,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+from spotifywrapper import views
+
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', include('spotifywrapper.urls')),
-    #path('match/', include('match.urls')),
+    path('admin/', admin.site.urls),  # Admin panel URL
+    path('', include('spotifywrapper.urls')),  # Main app URLs
+    # path('match/', include('match.urls')),  # Uncomment if you have a 'match' app
 ]

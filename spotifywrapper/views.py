@@ -7,16 +7,16 @@ import datetime
 import requests
 import base64
 from django.shortcuts import redirect
+from django.utils.translation import get_language
 from django.utils import translation
 from django.http import HttpResponseRedirect
-from django.contrib import messages
 from spotifyproject.settings import SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, SPOTIFY_REDIRECT_URI
 from .forms import PasswordResetCustomForm, CustomUserForm
 from .models import UserProfile
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm
-
+from django.utils.translation import activate
 
 def login_view(request):
     """Handles user login."""
@@ -270,11 +270,14 @@ def reset_password_view(request):
         form = PasswordResetCustomForm()
     return render(request, 'spotifywrapper/reset.html', {"form": form})
 def settings(request):
-    return render(request, 'settings.html')
+    language_code = get_language()  # Use get_language to get the current language
+    return render(request, 'settings.html', {
+        'language_code': language_code
+    })
 
+@login_required
 def delete_account(request):
     if request.method == 'POST':
-        # Delete the user's account
         user = request.user
         user.delete()  # This will delete the user from the database
 
@@ -283,17 +286,31 @@ def delete_account(request):
 
         # Add a success message and redirect to home or login page
         messages.success(request, "Your account has been deleted successfully.")
-        return redirect('home')  # Or redirect to login page
+        return redirect('login')  # Or redirect to login page if preferred
 
     return render(request, 'settings/delete_account.html')
 def contact_developers(request):
     # Render a template that displays the contact information or a contact form
     return render(request, 'contact_developers.html')
 
-def set_language(request):
-    user_language = request.POST.get('language', None)  # Get the selected language from the form
-    if user_language:
-        translation.activate(user_language)  # Activate the selected language
-        request.session[translation.LANGUAGE_SESSION_KEY] = user_language  # Save the language in the session
-        messages.success(request, f'Language changed to {user_language}')  # Optional message for feedback
-    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))  # Redirect back to the page the user was on
+
+def set_language(request, language_code):
+    # Define supported languages
+    supported_languages = ['en', 'es', 'fr', 'de']
+
+    # If the language code is not supported, redirect back to the referring page or fallback to home
+    if language_code not in supported_languages:
+        return redirect(request.META.get('HTTP_REFERER', '/'))  # Redirect to previous page or home if unsupported
+
+    # Activate the selected language
+    activate(language_code)
+
+    # Store the selected language in the session
+    if hasattr(request, 'session'):
+        request.session['django_language'] = language_code
+
+    # Create the redirect response and set the language cookie
+    response = HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+    response.set_cookie('django_language', language_code)  # Store the selected language in the cookie
+
+    return response

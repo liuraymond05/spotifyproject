@@ -1,11 +1,11 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login to Your Account!</title>
-    <link rel="stylesheet" href="{% static 'spotifywrapped/style.css' %}">
+    <title>Settings</title>
+    <link rel="stylesheet" href="{% static 'spotifywrapped/settingstyle.css' %}">
 </head>
 <body>
     <div class="settings-container">
@@ -13,7 +13,7 @@
 
         <!-- Change Language -->
         <div>
-            <form method="POST" action="{% url 'set_language' %}">
+            <form method="POST" action="{% url 'set_language' language_code='en' %}">
                 {% csrf_token %}
                 <label for="language-select">Language:</label>
                 <select id="language-select" name="language" onchange="this.form.submit()">
@@ -35,36 +35,47 @@
         </div>
 
         <!-- Delete Account -->
-        <form method="POST" action="{% url 'delete_account' %}">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-danger">Delete Account</button>
-        </form>
+        <div>
+    <form method="POST" action="{% url 'delete_account' %}">
+        {% csrf_token %}
+        <!-- Button to submit the form and delete the account -->
+        <button type="submit" class="btn btn-danger">Delete Account</button>
+    </form>
+</div>
 
         <!-- Contact Developers -->
-        <form method="POST" action="{% url 'contact_developers' %}">
-            {% csrf_token %}
-            <label for="subject">Subject:</label>
-            <input type="text" id="subject" name="subject" required><br>
-            <label for="message">Message:</label>
-            <textarea id="message" name="message" required></textarea><br>
-            <button type="submit" class="btn btn-primary">Send Message</button>
-        </form>
+        <div>
+            <form method="POST" action="{% url 'contact_developers' %}">
+                {% csrf_token %}
+                <label for="subject">Subject:</label>
+                <input type="text" id="subject" name="subject" required placeholder="Enter subject"><br>
+                <label for="message">Message:</label>
+                <textarea id="message" name="message" required placeholder="Enter your message"></textarea><br>
+                <button type="submit" class="btn btn-primary">Send Message</button>
+            </form>
+        </div>
     </div>
 
     <script>
         // Handle changing color mode
         function changeColorMode() {
-            var mode = document.getElementById('color-mode').value;
-            document.body.className = mode;  // Apply the mode to the body
-            localStorage.setItem('colorMode', mode);  // Store mode in localStorage
+            const mode = document.getElementById('color-mode').value;
+            document.body.className = mode; // Apply the mode to the body
+            localStorage.setItem('colorMode', mode); // Store mode in localStorage
         }
 
         // Apply the saved color mode on page load
-        window.onload = function() {
-            var savedMode = localStorage.getItem('colorMode');
-            if (savedMode) {
-                document.body.className = savedMode;  // Load the saved mode
-                document.getElementById('color-mode').value = savedMode;  // Set the dropdown value
+        window.onload = function () {
+            const savedMode = localStorage.getItem('colorMode');
+            const validModes = ['light', 'dark', 'neon'];
+
+            if (savedMode && validModes.includes(savedMode)) {
+                document.body.className = savedMode; // Load the saved mode
+                document.getElementById('color-mode').value = savedMode; // Set the dropdown value
+            } else {
+                // Default to 'light' mode if no valid saved mode
+                document.body.className = 'light';
+                document.getElementById('color-mode').value = 'light';
             }
         }
     </script>
