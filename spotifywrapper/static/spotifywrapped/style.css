@@ -41,9 +41,9 @@ body.neon-mode {
     background-color: #e62287; /* Hot pink background */
 }
 
-
-body.light-mode .wrapper {
-    background-color: #899c86; /* Green background for the form */
+/* Wrapper for forms (login and settings) */
+body.light-mode .wrapper, body.dark-mode .wrapper, body.neon-mode .wrapper {
+    background-color: #899c86; /* Default form background (light mode) */
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add shadow for depth */
@@ -51,30 +51,24 @@ body.light-mode .wrapper {
     text-align: center; /* Center text inside the form */
 }
 
+/* Dark Mode Wrapper */
 body.dark-mode .wrapper {
     background-color: #68a8ad; /* Blue background for the form */
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add shadow for depth */
-    width: 300px; /* Set a max width for the form */
-    text-align: center; /* Center text inside the form */
 }
 
+/* Neon Mode Wrapper */
 body.neon-mode .wrapper {
     background-color: #d993d6; /* Pink background for the form */
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add shadow for depth */
-    width: 300px; /* Set a max width for the form */
-    text-align: center; /* Center text inside the form */
 }
 
+/* Title */
 .title {
     font-size: 24px;
     margin-bottom: 20px;
     color: #324d3c; /* DodgerBlue for the title */
 }
 
+/* General Form Row */
 .row {
     display: flex;
     align-items: center;
@@ -93,7 +87,10 @@ label {
 
 input[type="text"],
 input[type="password"],
-input[type="email"] {
+input[type="email"],
+input[type="button"],
+input[type="submit"],
+select {
     border: 1px solid #ccc; /* Light gray border */
     border-radius: 4px;
     padding: 10px;
@@ -101,7 +98,8 @@ input[type="email"] {
     box-sizing: border-box;
 }
 
-input[type="submit"] {
+/* Submit Button */
+input[type="submit"], input[type="button"] {
     background-color: lightslategrey; /* DodgerBlue */
     color: white;
     border: none;
@@ -112,15 +110,17 @@ input[type="submit"] {
     transition: background-color 0.3s; /* Smooth transition */
 }
 
-input[type="submit"]:hover {
+input[type="submit"]:hover, input[type="button"]:hover {
     background-color: #1e3a6f; /* Darker shade on hover */
 }
 
+/* Password Reset */
 .pass {
     margin: 10px 0;
     text-align: right; /* Align "Forgot password?" to the right */
 }
 
+/* Sign Up Link */
 .signup-link {
     margin-top: 15px; /* Space above signup link */
     color: #254a7d; /* DodgerBlue for the link */
@@ -135,6 +135,7 @@ input[type="submit"]:hover {
     text-decoration: underline; /* Underline on hover for emphasis */
 }
 
+/* Footer */
 footer {
     background-color: #254a7d; /* DodgerBlue */
     color: white;
@@ -146,6 +147,7 @@ footer {
     bottom: 0;
 }
 
+/* Mode Switcher */
 .mode-switcher {
     position: absolute;
     top: 20px;
@@ -166,3 +168,73 @@ footer {
     background-color: #f0f0f0;
 }
 
+/* Settings Page Styling */
+.settings-page {
+    width: 80%;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.settings-page h2 {
+    font-size: 28px;
+    color: #324d3c;
+    margin-bottom: 20px;
+}
+
+.settings-page .settings-item {
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.settings-page .settings-item label {
+    font-size: 18px;
+    color: #254a7d;
+}
+
+.settings-page .settings-item select,
+.settings-page .settings-item button {
+    border: 1px solid #ccc;
+    padding: 8px 12px;
+    border-radius: 4px;
+    background-color: #f0f0f0;
+}
+
+.settings-page .settings-item button {
+    background-color: #e62287;
+    color: white;
+    cursor: pointer;
+}
+
+.settings-page .settings-item button:hover {
+    background-color: #c51f7a;
+}
+
+.settings-page .settings-item .action-link {
+    color: #254a7d;
+    text-decoration: none;
+}
+
+.settings-page .settings-item .action-link:hover {
+    text-decoration: underline;
+}
+
+/* Account Deletion Section */
+.delete-account {
+    background-color: #e62287;
+    color: white;
+    padding: 10px;
+    border-radius: 8px;
+    text-align: center;
+    margin-top: 30px;
+    cursor: pointer;
+}
+
+.delete-account:hover {
+    background-color: #c51f7a;
+}

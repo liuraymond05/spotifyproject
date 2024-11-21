@@ -94,3 +94,10 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'spotifywrapper', 'static')]
 
 # Default auto field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+# settings.py
+LANGUAGES = [
+    ('en', 'English'),
+    ('es', 'Español'),
+    ('fr', 'Français'),
+    # Add other languages you support
+]

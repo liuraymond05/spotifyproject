@@ -1,0 +1,72 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login to Your Account!</title>
+    <link rel="stylesheet" href="{% static 'spotifywrapped/style.css' %}">
+</head>
+<body>
+    <div class="settings-container">
+        <h2>Settings</h2>
+
+        <!-- Change Language -->
+        <div>
+            <form method="POST" action="{% url 'set_language' %}">
+                {% csrf_token %}
+                <label for="language-select">Language:</label>
+                <select id="language-select" name="language" onchange="this.form.submit()">
+                    <option value="en" {% if LANGUAGE_CODE == 'en' %}selected{% endif %}>English</option>
+                    <option value="es" {% if LANGUAGE_CODE == 'es' %}selected{% endif %}>Spanish</option>
+                    <!-- Add other languages here -->
+                </select>
+            </form>
+        </div>
+
+        <!-- Change Color Mode -->
+        <div>
+            <label for="color-mode">Color Mode:</label>
+            <select id="color-mode" onchange="changeColorMode()">
+                <option value="light">Light</option>
+                <option value="dark">Dark</option>
+                <option value="neon">Neon</option>
+            </select>
+        </div>
+
+        <!-- Delete Account -->
+        <form method="POST" action="{% url 'delete_account' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Delete Account</button>
+        </form>
+
+        <!-- Contact Developers -->
+        <form method="POST" action="{% url 'contact_developers' %}">
+            {% csrf_token %}
+            <label for="subject">Subject:</label>
+            <input type="text" id="subject" name="subject" required><br>
+            <label for="message">Message:</label>
+            <textarea id="message" name="message" required></textarea><br>
+            <button type="submit" class="btn btn-primary">Send Message</button>
+        </form>
+    </div>
+
+    <script>
+        // Handle changing color mode
+        function changeColorMode() {
+            var mode = document.getElementById('color-mode').value;
+            document.body.className = mode;  // Apply the mode to the body
+            localStorage.setItem('colorMode', mode);  // Store mode in localStorage
+        }
+
+        // Apply the saved color mode on page load
+        window.onload = function() {
+            var savedMode = localStorage.getItem('colorMode');
+            if (savedMode) {
+                document.body.className = savedMode;  // Load the saved mode
+                document.getElementById('color-mode').value = savedMode;  // Set the dropdown value
+            }
+        }
+    </script>
+</body>
+</html>

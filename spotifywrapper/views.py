@@ -6,8 +6,10 @@ from django.utils import timezone
 import datetime
 import requests
 import base64
-
-
+from django.shortcuts import redirect
+from django.utils import translation
+from django.http import HttpResponseRedirect
+from django.contrib import messages
 from spotifyproject.settings import SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, SPOTIFY_REDIRECT_URI
 from .forms import PasswordResetCustomForm, CustomUserForm
 from .models import UserProfile
@@ -267,3 +269,31 @@ def reset_password_view(request):
     else:
         form = PasswordResetCustomForm()
     return render(request, 'spotifywrapper/reset.html', {"form": form})
+def settings(request):
+    return render(request, 'settings.html')
+
+def delete_account(request):
+    if request.method == 'POST':
+        # Delete the user's account
+        user = request.user
+        user.delete()  # This will delete the user from the database
+
+        # Log out the user immediately after deletion
+        logout(request)
+
+        # Add a success message and redirect to home or login page
+        messages.success(request, "Your account has been deleted successfully.")
+        return redirect('home')  # Or redirect to login page
+
+    return render(request, 'settings/delete_account.html')
+def contact_developers(request):
+    # Render a template that displays the contact information or a contact form
+    return render(request, 'contact_developers.html')
+
+def set_language(request):
+    user_language = request.POST.get('language', None)  # Get the selected language from the form
+    if user_language:
+        translation.activate(user_language)  # Activate the selected language
+        request.session[translation.LANGUAGE_SESSION_KEY] = user_language  # Save the language in the session
+        messages.success(request, f'Language changed to {user_language}')  # Optional message for feedback
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))  # Redirect back to the page the user was on
