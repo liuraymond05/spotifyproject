@@ -9,10 +9,11 @@
 </head>
 <body>
     <div class="settings-container">
-        <h2>Settings</h2>
+        <h2 class="settings-title">Settings</h2>
 
         <!-- Change Language -->
-        <div>
+        <div class="setting-item">
+            <h3>Change Language</h3>
             <form method="POST" action="{% url 'set_language' language_code='en' %}">
                 {% csrf_token %}
                 <label for="language-select">Language:</label>
@@ -25,8 +26,9 @@
         </div>
 
         <!-- Change Color Mode -->
-        <div>
-            <label for="color-mode">Color Mode:</label>
+        <div class="setting-item">
+            <h3>Change Color Mode</h3>
+            <label for="color-mode">Select Mode:</label>
             <select id="color-mode" onchange="changeColorMode()">
                 <option value="light">Light</option>
                 <option value="dark">Dark</option>
@@ -35,16 +37,17 @@
         </div>
 
         <!-- Delete Account -->
-        <div>
-    <form method="POST" action="{% url 'delete_account' %}">
-        {% csrf_token %}
-        <!-- Button to submit the form and delete the account -->
-        <button type="submit" class="btn btn-danger">Delete Account</button>
-    </form>
-</div>
+        <div class="setting-item">
+            <h3>Delete Account</h3>
+            <form method="POST" action="{% url 'delete_account' %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Delete Account</button>
+            </form>
+        </div>
 
         <!-- Contact Developers -->
-        <div>
+        <div class="setting-item">
+            <h3>Contact Developers</h3>
             <form method="POST" action="{% url 'contact_developers' %}">
                 {% csrf_token %}
                 <label for="subject">Subject:</label>
