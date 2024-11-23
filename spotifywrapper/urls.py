@@ -16,4 +16,5 @@ urlpatterns = [
     path('delete-account/', views.delete_account, name='delete_account'),
     path('contact-developers/', views.contact_developers, name='contact_developers'),
     path('set_language/<str:language_code>/', views.set_language, name='set_language'),
+
 ]

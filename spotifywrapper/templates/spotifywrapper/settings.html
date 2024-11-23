@@ -47,15 +47,9 @@
 
         <!-- Contact Developers -->
         <div class="setting-item">
-            <h3>Contact Developers</h3>
-            <form method="POST" action="{% url 'contact_developers' %}">
-                {% csrf_token %}
-                <label for="subject">Subject:</label>
-                <input type="text" id="subject" name="subject" required placeholder="Enter subject"><br>
-                <label for="message">Message:</label>
-                <textarea id="message" name="message" required placeholder="Enter your message"></textarea><br>
-                <button type="submit" class="btn btn-primary">Send Message</button>
-            </form>
+            <a href="{% url 'contact_developers' %}">Contact Developers</a>
+
+
         </div>
     </div>
 

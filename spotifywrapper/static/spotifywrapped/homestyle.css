@@ -241,3 +241,23 @@ header .profile-icon img {
     color: #ffc700;
     margin-top: 10px;
 }
+
+.spotify-section {
+    display: flex;             /* Enables Flexbox */
+    flex-direction: column;    /* Stack the items vertically */
+    align-items: center;       /* Center items horizontally */
+    justify-content: center;   /* Optional: Centers vertically */
+    text-align: center;        /* Ensures text inside is centered */
+    margin: 0 auto;            /* Optional: Centers section within the page */
+    padding: 20px;             /* Optional: Adds space around the section */
+}
+
+.spotify-section ul {
+    list-style: none;          /* Remove list bullet points */
+    padding: 0;                /* Remove padding */
+    margin: 0;                 /* Remove margin */
+}
+
+.spotify-section li {
+    margin: 10px 0;            /* Add spacing between each list item */
+}
