@@ -49,6 +49,7 @@ def logout_view(request):
     return redirect('login')
 
 @login_required
+@login_required
 def home(request):
     """Renders the home page with Spotify profile information."""
     user_profile = UserProfile.objects.filter(user=request.user).first()
@@ -66,7 +67,7 @@ def home(request):
         profile_data = profile_response.json()
 
         top_tracks_response = requests.get(
-            'https://api.spotify.com/v1/me/top/tracks?limit=10',  # Limit to top 5 tracks for example
+            'https://api.spotify.com/v1/me/top/tracks?limit=10',  # Limit to top 10 tracks
             headers={'Authorization': f'Bearer {access_token}'}
         )
         top_tracks_data = top_tracks_response.json()
@@ -79,9 +80,11 @@ def home(request):
             })
 
         if profile_response.status_code == 200:
-            return render(request, 'home.html', {
+            username = profile_data.get('display_name', 'Unknown')  # Get the Spotify username
+            return render(request, 'wrapped.html', {
                 'profile': profile_data,
-                'top_tracks': top_tracks  # Pass top tracks with preview URLs
+                'top_tracks': top_tracks,
+                'username': username  # Pass the Spotify username to the template
             })
         else:
             messages.error(request, "Failed to fetch Spotify profile information.")
@@ -90,6 +93,7 @@ def home(request):
     except Exception as e:
         messages.error(request, f"An error occurred: {str(e)}")
         return redirect('login')
+
 
 
 # Spotify API credentials and URLs
@@ -314,3 +318,58 @@ def set_language(request, language_code):
     response.set_cookie('django_language', language_code)  # Store the selected language in the cookie
 
     return response
+@login_required
+def top_spotify_data(request):
+    """
+    View to get the user's top genre, top 3 artists, and minutes listened on Spotify and display them in the template.
+    """
+    user_profile = UserProfile.objects.filter(user=request.user).first()
+    if not user_profile or not user_profile.spotify_access_token:
+        return redirect('spotify_login')  # Redirect if user is not authenticated with Spotify
+
+    # Get the access token
+    access_token = get_spotify_access_token(user_profile)
+
+    # Get the time range selected by the user (default to 'long_term' if not provided)
+    time_range = request.GET.get('time_range', 'long_term')
+
+    # Fetch the top artists (limit to 3) based on the selected time range
+    top_artists_response = requests.get(
+        f'https://api.spotify.com/v1/me/top/artists?time_range={time_range}&limit=3',
+        headers={'Authorization': f'Bearer {access_token}'}
+    )
+    top_artists_data = []
+    if top_artists_response.status_code == 200:
+        top_artists = top_artists_response.json()['items']
+        for artist in top_artists:
+            top_artists_data.append({
+                'name': artist['name'],
+                'image': artist['images'][0]['url'] if artist['images'] else None
+            })
+    else:
+        return redirect('home')  # Redirect back if there was an error fetching top artists
+
+    # Get the top genre (most frequent genre from top artists)
+    genres = []
+    for artist in top_artists:
+        genres.extend(artist['genres'])
+
+    top_genre = max(set(genres), key=genres.count) if genres else None
+
+    # Get the minutes listened: sum the time of top tracks
+    top_tracks_response = requests.get(
+        f'https://api.spotify.com/v1/me/top/tracks?time_range={time_range}&limit=10',
+        headers={'Authorization': f'Bearer {access_token}'}
+    )
+    total_minutes_listened = 0
+    if top_tracks_response.status_code == 200:
+        top_tracks = top_tracks_response.json()['items']
+        total_minutes_listened = sum([track['duration_ms'] for track in top_tracks]) // 60000
+
+    return render(request, 'spotifywrapper/wrapped.html', {
+        'top_genre': top_genre,
+        'top_artists': top_artists_data,
+        'total_minutes_listened': total_minutes_listened,
+        'selected_time_range': time_range  # Pass the selected time range to the template
+
+    })

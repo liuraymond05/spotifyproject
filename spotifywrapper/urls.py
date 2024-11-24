@@ -16,5 +16,7 @@ urlpatterns = [
     path('delete-account/', views.delete_account, name='delete_account'),
     path('contact-developers/', views.contact_developers, name='contact_developers'),
     path('set_language/<str:language_code>/', views.set_language, name='set_language'),
+    path('wrapped/', views.top_spotify_data, name='wrapped'),
+    path('top_spotify_data', views.top_spotify_data, name='top_spotify_data'),
 
 ]
