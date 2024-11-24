@@ -81,7 +81,7 @@ def home(request):
 
         if profile_response.status_code == 200:
             username = profile_data.get('display_name', 'Unknown')  # Get the Spotify username
-            return render(request, 'wrapped.html', {
+            return render(request, 'home.html', {
                 'profile': profile_data,
                 'top_tracks': top_tracks,
                 'username': username  # Pass the Spotify username to the template
@@ -330,6 +330,17 @@ def top_spotify_data(request):
     # Get the access token
     access_token = get_spotify_access_token(user_profile)
 
+    # Fetch the Spotify profile to get the username
+    profile_response = requests.get(
+        'https://api.spotify.com/v1/me',
+        headers={'Authorization': f'Bearer {access_token}'}
+    )
+    if profile_response.status_code == 200:
+        profile_data = profile_response.json()
+        username = profile_data.get('display_name', 'Unknown')  # Get the display name from the profile
+    else:
+        username = 'Unknown'
+
     # Get the time range selected by the user (default to 'long_term' if not provided)
     time_range = request.GET.get('time_range', 'long_term')
 
@@ -370,6 +381,7 @@ def top_spotify_data(request):
         'top_genre': top_genre,
         'top_artists': top_artists_data,
         'total_minutes_listened': total_minutes_listened,
-        'selected_time_range': time_range  # Pass the selected time range to the template
-
+        'selected_time_range': time_range,  # Pass the selected time range to the template
+        'username': username  # Pass the username to the template
     })
+
