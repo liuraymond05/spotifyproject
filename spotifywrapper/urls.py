@@ -2,6 +2,7 @@ from django.urls import path
 from . import views  # Import views from the current directory
 
 urlpatterns = [
+    path('', views.login_view, name='login'),
     path('home/', views.home, name='home'),
     path('spotify/login/', views.spotify_login, name='spotify_login'),
     path('spotify/callback/', views.spotify_callback, name='spotify_callback'),
