@@ -385,3 +385,7 @@ def top_spotify_data(request):
         'username': username  # Pass the username to the template
     })
 
+def gamepage(request):
+    return render(request, 'games.html')
+def wraps(request):
+    return render(request, 'savedwraps.html')

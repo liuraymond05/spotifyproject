@@ -1,0 +1,53 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}My Spotify Wrapped{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'spotifywrapped/homestyle.css' %}">
+    <script src="{% static 'spotifywrapped/script.js' %}" defer></script>
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+        <!-- Make the logo clickable and redirect to home -->
+        <a href="{% url 'home' %}">
+            <img src="{% static 'spotifywrapped/spotify.png' %}" alt="Spotify Logo">
+        </a>
+        <h1>My Spotify Wrapped</h1>
+        </div>
+        <div class="menu-icon" onclick="toggleMenu()">
+            <div class="line"></div>
+            <div class="line"></div>
+            <div class="line"></div>
+        </div>
+    </header>
+
+    <!-- Dropdown menu -->
+    <div class="dropdown-menu" id="dropdownMenu">
+        <ul>
+            <li><a href="{% url 'gamepage' %}" id="games">Games</a></li>
+            <li><a href="{% url 'wraps' %}" id="wraps">My Wraps</a></li>
+            <li><a href="{% url 'settings' %}" id="settingsLink">Settings</a></li>
+            <li><a href="{% url 'logout' %}">Log Out</a></li>
+        </ul>
+    </div>
+
+    <!-- Main content of each page -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- JavaScript for dropdown toggle -->
+    <script>
+        function toggleMenu() {
+            const dropdown = document.getElementById("dropdownMenu");
+            // Toggle the display of the dropdown menu
+            dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+        }
+    </script>
+
+</body>
+</html>
