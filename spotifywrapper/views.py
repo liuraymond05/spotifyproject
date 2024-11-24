@@ -421,4 +421,4 @@ from .models import SavedWrap
 
 def saved_wraps(request):
     saved_wraps = SavedWrap.objects.filter(user=request.user)
-    return render(request, 'spotifywrapped/savedwraps.html', {'saved_wraps': saved_wraps})
+    return render(request, 'spotifywrapper/savedwraps.html', {'saved_wraps': saved_wraps})

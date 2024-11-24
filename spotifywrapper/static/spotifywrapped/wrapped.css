@@ -92,7 +92,7 @@ body {
     justify-content: center;
     gap: 20px; /* Space between artist cards */
     margin-top: 20px;
-    padding: 0 20px; /* Add padding to avoid clipping */
+    padding: 0 26px; /* Add padding to avoid clipping */
     overflow: hidden; /* Ensure overflow doesn't cut off content */
     box-sizing: border-box; /* Include padding in overall width */
 }
@@ -179,5 +179,24 @@ body {
 /* Scroll behavior */
 body {
     scroll-behavior: smooth;
+}
+
+button, form {
+    z-index: 10; /* Bring form and button to the front */
+    position: relative; /* Ensure it layers above other elements */
+}
+button[type="submit"] {
+    z-index: 100; /* Ensure it's above other elements */
+    position: relative;
+    background-color: #6200ea; /* Button color */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+button[type="submit"]:hover {
+    background-color: #3700b3; /* Slightly darker hover effect */
 }
 
