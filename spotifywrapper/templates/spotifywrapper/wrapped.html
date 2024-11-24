@@ -20,7 +20,18 @@
             <button type="submit">Apply</button>
         </form>
         <h1>Spotify Wrapped for the last {% if selected_time_range == 'short_term' %}4 weeks{% elif selected_time_range == 'medium_term' %}6 months{% else %}year{% endif %}</h1>
+         <div class="pic-container">
 
+
+        <div id="silver-squiggle">
+            <img src="../../static/spotifywrapped/silversquiggle.png" alt="Flower">
+        </div>
+
+        <div id="lavender">
+            <img src="../../static/spotifywrapped/lavender.png" alt="Flower">
+        </div>
+
+    </div>
         <div class="carousel">
             <button class="arrow left" onclick="moveCarousel('left')">&#10094;</button>
             <div class="cards-container">
@@ -38,16 +49,19 @@
                 </div>
 
                 <div class="card">
-                    <h2>Top 3 Artists</h2>
-                    <ul>
-                        {% for artist in top_artists %}
-                            <li>
-                                <img src="{{ artist.image }}" alt="{{ artist.name }}" width="100" height="100">
-                                <p>{{ artist.name }}</p>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                </div>
+    <h2>Top 3 Artists</h2>
+                <!-- Save Wrapped Button -->
+<button onclick="saveWrapped()">Save My Wrapped</button>
+    <div class="artist-container">
+        {% for artist in top_artists %}
+            <div class="artist-card">
+                <img src="{{ artist.image }}" alt="{{ artist.name }}" class="artist-image">
+                <p class="artist-name">{{ artist.name }}</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
 
                 <div class="card">
                     <h2>Total Minutes Listened</h2>
@@ -89,6 +103,7 @@
     </div>
 
     <script>
+
         let currentIndex = 0;
 
         function moveCarousel(direction) {
@@ -105,6 +120,7 @@
             // Update the transform property to slide the carousel
             container.style.transform = `translateX(-${currentIndex * 320}px)`;  // 320px is the width of each card plus margin
         }
+
     </script>
 </body>
 </html>

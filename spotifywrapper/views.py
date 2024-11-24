@@ -17,6 +17,9 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.utils.translation import activate
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from .models import SavedWrap
 
 def login_view(request):
     """Handles user login."""
@@ -389,3 +392,33 @@ def gamepage(request):
     return render(request, 'games.html')
 def wraps(request):
     return render(request, 'savedwraps.html')
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from .models import SavedWrap  # Assuming you have a SavedWrap model to store wrapped data
+
+@csrf_exempt
+def save_wrap(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        user = request.user
+
+        # Save the wrapped data
+        saved_wrap = SavedWrap(
+            user=user,
+            top_artists=data['top_artists'],
+            top_tracks=data['top_tracks'],
+            top_albums=data['top_albums'],
+            minutes_listened=data['minutes_listened'],
+            time_range=data['time_range'],
+        )
+        saved_wrap.save()
+
+        return JsonResponse({'success': True})
+
+    return JsonResponse({'success': False})
+from django.shortcuts import render
+from .models import SavedWrap
+
+def saved_wraps(request):
+    saved_wraps = SavedWrap.objects.filter(user=request.user)
+    return render(request, 'spotifywrapped/savedwraps.html', {'saved_wraps': saved_wraps})

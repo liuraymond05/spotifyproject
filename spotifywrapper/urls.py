@@ -21,5 +21,8 @@ urlpatterns = [
     path('top_spotify_data', views.top_spotify_data, name='top_spotify_data'),
     path('gamepage', views.gamepage, name='gamepage'),
     path('wraps', views.wraps, name='wraps'),
+    path('save_wrap/', views.save_wrap, name='save_wrap'),
+    path('savedwraps/', views.saved_wraps, name='savedwraps'),
+
 
 ]

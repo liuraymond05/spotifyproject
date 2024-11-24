@@ -25,3 +25,16 @@ def register_user(request):
         # Other registration logic...
 
         return redirect('login')  # Redirect to login after registration
+
+
+
+class SavedWrap(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    top_artists = models.JSONField()
+    top_tracks = models.JSONField()
+    top_albums = models.JSONField()
+    minutes_listened = models.IntegerField()
+    time_range = models.CharField(max_length=50)
+
+    def __str__(self):
+        return f"{self.user.username}'s Wrapped - {self.time_range}"

@@ -1,10 +1,35 @@
 body {
     font-family: 'Georgia', serif; /* A more homey font */
-    background-color: #f9f3e1; /* A soft, warm beige background */
-    color: #4f4f4f; /* Darker grey text for readability */
+    background-color: #d529f0; /* A soft, warm beige background */
+    color: black; /* Darker grey text for readability */
     margin: 0;
     padding: 0;
 }
+#blue-squiggle {
+    position: absolute;
+    z-index: 1;
+    left: -50px; /* Bring it closer to the viewport */
+    top: 40%; /* Align the flower halfway down */
+    transform: translateY(-50%);
+}
+
+#silver-squiggle {
+    position: absolute;
+    z-index: 1;
+    right: -50px; /* Bring it closer to the viewport */
+    top: 70%; /* Adjusted so it remains visible */
+    transform: translateY(-50%);
+}
+
+#lavender {
+    position: absolute;
+    z-index: 1;
+    left: 0; /* Bring it into the viewport */
+    top: 90%; /* Ensure visibility */
+    transform: translateY(-50%);
+}
+
+
 
 /* Wrapper styling */
 .wrapper {
@@ -19,7 +44,7 @@ body {
     justify-content: center;
     align-items: center;
     overflow: hidden; /* Hide any overflow so only one card is visible */
-    width: 320px; /* Width of one card */
+    width: 400px; /* Width of one card */
     height: 320px; /* Make the height equal to the width to make the cards square */
     margin: 0 auto; /* Center the carousel */
     border-radius: 15px; /* Rounded corners for a soft feel */
@@ -31,7 +56,7 @@ body {
 .cards-container {
     display: flex;
     transition: transform 0.3s ease-in-out;
-    width: 100%; /* Ensure this takes up the full container */
+    width: 80%; /* Ensure this takes up the full container */
 }
 
 /* Styling for each individual card */
@@ -39,7 +64,7 @@ body {
     background-color: #fff;
     border-radius: 15px; /* Rounded corners */
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
-    width: 280px; /* Width of each card */
+    width: 260px; /* Width of each card */
     height: 280px; /* Height of each card to make it square */
     padding: 20px;
     text-align: center;
@@ -51,7 +76,7 @@ body {
     align-items: center;
     flex-direction: column; /* Stack content vertically */
     overflow: hidden; /* Prevent overflow */
-    background-color: #fff9e5; /* Light yellow background for warmth */
+    background-color: whitesmoke; /* Light yellow background for warmth */
 }
 
 /* Hover effect for cards */
@@ -61,37 +86,52 @@ body {
 }
 
 /* Styling for the artist cards (inside top artists) */
-.artist-card {
+/* Artist container */
+.artist-container {
     display: flex;
+    justify-content: center;
+    gap: 20px; /* Space between artist cards */
+    margin-top: 20px;
+    padding: 0 20px; /* Add padding to avoid clipping */
+    overflow: hidden; /* Ensure overflow doesn't cut off content */
+    box-sizing: border-box; /* Include padding in overall width */
+}
+
+.artist-card {
+    width: 100px;  /* Make each artist card smaller */
+    height: 100px;  /* Set a fixed height */
+    display: flex;
+    flex-direction: column; /* Stack image and text vertically */
     align-items: center;
-    margin-bottom: 15px;
-    padding: 5px;
+    justify-content: center;
+    padding: 10px;
+    box-sizing: border-box;
 }
 
 .artist-card img {
-    border-radius: 50%;
-    margin-right: 10px;
-    border: 3px solid #f5c6a5; /* Soft border around the image */
+    width: 55px;  /* Make the image smaller */
+    height: 55px;  /* Make the image smaller */
+    border-radius: 50%; /* Keep the circular shape */
+    object-fit: cover; /* Ensure the image covers the circle without distortion */
 }
 
 .artist-card p {
-    margin: 0;
-    font-size: 1.2em;
-    color: #6c6c6c; /* Softer text for the name */
+    margin-top: 5px; /* Add some space below the image */
+    font-size: 8px; /* Make the text smaller */
 }
 
 /* Headings inside cards */
 .card h2 {
     font-size: 1.6em;
     margin-bottom: 10px;
-    color: #d35400; /* Warm orange for headings */
+    color: black; /* Warm orange for headings */
     font-family: 'Georgia', serif; /* Homely font */
 }
 
 /* Card paragraph text */
 .card p {
-    font-size: 1.1em;
-    color: #7f8c8d; /* Soft grey text for readability */
+    font-size: 1em;
+    color: black; /* Soft grey text for readability */
     margin-bottom: 10px;
 }
 
@@ -140,3 +180,4 @@ body {
 body {
     scroll-behavior: smooth;
 }
+
