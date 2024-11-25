@@ -18,7 +18,7 @@ urlpatterns = [
     path('set_language/<str:language_code>/', views.set_language, name='set_language'),
     path('wrapped/', views.top_spotify_data, name='wrapped'),
     path('top_spotify_data', views.top_spotify_data, name='top_spotify_data'),
-    path('gamepage', views.gamepage, name='gamepage'),
+    path('game/', views.gamepage, name='game'),
     path('wraps', views.wraps, name='wraps'),
 
 ]

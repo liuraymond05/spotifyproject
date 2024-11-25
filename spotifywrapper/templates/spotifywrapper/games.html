@@ -1,2 +1,55 @@
-{% load static %}
 {% include 'spotifywrapper/banner.html' %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Match That Lyric!</title>
+    {% load static %}
+  <link rel="stylesheet" href="{% static 'spotifywrapped/gamestyles.css' %}">
+</head>
+<body>
+ <!-- Title Screen -->
+<div id="title-screen" class="title-container">
+  <h1>Match That Lyric!</h1>
+  <button id="start-button" class="start-button">Click to Begin</button>
+</div>
+
+
+  <!-- Game Page -->
+  <div id="game-page" class="game-container" style="display: none;">
+    <h1 id="game-title">Match That Lyric!</h1>
+    <div id="score">Score: 0</div>
+    <div class="options">
+      <div class="option" id="option-a">
+        <img src="{% static 'spotifywrapped/placeholderimage.jpg' %}" alt="Album Cover A">
+        <p>A. Song Title 1</p>
+      </div>
+      <div class="option" id="option-b">
+        <img src="{% static 'spotifywrapped/placeholderimage.jpg' %}" alt="Album Cover B">
+        <p>B. Song Title 2</p>
+      </div>
+      <div class="option" id="option-c">
+        <img src="{% static 'spotifywrapped/placeholderimage.jpg' %}" alt="Album Cover C">
+        <p>C. Song Title 3</p>
+      </div>
+    </div>
+    <div class="lyric-display">
+      <p id="lyric">Lyric will appear here...</p>
+    </div>
+    <div id="timer">Time Left: 7s</div>
+  </div>
+
+  <!-- End Page -->
+  <div id="end-page" class="end-container" style="display: none;">
+    <h1>Game Over!</h1>
+    <p id="final-score">Your Score: 0</p>
+    <p id="high-score">High Score: 0</p>
+    <button id="play-again">Play Again</button>
+    <button id="return-to-start">Return to Start</button>
+  </div>
+
+  <script src="{% static 'spotifywrapped/gamescript.js' %}"></script>
+</body>
+</html>
