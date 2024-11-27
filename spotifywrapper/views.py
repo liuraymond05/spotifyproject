@@ -18,7 +18,7 @@ from .models import UserProfile
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm
-from django.utils.translation import activate
+from django.utils.translation import activate, get_language_from_request
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .models import SavedWrap
@@ -279,9 +279,9 @@ def reset_password_view(request):
         form = PasswordResetCustomForm()
     return render(request, 'spotifywrapper/reset.html', {"form": form})
 def settings(request):
-    language_code = get_language()  # Use get_language to get the current language
+    language_code = request.LANGUAGE_CODE  # Use get_language to get the current language
     return render(request, 'settings.html', {
-        'language_code': language_code
+        'language_code': language_code,
     })
 
 @login_required
@@ -303,26 +303,33 @@ def contact_developers(request):
     return render(request, 'contact_developers.html')
 
 
-def set_language(request, language_code):
-    # Define supported languages
-    supported_languages = ['en', 'es', 'fr', 'de']
+def set_language(request):
 
-    # If the language code is not supported, redirect back to the referring page or fallback to home
-    if language_code not in supported_languages:
-        return redirect(request.META.get('HTTP_REFERER', '/'))  # Redirect to previous page or home if unsupported
+    if request.method == 'POST':
+        #Get the current language
+        language_code = request.POST.get('language')
 
-    # Activate the selected language
-    activate(language_code)
+        # Define supported languages
+        supported_languages = ['en', 'es', 'fr']
 
-    # Store the selected language in the session
-    if hasattr(request, 'session'):
-        request.session['django_language'] = language_code
+        # If the language code is not supported, redirect back to the referring page or fallback to home
+        if language_code not in supported_languages:
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))  # Redirect to previous page or home if unsupported
 
-    # Create the redirect response and set the language cookie
-    response = HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
-    response.set_cookie('django_language', language_code)  # Store the selected language in the cookie
+        # Activate the selected language
+        activate(language_code)
 
-    return response
+        # Store the selected language in the session
+        if hasattr(request, 'session'):
+            request.session['django_language'] = language_code
+
+        # Create the redirect response and set the language cookie
+        response = HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+        response.set_cookie('django_language', language_code)  # Store the selected language in the cookie
+
+        return response
+    # In case the form method isn't POST, redirect back
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 @login_required
 def top_spotify_data(request):
     """

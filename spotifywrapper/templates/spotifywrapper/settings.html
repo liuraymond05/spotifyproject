@@ -1,4 +1,5 @@
 {% load static %}
+{% load i18n %}
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
@@ -10,17 +11,18 @@
 <body>
 {% include 'spotifywrapper/banner.html' %}
     <div class="settings-container">
-        <h2 class="settings-title">Settings</h2>
+        <h2 class="settings-title">{% trans "Settings" %}</h2>
 
         <!-- Change Language -->
         <div class="setting-item">
-            <h3>Change Language</h3>
-            <form method="POST" action="{% url 'set_language' language_code='en' %}">
+            <h3>{% trans "Change Language" %}</h3>
+            <form method="POST" action="{% url 'set_language' %}">
                 {% csrf_token %}
-                <label for="language-select">Language:</label>
+                <label for="language-select">{% trans "Language" %}:</label>
                 <select id="language-select" name="language" onchange="this.form.submit()">
-                    <option value="en" {% if LANGUAGE_CODE == 'en' %}selected{% endif %}>English</option>
-                    <option value="es" {% if LANGUAGE_CODE == 'es' %}selected{% endif %}>Spanish</option>
+                    <option value="en" {% if LANGUAGE_CODE == 'en' %}selected{% endif %}>{% trans "English" %}</option>
+                    <option value="es" {% if LANGUAGE_CODE == 'es' %}selected{% endif %}>{% trans "Spanish" %}</option>
+                    <option value="fr" {% if LANGUAGE_CODE == 'fr' %}selected{% endif %}>{% trans "French" %}</option>
                     <!-- Add other languages here -->
                 </select>
             </form>
@@ -28,27 +30,27 @@
 
         <!-- Change Color Mode -->
         <div class="setting-item">
-            <h3>Change Color Mode</h3>
-            <label for="color-mode">Select Mode:</label>
+            <h3>{% trans "Change Color Mode" %}</h3>
+            <label for="color-mode">{% trans "Select Mode" %}:</label>
             <select id="color-mode" onchange="changeColorMode()">
-                <option value="light">Light</option>
-                <option value="dark">Dark</option>
-                <option value="neon">Neon</option>
+                <option value="light">{% trans "Light" %}</option>
+                <option value="dark">{% trans "Dark" %}</option>
+                <option value="neon">{% trans "Neon" %}</option>
             </select>
         </div>
 
         <!-- Delete Account -->
         <div class="setting-item">
-            <h3>Delete Account</h3>
+            <h3>{% trans "Delete Account" %}</h3>
             <form method="POST" action="{% url 'delete_account' %}">
                 {% csrf_token %}
-                <button type="submit" class="btn btn-danger">Delete Account</button>
+                <button type="submit" class="btn btn-danger">{% trans "Delete Account" %}</button>
             </form>
         </div>
 
         <!-- Contact Developers -->
         <div class="setting-item">
-            <a href="{% url 'contact_developers' %}">Contact Developers</a>
+            <a href="{% url 'contact_developers' %}">{% trans "Contact Developers" %}</a>
 
 
         </div>
