@@ -66,9 +66,11 @@
   </div>
 
   <!-- Pass track data to JavaScript -->
-  <script>
-    const tracks = {{ tracks|safe }}; // JSON data from Django
+  <script id="tracks-data" type="application/json">
+    {{ tracks|json_script:"tracks" }}
   </script>
+
+  <!-- Link to the game script -->
   <script src="{% static 'spotifywrapped/gamescript.js' %}"></script>
 </body>
 </html>

@@ -161,8 +161,6 @@ def spotify_callback(request):
                 "Content-Type": "application/x-www-form-urlencoded"
             },
         )
-
-
         token_data = token_response.json()
         access_token = token_data.get('access_token')
         refresh_token = token_data.get('refresh_token')
@@ -430,15 +428,21 @@ def gamepage(request):
 
     # Parse and format the tracks data
     tracks_data = response.json().get("items", [])
+    #print("Tracks Data:", tracks_data)
     tracks = [
         {
             "title": track["name"],
             "artist": track["artists"][0]["name"],
-            "album_cover": track["album"]["images"][0]["url"] if track["album"]["images"] else "default_image_url",  # Fallback if no album cover
+            "album_cover": track["album"]["images"][0]["url"] if track["album"]["images"] else "/static/spotifywrapped/placeholderimage.jpg",  # Fallback if no album cover
             "id": track["id"],
         }
         for track in tracks_data
     ]
+    print("Processed Tracks:", tracks)
+
+    if not tracks:
+        messages.error(request, "No top tracks found on Spotify. Please listen to more music and try again!")
+        return redirect('home')  # Or render a page with a user-friendly message
 
     # Pass tracks to the template
     return render(request, "spotifywrapper/games.html", {"tracks": tracks})
