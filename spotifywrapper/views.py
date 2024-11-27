@@ -1,9 +1,11 @@
+from collections import Counter
+
 from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.contrib import messages
 from django.utils import timezone
-import datetime
+from datetime import datetime, timedelta
 import requests
 import base64
 from django.shortcuts import redirect
@@ -163,7 +165,7 @@ def spotify_callback(request):
             user_profile, _ = UserProfile.objects.get_or_create(user=request.user)
             user_profile.spotify_access_token = access_token
             user_profile.spotify_refresh_token = refresh_token
-            user_profile.token_expires = timezone.now() + datetime.timedelta(seconds=expires_in)
+            user_profile.token_expires = timezone.now() + timedelta(seconds=expires_in)
             user_profile.save()
             return redirect('home')
 
@@ -190,7 +192,7 @@ def refresh_spotify_token(user_profile):
 
         if access_token:
             user_profile.spotify_access_token = access_token
-            user_profile.token_expires = timezone.now() + datetime.timedelta(seconds=expires_in)
+            user_profile.token_expires = timezone.now() + timedelta(seconds=expires_in)
             user_profile.save()
             return access_token
 
@@ -338,14 +340,32 @@ def top_spotify_data(request):
         'https://api.spotify.com/v1/me',
         headers={'Authorization': f'Bearer {access_token}'}
     )
-    if profile_response.status_code == 200:
-        profile_data = profile_response.json()
-        username = profile_data.get('display_name', 'Unknown')  # Get the display name from the profile
-    else:
-        username = 'Unknown'
+
+    username = profile_response.json().get('display_name', 'Unknown') if profile_response.status_code == 200 else 'Unknown'
+
 
     # Get the time range selected by the user (default to 'long_term' if not provided)
     time_range = request.GET.get('time_range', 'long_term')
+
+    top_tracks_response = requests.get(
+        f'https://api.spotify.com/v1/me/top/tracks?time_range={time_range}&limit=3',
+        headers={'Authorization': f'Bearer {access_token}'}
+    )
+    top_tracks = []
+    if top_tracks_response.status_code == 200:
+        top_tracks = top_tracks_response.json()['items']
+
+    top_tracks_data = []
+    for track in top_tracks:
+        top_tracks_data.append({
+            'name': track['name'],
+            'artist': track['artists'][0]['name'],
+            'album': track['album']['name'],
+            'image': track['album']['images'][0]['url'] if track['album']['images'] else None,
+            'preview_url': track['preview_url']
+
+        })
+
 
     # Fetch the top artists (limit to 3) based on the selected time range
     top_artists_response = requests.get(
@@ -358,10 +378,36 @@ def top_spotify_data(request):
         for artist in top_artists:
             top_artists_data.append({
                 'name': artist['name'],
-                'image': artist['images'][0]['url'] if artist['images'] else None
+                'image': artist['images'][0]['url'] if 'images' in artist else None,
             })
     else:
         return redirect('home')  # Redirect back if there was an error fetching top artists
+
+
+    recently_played_response = requests.get(
+        'https://api.spotify.com/v1/me/player/recently-played?limit=50',
+        headers={'Authorization': f'Bearer {access_token}'}
+    )
+    recently_played_data = []
+    recently_played_items = recently_played_response.json().get('items', [])
+    listening_hours = Counter()
+    for item in recently_played_items:
+        played_at = item['played_at']
+        played_hour = datetime.fromisoformat(played_at[:-1]).hour
+        listening_hours[played_hour] += 1
+    peak_hour = max(listening_hours, key=listening_hours.get)
+    peak_hour_count = listening_hours[peak_hour]
+
+
+    saved_tracks_response = requests.get(
+        'https://api.spotify.com/v1/me/tracks?limit=1',
+        headers={'Authorization': f'Bearer {access_token}'}
+    )
+
+    saved_tracks_count = 0
+    if saved_tracks_response.status_code == 200:
+        saved_tracks_items = saved_tracks_response.json().get('total', 0)
+
 
     # Get the top genre (most frequent genre from top artists)
     genres = []
@@ -370,22 +416,79 @@ def top_spotify_data(request):
 
     top_genre = max(set(genres), key=genres.count) if genres else None
 
-    # Get the minutes listened: sum the time of top tracks
+    # Top tracks for album and mood
     top_tracks_response = requests.get(
         f'https://api.spotify.com/v1/me/top/tracks?time_range={time_range}&limit=10',
         headers={'Authorization': f'Bearer {access_token}'}
     )
-    total_minutes_listened = 0
-    if top_tracks_response.status_code == 200:
-        top_tracks = top_tracks_response.json()['items']
-        total_minutes_listened = sum([track['duration_ms'] for track in top_tracks]) // 60000
+
+    album_count = {}
+    album_details = {}
+    for track in top_tracks:
+        album_name = track['album']['name']
+        album_image = track['album']['images'][0]['url'] if track['album']['images'] else None
+        album_release_date = track['album']['release_date']
+
+        album_count[album_name] = album_count.get(album_name, 0) + 1
+        if album_name not in album_details:
+            album_details[album_name] = {
+                'name': album_name,
+                'image': album_image,
+                'release_date': album_release_date,
+                'details': track['album'].get('label', 'Unknown')  # You can use this for additional album details
+            }
+    top_album = max(album_count, key=album_count.get) if album_count else None
+    album_details = album_details.get(top_album, None)
+
+    decades = [int(track['album']['release_date'][:4]) // 10 * 10 for track in top_tracks if
+               'release_date' in track['album']]
+    favorite_decade = max(set(decades), key=decades.count) if decades else None
+    favorite_decade = f"{favorite_decade}" if favorite_decade else None
+
+
+    valence_energy_map = {'Euphoric': 0, 'Chill': 0, 'Fiery': 0, 'Melancholic': 0}
+    for track in top_tracks:
+        valence = track['valence'] if 'valence' in track else 0.5
+        energy = track['energy'] if 'energy' in track else 0.5
+        if valence >= 0.5 and energy >= 0.5:
+            valence_energy_map['Euphoric'] += 1
+        elif valence >= 0.5 and energy < 0.5:
+            valence_energy_map['Chill'] += 1
+        elif valence < 0.5 and energy >= 0.5:
+            valence_energy_map['Fiery'] += 1
+        elif valence < 0.5 and energy < 0.5:
+                valence_energy_map['Melancholic'] += 1
+
+    favorite_mood = max(valence_energy_map, key=valence_energy_map.get)
+
+    top_song = None
+    if top_tracks:
+        top_song = top_tracks[0]['name']
+
+    # Get the most played playlist
+    playlists_response = requests.get(
+        'https://api.spotify.com/v1/me/playlists?limit=1',
+        headers={'Authorization': f'Bearer {access_token}'}
+    )
+    top_playlist = None
+    if playlists_response.status_code == 200:
+        playlists = playlists_response.json()['items']
+        top_playlist = playlists[0]['name'] if playlists else None
 
     return render(request, 'spotifywrapper/wrapped.html', {
         'top_genre': top_genre,
         'top_artists': top_artists_data,
-        'total_minutes_listened': total_minutes_listened,
         'selected_time_range': time_range,  # Pass the selected time range to the template
-        'username': username  # Pass the username to the template
+        'top_song': top_song,
+        'top_playlist': top_playlist,
+        'username': username, # Pass the username to the template
+        'favorite_decade': favorite_decade,
+        'favorite_mood': favorite_mood,
+        'peak_hour': peak_hour_count,
+        'top_album': top_album,
+        'top_tracks': top_tracks,
+        'album_details': album_details,
+
     })
 
 def gamepage(request):

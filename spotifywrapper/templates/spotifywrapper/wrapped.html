@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Spotify Wrapped</title>
     <link rel="stylesheet" href="{% static 'spotifywrapped/wrapped.css' %}">
+    <script src="{% static 'spotifywrapped/confetti.js' %}"></script>
 </head>
 <body>
    <div class="wrapper">
@@ -41,6 +42,10 @@
         </div>
     </div>
 
+   <div class="animation-container">
+        <div id="sun-or-moon"></div> <!-- The sun or moon image will appear here -->
+    </div>
+
     <div class="carousel">
         <button class="arrow left" onclick="moveCarousel('left')">&#10094;</button>
         <div class="cards-container">
@@ -51,8 +56,13 @@
 
             <div class="card">
                 <h2>Top Genre</h2>
-                <p>{{ top_genre }}</p>
+                <div id="cd-container">
+                    <div id="cd"></div>
+                    <div id="genre-name">{{ top_genre }}</div>
+                </div>
             </div>
+
+            <canvas id="confetti"></canvas>
 
             <div class="card">
                 <h2>Top 3 Artists</h2>
@@ -67,46 +77,110 @@
             </div>
 
             <div class="card">
-                <h2>Total Minutes Listened</h2>
-                <p>{{ total_minutes_listened }} minutes</p>
+                <h2>Top Album</h2>
+                    <div class="album-card-container">
+                        <div class="album-card" id="album-card">
+                        <!-- Front of the card: Album cover -->
+                            <div class="album-front">
+                                <img src="{{ album_details.image }}" alt="Top Album" class="album-image">
+                                <p><strong>Album:</strong> {{ album_details.name }}</p>
+                            </div>
+                            <!-- Back of the card: Album details -->
+                            <div class="album-back">
+                                <div class="album-details">
+                                    <p><strong>Album:</strong> {{ album_details.name }}</p>
+                                    <p><strong>Release Date:</strong> {{ album_details.release_date }}</p>
+                                    <p><strong>Label:</strong> {{ album_details.details }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
             </div>
 
             <div class="card">
                 <h2>Top Song</h2>
                 <p>{{ top_song }}</p>
+                <div id="song-container">
+                    <canvas id="waveform-canvas" width="600" height="200"></canvas>
+                </div>
             </div>
 
             <div class="card">
                 <h2>Top Playlist</h2>
-                <p>{{ top_playlist }}</p>
+                <div id="playlist-pulse-container">
+                    <div id="pulse-circle">
+                        <span id="playlist-name">{{ top_playlist }}</span>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="card">
+                <h2>Favorite Decade</h2>
+                <div id="vinyl-container">
+                    <div id="vinyl"></div>
+                    <div id="decade-number">{{ favorite_decade }}</div>
+                </div>
+            </div>
+
+            <div class="card" id="favorite-mood">
+                <h2>Favorite Mood</h2>
+                <p>{{ favorite_mood }}</p>
             </div>
 
             <div class="card">
-                <h2>Most Played Song</h2>
-                <p>{{ most_played_song }}</p>
-            </div>
-
-            <div class="card">
-                <h2>Top Artist of All Time</h2>
-                <p>{{ all_time_top_artist }}</p>
-            </div>
-
-            <div class="card">
-                <h2>Top Tracks</h2>
-                <ul>
+                <h2>Top 3 Tracks</h2>
+                <div class="tracks-list">
                     {% for track in top_tracks %}
-                        <li>{{ track.name }}</li>
+                    <div class="track-card">
+                        <div class="track-info">
+                            <h4>{{ track.name }}</h4>
+                            <p class="artist-name">by {{ track.artist }}</p>
+                        </div>
+                        {% if track.preview_url %}
+                        <audio controls>
+                            <source src="{{ track.preview_url }}" type="audio/mpeg">
+                            Your browser does not support the audio element.
+                        </audio>
+                        {% else %}
+                        <p class="no-preview">No preview available</p>
+                        {% endif %}
+                    </div>
                     {% endfor %}
-                </ul>
+                </div>
             </div>
+
+        <div class="card" id="listening-habits">
+            <h2>Listening Habits</h2>
+            <p>You listen to music most at <strong>{{ peak_hour }}:00</strong>!</p>
+        </div>
+
         </div>
         <button class="arrow right" onclick="moveCarousel('right')">&#10095;</button>
     </div>
 </div>
 
+    <audio id="preview-audio" style="display:none" controls>
+        Your browser does not support the audio element.
+    </audio>
+
+
 <script>
     // Carousel Logic
     let currentIndex = 0;
+
+    document.addEventListener("DOMContentLoaded", function() {
+    // Hide the artist cards initially and apply the flip animation when the page loads
+    const artistCards = document.querySelectorAll('.artist-card');
+    artistCards.forEach(card => {
+        card.classList.remove('visible'); // Ensure cards are hidden on load
+    });
+
+    // Initialize the confetti animation
+    const confetti = new Confetti("confetti");
+    confetti.start();
+
+    });
 
     function moveCarousel(direction) {
         const container = document.querySelector('.cards-container');
@@ -124,7 +198,239 @@
 
         // Slide the carousel by updating the `transform` property
         container.style.transform = `translateX(-${currentIndex * (cardWidth + 18)}px)`;
+
+
+
+        if (currentIndex === 2) {
+            animateArtistCards();
+        } else if (currentIndex === 3) {
+            animateAlbumCard()
+        } else if  (currentIndex === 4) {
+            animateWaveform(currentIndex);
+        } else if (currentIndex === 7) {
+            animateFavoriteMoodCard()
+        } else if (currentIndex === 9) {
+            // Set the initial state for the Listening Habits card
+            const peakHour = {{ peak_hour }};
+            updateListeningHabitsCard(peakHour);
+        }
+
+
+        // Start the vinyl animation when the "Favorite Decade" card (card index 6) is shown
+        if (currentIndex === 6) {
+            startVinylAnimation();
+        } else {
+            stopVinylAnimation();
+        }
+
+        if (currentIndex === 1) {
+            startCdAnimation();
+        } else {
+            stopCdAnimation();
+        }
+
+        if (currentIndex === 5) { // Top Playlist
+            animateTopPlaylistCard(currentIndex);
+        } else {
+            togglePlaylistPulse(false); // Stop pulse animation for other cards
+        }
     }
+
+    // Function to start the CD rotation animation
+    function startCdAnimation() {
+        const cd = document.querySelector('#cd');
+        cd.style.animationPlayState = 'running'; // Start spinning
+    }
+
+    // Function to stop the CD rotation animation
+    function stopCdAnimation() {
+        const cd = document.querySelector('#cd');
+        cd.style.animationPlayState = 'paused'; // Stop spinning
+    }
+
+
+
+        // Function to animate the artist cards with a delay
+        function animateArtistCards() {
+            const artistCards = document.querySelectorAll('.artist-card');
+
+            // First, ensure all artist cards are hidden initially
+            artistCards.forEach(card => {
+                card.classList.remove('visible'); // Remove visible class to reset
+            });
+
+            // Add the 'visible' class with delay to show cards one by one
+            artistCards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.classList.add('visible');
+                }, index * 800); // Add delay of 300ms between each card
+            });
+        }
+
+        // Call the function when the page first loads to ensure the artist cards aren't visible initially
+        document.addEventListener('DOMContentLoaded', function () {
+            const artistCards = document.querySelectorAll('.artist-card');
+            artistCards.forEach(card => {
+                card.classList.remove('visible'); // Ensure cards are hidden on load
+            });
+        });
+
+        // Function to animate the album card when it reaches the Top Album card
+        function animateAlbumCard() {
+            const albumCard = document.querySelector('.album-card');
+            const front = albumCard.querySelector('.album-front');
+            const back = albumCard.querySelector('.album-back');
+
+            if (albumCard) {
+                // Step 1: Animate moving down
+                albumCard.style.animation = 'moveDown 1s forwards';
+
+                // Step 2: Flip to show the back after moving down
+                setTimeout(() => {
+                    albumCard.classList.add('animate'); // Apply flip animation
+                }, 1000); // Wait for 1 second (moveDown animation duration)
+
+                // Step 3: Flip back to the front after showing the back
+                setTimeout(() => {
+                    albumCard.classList.remove('animate'); // Reset flip animation
+                }, 3000); // Wait for 3 seconds (1s moveDown + 2s on back)
+            }
+        }
+
+        //Waveform for top song
+    function animateWaveform(currentIndex) {
+        if (currentIndex !== 4) return; // Ensure animation runs only for the "Top Song" card
+
+        const canvas = document.getElementById('waveform-canvas');
+        const ctx = canvas.getContext('2d');
+        const width = canvas.width;
+        const height = canvas.height;
+        const waveCount = 5; // Number of waveform layers
+        const waveHeight = 50; // Max height of waves
+        const speed = 0.02; // Speed of wave animation
+        const colors = ['#ff6f61', '#ffc107', '#8bc34a', '#03a9f4', '#673ab7']; // Gradient colors
+
+        let time = 0;
+
+        // Function to draw the waveform
+        function drawWaveform() {
+            ctx.clearRect(0, 0, width, height); // Clear canvas
+            for (let i = 0; i < waveCount; i++) {
+                ctx.beginPath();
+                ctx.strokeStyle = colors[i % colors.length];
+                ctx.lineWidth = 2;
+                for (let x = 0; x <= width; x++) {
+                    const y =
+                        height / 2 +
+                        Math.sin((x / 50) + (time + i)) * waveHeight * (1 - i / waveCount);
+                    if (x === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                }
+                ctx.stroke();
+            }
+            time += speed;
+            requestAnimationFrame(drawWaveform); // Continue animation
+        }
+
+        // Start the animation
+        drawWaveform();
+    }
+
+    function togglePlaylistPulse(enable) {
+        const pulseContainer = document.getElementById('playlist-pulse-container');
+        if (enable) {
+            pulseContainer.style.display = 'block'; // Show pulse animation
+        } else {
+            pulseContainer.style.display = 'none'; // Hide pulse animation
+        }
+    }
+
+    function animateTopPlaylistCard(currentIndex) {
+        if (currentIndex === 5) { // Assuming the "Top Playlist" card is at index 5
+            togglePlaylistPulse(true); // Start the pulse animation
+        } else {
+            togglePlaylistPulse(false); // Stop the pulse animation
+        }
+    }
+
+
+
+
+        // Function to start the vinyl spin animation
+    function startVinylAnimation() {
+        const vinyl = document.querySelector('#vinyl');
+        vinyl.style.animationPlayState = 'running'; // Start spinning
+    }
+
+    // Function to stop the vinyl spin animation
+    function stopVinylAnimation() {
+        const vinyl = document.querySelector('#vinyl');
+        vinyl.style.animationPlayState = 'paused'; // Stop spinning
+    }
+
+
+
+
+// Function to animate the "Favorite Mood" card with a gradient transition
+        function animateFavoriteMoodCard() {
+            const moodCard = document.querySelector('#favorite-mood');
+            const mood = "{{ favorite_mood }}"; // Get the mood value from the server
+
+            // Reset any previous mood styles
+            moodCard.classList.remove('euphoric', 'chill', 'fiery', 'melancholic');
+
+            // Add the appropriate class based on the mood
+            if (mood === 'Euphoric') {
+                moodCard.classList.add('euphoric');
+            } else if (mood === 'Chill') {
+                moodCard.classList.add('chill');
+            } else if (mood === 'Fiery') {
+                moodCard.classList.add('fiery');
+            } else if (mood === 'Melancholic') {
+                moodCard.classList.add('melancholic');
+            }
+
+            // Trigger the animation of the gradient (ensure it’s set after class change)
+            moodCard.style.backgroundPosition = "0 100%";
+        }
+
+
+
+// Function to update the Listening Habits card based on the peak listening hour
+        function updateListeningHabitsCard(peakHour) {
+            const listeningHabitsCard = document.querySelector('#listening-habits');
+
+
+            // Remove any previous time-based classes
+            listeningHabitsCard.classList.remove('early-morning', 'midday', 'late-night');
+
+            // Add the appropriate class based on the peak hour from Spotify
+            if (peakHour >= 6 && peakHour < 12) {
+                listeningHabitsCard.classList.add('early-morning'); // Sunrise animation (6 AM to 11:59 AM)
+            } else if (peakHour >= 12 && peakHour < 18) {
+                listeningHabitsCard.classList.add('midday'); // Midday (12 PM to 5:59 PM)
+            } else {
+                listeningHabitsCard.classList.add('late-night'); // Moonrise animation (6 PM to 5:59 AM)
+            }
+        }
+
+
+        function playPreview(url) {
+            const audioPlayer = document.getElementById('preview-audio');
+
+            if (audioPlayer) {
+                audioPlayer.src = url;
+                audioPlayer.load();
+                audioPlayer.play();
+            } else {
+                console.error('Audio player or source element not found.')
+            }
+        }
+
+
 </script>
 
 </body>

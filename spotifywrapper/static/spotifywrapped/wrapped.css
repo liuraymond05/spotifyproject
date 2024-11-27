@@ -106,6 +106,10 @@ body {
     justify-content: center;
     padding: 10px;
     box-sizing: border-box;
+    opacity: 0;            /* Initially hide the cards */
+    transform: translateY(20px); /* Slight downward position for effect */
+    visibility: hidden;    /* Make the cards invisible initially */
+    transition: opacity 0.5s ease, transform 0.5s ease, visibility 0s 0.5s; /* Smooth transition */
 }
 
 .artist-card img {
@@ -200,3 +204,493 @@ button[type="submit"]:hover {
     background-color: #3700b3; /* Slightly darker hover effect */
 }
 
+
+/* Top 5 Tracks CSS styling */
+
+.top-tracks-section {
+    color: #fff;
+    padding: 20px;
+    max-width: 100px;
+    margin: 0 auto;
+}
+
+.tracks-list {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.track-card {
+    display: flex;
+    align-items: center;
+    background-color: #fff;
+    color: #000;
+    padding: 10px 15px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.track-info {
+    flex: 1;
+    margin-right: 15px;
+}
+
+.track-info h4 {
+    font-size: 10px;
+    font-weight: bold;
+    margin: 0 0 5px;
+}
+
+.artist-name {
+    font-size: 14px;
+    color: #555;
+    margin: 0;
+}
+
+audio {
+    flex-shrink: 0;
+    width: 150px;
+}
+
+.no-preview {
+    font-size: 12px;
+    color: #999;
+}
+
+@media (max-width: 600px) {
+    .tracks-card {
+        padding: 10px;
+    }
+
+    .track-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    audio {
+        width: 100%; /* Full width on small screens */
+        height: 25px;
+        margin-top: 5px;
+    }
+}
+
+/* Confetti Positioning */
+#confetti {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 9999;
+    pointer-events: none;
+}
+
+
+/*Top Genre*/
+/* CD container */
+#cd-container {
+    position: relative;
+    width: 250px;
+    height: 250px;
+    margin: 0 auto;
+}
+
+/* CD design */
+#cd {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: url('cd.png') no-repeat center center; /* Image for the CD */
+    background-size: cover;
+    animation: spin 10s linear infinite; /* Infinite rotation */
+}
+
+/* Genre name positioned in the center of the CD */
+#genre-name {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* Centers the text */
+    font-size: 1.5rem; /* Adjust size for readability */
+    font-weight: bold;
+    color: #181818; /* White text */
+    z-index: 1; /* Ensure text is above the CD */
+}
+
+/* Keyframes for CD rotation */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+
+
+
+/* Top Artists effects */
+/* Artist images effects */
+.artist-card.visible {
+    opacity: 1;           /* Make cards visible */
+    transform: translateY(0); /* Move them to their original position */
+    visibility: visible;  /* Make the cards visible */
+    transition-delay: 0s; /* Delay the visibility transition until after the animation */
+}
+
+/* Top Album effects */
+.card {
+    text-align: center;
+    padding: 20px;
+}
+
+.album-card-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+}
+
+/* Style the album card */
+.album-card {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    perspective: 1000px; /* Enables 3D effect for flip */
+    transition: transform 1s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.album-front {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden; /* Prevents the "back" side from showing when hidden */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: transform 1s ease, opacity 0.5s ease;
+    background-color: #333;
+    z-index: 2;
+}
+
+
+.album-front p {
+    font-size: 14px;
+    color: #fff;
+    text-align: center;
+    margin-top: 10px;
+}
+
+/* Album image inside the front */
+.album-image {
+    width: 70%; /* Adjust image size relative to the card */
+    height: auto;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+.album-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden; /* Prevents the "back" side from showing when hidden */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 1s ease, opacity 0.5s ease;
+    background-color: #f0f0f0;
+    color: black;
+    transform: rotateY(180deg); /* Initially hidden */
+    z-index: 1;
+    opacity: 0; /* Start hidden */
+}
+
+.album-card.animate .album-front {
+    transform: rotateY(180deg); /* Hide front when flipping */
+    opacity: 0;
+}
+
+.album-card.animate .album-back {
+    transform: rotateY(0); /* Show back */
+    opacity: 1;
+}
+
+/* Move down animation */
+@keyframes moveDown {
+    0% {
+        transform: translateY(-100vh); /* Start above viewport */
+    }
+    100% {
+        transform: translateY(0); /* End in position */
+    }
+}
+
+/*Top Song*/
+#song-container {
+    position: relative;
+    width: 150px; /* Adjust size of the pulsating circle */
+    height: 150px;
+    margin: 20px auto; /* Center the container on the page */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#waveform-canvas {
+    display: block;
+    margin: 0 auto;
+    background-color: #a7bfd4;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+/*Top Playlist*/
+/* Container for the pulsating circle */
+#playlist-pulse-container {
+    position: relative;
+    width: 150px; /* Adjust size of the pulsating circle */
+    height: 150px;
+    margin: 20px auto; /* Center the container on the page */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Pulsating circle */
+#pulse-circle {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: #a7d4b5; /* Light pink */
+    position: relative;
+    animation: pulse 2s infinite; /* Repeats the pulsation effect */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+/* Playlist name text */
+#playlist-name {
+    font-size: 1.5rem; /* Adjust the text size */
+    font-weight: bold;
+    color: #fff; /* White text for contrast */
+    text-align: center;
+    margin: 0; /* No extra spacing */
+    position: absolute;
+    top: 50%; /* Center vertically */
+    left: 50%; /* Center horizontally */
+    transform: translate(-50%, -50%); /* Align the center point of the text */
+    z-index: 1; /* Ensure it's above the pulsating effect */
+}
+
+/* Keyframes for pulsation effect */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.2); /* Slight expansion */
+        opacity: 0.7;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+
+
+/*Favorite Decade*/
+#vinyl-container {
+    position: relative;
+    width: 250px;
+    height: 250px;
+    margin: 0 auto;
+}
+
+#vinyl {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: url('vinyl.png') no-repeat center center;
+    background-size: cover;
+    animation: spin 10s linear infinite;
+}
+
+#decade-number {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 2rem;
+    font-weight: bold;
+    color: dimgrey;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+
+
+/* Euphoric Mood */
+#favorite-mood.euphoric {
+    background-image: linear-gradient(to bottom, #FFD700, #FF6347); /* Gradient from bright yellow to coral */
+    transform: scale(1.1);
+    animation: gradientSparkle 2s ease-in-out infinite; /* Apply the sparkling animation */
+}
+
+/* Chill Mood */
+#favorite-mood.chill {
+    background-image: linear-gradient(to bottom, #A8DADC, #457B9D); /* Gradient from soft blue to deeper blue */
+    transform: scale(1.05);
+    animation: gradientSparkle 2s ease-in-out infinite; /* Apply the sparkling animation */
+}
+
+/* Fiery Mood */
+#favorite-mood.fiery {
+    background-image: linear-gradient(to bottom, #FF4500, #D32F2F); /* Gradient from fiery red-orange to dark red */
+    transform: scale(1.05);
+    animation: gradientSparkle 2s ease-in-out infinite; /* Apply the sparkling animation */
+}
+
+/* Melancholic Mood */
+#favorite-mood.melancholic {
+    background-image: linear-gradient(to bottom, #6C757D, #495057); /* Gradient from dark gray to charcoal gray */
+    transform: scale(1.05);
+    animation: gradientSparkle 2s ease-in-out infinite; /* Apply the sparkling animation */
+}
+
+
+
+
+/*Animations for Listening Habits*/
+/* Early Morning (Sunrise) */
+#listening-habits.early-morning {
+    background-image: url("morning.png");
+    position: relative;
+    animation: sunrise 5s ease-in-out forwards;
+}
+
+/* Midday */
+#listening-habits.midday {
+    background-image: url("midday.jpg");
+    position: relative;
+    animation: cloud 5s ease-in-out forwards;
+}
+
+/* Late Night (Moonrise) */
+#listening-habits.late-night {
+    background-image: url("night.jpg");
+    position: relative;
+    animation: moonrise 5s ease-in-out forwards;
+}
+
+/* Sunrise Animation (Sun moves across) */
+@keyframes sunrise {
+    0% {
+        background-position: center center;
+    }
+    100% {
+        background-position: center center;
+    }
+}
+
+/* Cloud Animation (Cloud moves across) */
+@keyframes cloud {
+    0% {
+        background-position: center center;
+    }
+    100% {
+        background-position: center center;
+    }
+}
+
+/* Moonrise Animation (Moon moves across) */
+@keyframes moonrise {
+    0% {
+        background-position: center center;
+    }
+    100% {
+        background-position: center center;
+    }
+}
+
+/* Sun Image Animation */
+#listening-habits.early-morning::before {
+    content: "";
+    position: absolute;
+    top: 20%;
+    left: -100px; /* Start position off-screen */
+    width: 100px;
+    height: 100px;
+    background-image: url("sun.png"); /* Replace with your sun image */
+    background-size: contain;
+    background-repeat: no-repeat;
+    animation: sunMove 5s ease-in-out forwards; /* Animate across */
+}
+
+/* Moon Image Animation */
+#listening-habits.late-night::before {
+    content: "";
+    position: absolute;
+    top: 20%;
+    right: -100px; /* Start position off-screen */
+    width: 80px;
+    height: 80px;
+    background-image: url("moon.png"); /* Replace with your moon image */
+    background-size: contain;
+    background-repeat: no-repeat;
+    animation: moonMove 5s ease-in-out forwards; /* Animate across */
+}
+
+/* Sun Image Animation */
+#listening-habits.midday::before {
+    content: "";
+    position: absolute;
+    top: 20%;
+    left: -100px; /* Start position off-screen */
+    width: 100px;
+    height: 100px;
+    background-image: url("cloud.png"); /* Replace with your sun image */
+    background-size: contain;
+    background-repeat: no-repeat;
+    animation: cloudMove 5s ease-in-out forwards; /* Animate across */
+}
+
+/* Sun Animation (Moves from left to right) */
+@keyframes sunMove {
+    0% {
+        left: -100px; /* Start off-screen */
+    }
+    100% {
+        left: 50%; /* End at the center of the card */
+        transform: translateX(-50%); /* Center it */
+    }
+}
+
+/* Cloud Animation (Cloud from left to right) */
+@keyframes cloudMove {
+    0% {
+        left: -100px; /* Start off-screen */
+    }
+    100% {
+        left: 50%; /* End at the center of the card */
+        transform: translateX(-50%); /* Center it */
+    }
+}
+
+/* Moon Animation (Moves from right to left) */
+@keyframes moonMove {
+    0% {
+        right: -100px; /* Start off-screen */
+    }
+    100% {
+        right: 50%; /* End at the center of the card */
+        transform: translateX(50%); /* Center it */
+    }
+}
