@@ -6,33 +6,48 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Match That Lyric!</title>
-    {% load static %}
+  {% load static %}
   <link rel="stylesheet" href="{% static 'spotifywrapped/gamestyles.css' %}">
 </head>
 <body>
- <!-- Title Screen -->
-<div id="title-screen" class="title-container">
-  <h1>Match That Lyric!</h1>
-  <button id="start-button" class="start-button">Click to Begin</button>
-</div>
+  <!-- Title Screen -->
+  <div id="title-screen" class="title-container">
+    <h1>Match That Lyric!</h1>
+      <!-- Error Message Display (If Available) -->
+    {% if message %}
+      <div class="error-message">{{ message }}</div>
+    {% endif %}
 
+    <button id="start-button" class="start-button">Click to Begin</button>
+  </div>
 
   <!-- Game Page -->
   <div id="game-page" class="game-container" style="display: none;">
+
+    <!-- Error Message (If Available) -->
+    {% if messages %}
+      <div class="error-message">
+        {% for message in messages %}
+          <p>{{ message }}</p>
+        {% endfor %}
+      </div>
+    {% endif %}
+
     <h1 id="game-title">Match That Lyric!</h1>
     <div id="score">Score: 0</div>
     <div class="options">
+      <!-- Dynamically populated options -->
       <div class="option" id="option-a">
         <img src="{% static 'spotifywrapped/placeholderimage.jpg' %}" alt="Album Cover A">
-        <p>A. Song Title 1</p>
+        <p>A. <span class="song-title"></span></p>
       </div>
       <div class="option" id="option-b">
         <img src="{% static 'spotifywrapped/placeholderimage.jpg' %}" alt="Album Cover B">
-        <p>B. Song Title 2</p>
+        <p>B. <span class="song-title"></span></p>
       </div>
       <div class="option" id="option-c">
         <img src="{% static 'spotifywrapped/placeholderimage.jpg' %}" alt="Album Cover C">
-        <p>C. Song Title 3</p>
+        <p>C. <span class="song-title"></span></p>
       </div>
     </div>
     <div class="lyric-display">
@@ -50,6 +65,10 @@
     <button id="return-to-start">Return to Start</button>
   </div>
 
+  <!-- Pass track data to JavaScript -->
+  <script>
+    const tracks = {{ tracks|safe }}; // JSON data from Django
+  </script>
   <script src="{% static 'spotifywrapped/gamescript.js' %}"></script>
 </body>
 </html>

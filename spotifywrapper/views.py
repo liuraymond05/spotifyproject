@@ -17,6 +17,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.utils.translation import activate
+from django.shortcuts import render
+from .spotify_helper import get_user_top_tracks, select_random_tracks
 
 def login_view(request):
     """Handles user login."""
@@ -33,6 +35,16 @@ def login_view(request):
                 user_profile.save()
 
             if not user_profile.spotify_access_token:
+                # SPOTIFY_AUTH_URL = "https://accounts.spotify.com/authorize"
+                # CLIENT_ID = "0981ffa5b46448b4bda7f25862742556"
+                # REDIRECT_URI = "http://127.0.0.1:8000/spotify/callback/"
+                # SCOPES = "user-top-read"
+                # auth_url = (
+                #     f"{SPOTIFY_AUTH_URL}?response_type=code&client_id={CLIENT_ID}"
+                #     f"&redirect_uri={REDIRECT_URI}&scope={SCOPES}"
+                # )
+                # return redirect(auth_url)
+
                 return redirect('spotify_login')
 
             return redirect('home')
@@ -164,6 +176,7 @@ def spotify_callback(request):
             user_profile.save()
             return redirect('home')
 
+    print(f"Access token stored in session: {request.session.get('spotify_access_token')}")
     messages.error(request, "Spotify authentication failed. No code provided.")
     return redirect('login')
 
@@ -385,9 +398,50 @@ def top_spotify_data(request):
         'username': username  # Pass the username to the template
     })
 
-def game(request):
-    return render(request, 'spotifywrapper/games.html')
+def gamepage(request):
+    """
+    Game view that fetches the user's top tracks and selects three random tracks for the game.
+    """
+    # Retrieve the access token from the user profile
+    user_profile = UserProfile.objects.filter(user=request.user).first()
+    if not user_profile or not user_profile.spotify_access_token:
+        messages.error(request, "No Spotify access token found. Please log in to play the game.")
+        return redirect('login')  # Redirect to login page
 
+    access_token = user_profile.spotify_access_token
+
+    # Check if the token has expired
+    if user_profile.token_expires and timezone.now() >= user_profile.token_expires:
+        messages.error(request, "Your Spotify session has expired. Please log in again.")
+        return redirect('login')  # Redirect to login page
+
+    # Call Spotify API to get user's top tracks
+    headers = {"Authorization": f"Bearer {access_token}"}
+    top_tracks_url = "https://api.spotify.com/v1/me/top/tracks?limit=50"
+    response = requests.get(top_tracks_url, headers=headers)
+
+    # Handle API response
+    if response.status_code == 401:  # 401 Unauthorized - token invalid
+        messages.error(request, "Your session has expired or is invalid. Please log in again.")
+        return redirect('login')  # Redirect to login page
+    elif response.status_code != 200:  # Other API errors
+        messages.error(request, "Failed to load tracks from Spotify. Please try again later.")
+        return redirect('home')  # Redirect to home page
+
+    # Parse and format the tracks data
+    tracks_data = response.json().get("items", [])
+    tracks = [
+        {
+            "title": track["name"],
+            "artist": track["artists"][0]["name"],
+            "album_cover": track["album"]["images"][0]["url"] if track["album"]["images"] else "default_image_url",  # Fallback if no album cover
+            "id": track["id"],
+        }
+        for track in tracks_data
+    ]
+
+    # Pass tracks to the template
+    return render(request, "spotifywrapper/games.html", {"tracks": tracks})
 
 def wraps(request):
     return render(request, 'savedwraps.html')

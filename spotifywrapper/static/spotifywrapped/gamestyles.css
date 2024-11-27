@@ -93,7 +93,7 @@ body {
 .option {
   background-color: #34495e;
   margin: 0 10px;
-  padding: 10px;
+  padding: 20px 10px;  /* Padding added for better layout */
   border: 2px solid #ecf0f1;
   border-radius: 8px;
   text-align: center;
@@ -105,6 +105,12 @@ body {
 .option:hover {
   background-color: #1abc9c;
   transform: scale(1.1);
+}
+
+.option img {
+    width: 100%; /* makes image responsive */
+    height: auto; /*vmaintains aspect ratio */
+    border-radius: 8px; /* matches the rounded corners */
 }
 
 /* Buttons for Play Again and Return to Start */
@@ -123,4 +129,14 @@ button {
 button:hover {
   background-color: #1abc9c;
   transform: scale(1.05);
+}
+
+.error-message {
+  color: red;
+  font-size: 1.2rem;
+  margin: 10px 0;
+  padding: 10px;
+  border: 2px solid red;
+  background-color: rgba(255, 0, 0, 0.1);
+  border-radius: 5px;
 }
