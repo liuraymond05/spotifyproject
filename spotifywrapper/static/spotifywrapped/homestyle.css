@@ -315,76 +315,6 @@ body.dark-mode .btn:hover {
 }
 
 
-/* Specific Card Colors */
-#artist {
-    background-color: #cdff8c;
-}
-
-body.dark-mode #artist {
-    background-color: #6a9e3e;
-}
-
-#songs {
-    background-color: #f7bb54;
-}
-
-body.dark-mode #songs {
-    background-color: #8c6930;
-}
-
-#albums {
-    background-color: #47afff;
-}
-
-body.dark-mode #albums {
-    background-color: #274c73;
-}
-
-#minutes {
-    background-color: #fafc83;
-}
-
-body.dark-mode #minutes {
-    background-color: #787a3c;
-}
-
-.card p {
-    margin-top: 10px;
-    font-size: 1.8em;
-    font-weight: bold;
-}
-
-/* Rating Section */
-.rating {
-    background-color: #44c968;
-    color: black;
-    text-align: center;
-    padding: 30px;
-    border-top-left-radius: 100px;
-    border-top-right-radius: 100px;
-    margin-top: 30px;
-    width: 100%;
-}
-
-body.dark-mode .rating {
-    background-color: #2a5e3a;
-    color: #f5f5f5;
-}
-
-.rating h3 {
-    font-size: 3em;
-    margin: 0;
-}
-
-.rating p {
-    font-size: 1.8em;
-}
-
-.stars {
-    font-size: 2em;
-    color: #ffc700;
-    margin-top: 10px;
-}
 
 /* Squiggles */
 #blue-squiggle, #silver-squiggle, #lavender {
@@ -507,10 +437,6 @@ body.dark-mode .top-tracks-list li:hover {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     z-index: 10; /* Ensures the menu appears above the squiggles */
 }
-
-
-/* ------------------------------------------------------------------------------------------------------------------*/
-/* Different pages info styling and stuff */
 
 
 

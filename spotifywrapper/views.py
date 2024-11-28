@@ -534,8 +534,85 @@ def saved_wraps(request):
     saved_wraps = SavedWrap.objects.filter(user=request.user)
     return render(request, 'spotifywrapper/savedwraps.html', {'saved_wraps': saved_wraps})
 
-def top_songs(request):
-    return render(request, 'spotifywrapper/top-songs.html')
+
+def top_genre(request):
+    """
+    View to get the user's top genre from their top artists on Spotify and display it in the template.
+    """
+    # Retrieve the user profile
+    user_profile = UserProfile.objects.filter(user=request.user).first()
+    if not user_profile or not user_profile.spotify_access_token:
+        return redirect('spotify_login')  # Redirect if user is not authenticated with Spotify
+
+    # Get the access token
+    access_token = get_spotify_access_token(user_profile)
+
+    # Get the time range selected by the user (default to 'long_term' if not provided)
+    time_range = request.GET.get('time_range', 'long_term')
+
+    # Fetch the user's top artists
+    top_artists_response = requests.get(
+        f'https://api.spotify.com/v1/me/top/artists?time_range={time_range}&limit=10',
+        headers={'Authorization': f'Bearer {access_token}'}
+    )
+
+    genres = []
+    if top_artists_response.status_code == 200:
+        top_artists = top_artists_response.json()['items']
+        for artist in top_artists:
+            genres.extend(artist.get('genres', []))  # Add all genres associated with each artist
+
+    # Determine the top genre (most frequent genre in the list)
+    top_genre = max(Counter(genres), key=Counter(genres).get) if genres else None
+
+    # Additional genre data for visualization or debugging
+    genre_counts = Counter(genres)
+
+    return render(request, 'spotifywrapper/top-genre.html', {
+        'top_genre': top_genre,
+        'genre_counts': genre_counts,  # Pass genre counts for additional context or visualizations
+        'genres': genres,  # Pass all genres if needed for the template
+        'repeat_times': range(10)
+    })
+
+@login_required
+def top_artists(request):
+    """
+    View to fetch and display the user's top artists from Spotify.
+    """
+    # Retrieve the user profile
+    user_profile = UserProfile.objects.filter(user=request.user).first()
+    if not user_profile or not user_profile.spotify_access_token:
+        return redirect('spotify_login')  # Redirect if user is not authenticated with Spotify
+
+    # Get the access token
+    access_token = get_spotify_access_token(user_profile)
+
+    # Get the time range selected by the user (default to 'long_term' if not provided)
+    time_range = request.GET.get('time_range', 'long_term')
+
+    # Fetch the user's top artists
+    top_artists_response = requests.get(
+        f'https://api.spotify.com/v1/me/top/artists?time_range={time_range}&limit=10',
+        headers={'Authorization': f'Bearer {access_token}'}
+    )
+
+    top_artists_data = []
+    if top_artists_response.status_code == 200:
+        top_artists = top_artists_response.json()['items']
+        for artist in top_artists:
+            top_artists_data.append({
+                'name': artist['name'],
+                'image': artist['images'][0]['url'] if 'images' in artist and artist['images'] else None,
+                'genres': artist.get('genres', []),
+                'popularity': artist.get('popularity', 'Unknown'),
+            })
+
+    return render(request, 'spotifywrapper/top-artists.html', {
+        'top_artists': top_artists_data,
+        'selected_time_range': time_range,  # Pass the selected time range to the template
+    })
+
 
 def top_albums(request):
     """
@@ -552,14 +629,20 @@ def top_albums(request):
     # Get the time range selected by the user (default to 'long_term' if not provided)
     time_range = request.GET.get('time_range', 'long_term')
 
-    # Fetch the top tracks (limit to 10 for a broader album sample)
     top_tracks_response = requests.get(
-        f'https://api.spotify.com/v1/me/top/tracks?time_range={time_range}&limit=10',
+        f'https://api.spotify.com/v1/me/top/tracks?time_range={time_range}&limit=5',
         headers={'Authorization': f'Bearer {access_token}'}
     )
-    top_tracks = []
+    top_songs = []
     if top_tracks_response.status_code == 200:
         top_tracks = top_tracks_response.json()['items']
+        for track in top_tracks:
+            top_songs.append({
+                'name': track['name'],
+                'artist': track['artists'][0]['name'],
+                'image': track['album']['images'][0]['url'] if track['album']['images'] else None,
+                'preview_url': track['preview_url']
+            })
 
     # Organize album data
     album_count = {}
@@ -589,8 +672,268 @@ def top_albums(request):
         'top_tracks': top_tracks,  # You can also pass the list of top tracks to show more albums
     })
 
-def top_artists(request):
-    return render(request, 'spotifywrapper/top-artists.html')
+@login_required
+def top_songs(request):
+    """
+    View to display the user's top songs based on Spotify data.
+    """
+    user_profile = UserProfile.objects.filter(user=request.user).first()
+    if not user_profile or not user_profile.spotify_access_token:
+        return redirect('spotify_login')  # Redirect if Spotify is not authenticated
 
-def minutes_listened(request):
-    return render(request, 'spotifywrapper/minutes-listened.html')
+    # Get the access token
+    access_token = get_spotify_access_token(user_profile)
+
+    # Fetch the user's top tracks
+    tracks_response = requests.get(
+        'https://api.spotify.com/v1/me/top/tracks?limit=10',  # Fetch the top 10 tracks
+        headers={'Authorization': f'Bearer {access_token}'}
+    )
+
+    top_tracks = []
+    if tracks_response.status_code == 200:
+        tracks_data = tracks_response.json().get('items', [])
+        for track in tracks_data:
+            # Extract relevant details for each track
+            top_tracks.append({
+                'name': track['name'],
+                'artist': ', '.join([artist['name'] for artist in track['artists']]),
+                'album': track['album']['name'],
+                'image': track['album']['images'][0]['url'] if track['album']['images'] else None,
+                'url': track['external_urls']['spotify'],
+            })
+
+    return render(request, 'spotifywrapper/top-songs.html', {
+        'top_songs': top_tracks,
+    })
+
+@login_required
+def top_playlist(request):
+    """
+    View to display the user's top Spotify playlist based on the top Spotify data view.
+    """
+    user_profile = UserProfile.objects.filter(user=request.user).first()
+    if not user_profile or not user_profile.spotify_access_token:
+        return redirect('spotify_login')  # Redirect if user is not authenticated with Spotify
+
+    # Get the access token
+    access_token = get_spotify_access_token(user_profile)
+
+    # Fetch the user's playlists
+    playlists_response = requests.get(
+        'https://api.spotify.com/v1/me/playlists?limit=10',  # Fetch more playlists for context
+        headers={'Authorization': f'Bearer {access_token}'}
+    )
+
+    top_playlist_data = None
+    if playlists_response.status_code == 200:
+        playlists = playlists_response.json().get('items', [])
+        if playlists:
+            top_playlist = playlists[0]  # Assume the first playlist is the "top" one
+            top_playlist_data = {
+                'name': top_playlist['name'],
+                'description': top_playlist.get('description', ''),
+                'image': top_playlist['images'][0]['url'] if top_playlist['images'] else None,
+                'url': top_playlist['external_urls']['spotify'],
+                'track_count': top_playlist['tracks']['total'],
+            }
+
+    return render(request, 'spotifywrapper/top-playlist.html', {
+        'top_playlist': top_playlist_data,
+    })
+
+@login_required
+def favorite_decade(request):
+    """
+    View to display the user's favorite decade based on Spotify data.
+    """
+    user_profile = UserProfile.objects.filter(user=request.user).first()
+    if not user_profile or not user_profile.spotify_access_token:
+        return redirect('spotify_login')  # Redirect if Spotify is not authenticated
+
+    # Get the access token
+    access_token = get_spotify_access_token(user_profile)
+
+    # Fetch the user's top tracks
+    tracks_response = requests.get(
+        'https://api.spotify.com/v1/me/top/tracks?limit=50',  # Fetch the top 50 tracks for better analysis
+        headers={'Authorization': f'Bearer {access_token}'}
+    )
+
+    decade_count = {}
+    top_decade = None
+    if tracks_response.status_code == 200:
+        tracks_data = tracks_response.json().get('items', [])
+        for track in tracks_data:
+            # Get the release year from the album's release date
+            release_date = track['album']['release_date']
+            if release_date:
+                year = int(release_date[:4])
+                decade = (year // 10) * 10  # Calculate the decade (e.g., 1980, 1990)
+                decade_count[decade] = decade_count.get(decade, 0) + 1
+
+        # Determine the top decade
+        if decade_count:
+            top_decade = max(decade_count, key=decade_count.get)
+
+    # Format decade data for the template
+    decade_data = [{'decade': decade, 'count': count} for decade, count in decade_count.items()]
+    decade_data.sort(key=lambda x: x['decade'])  # Sort decades chronologically
+
+    return render(request, 'spotifywrapper/favorite-decade.html', {
+        'decade_data': decade_data,
+        'top_decade': top_decade,
+    })
+
+@login_required
+def favorite_mood(request):
+    """
+    View to determine the user's favorite mood based on Spotify data.
+    """
+    user_profile = UserProfile.objects.filter(user=request.user).first()
+    if not user_profile or not user_profile.spotify_access_token:
+        return redirect('spotify_login')  # Redirect if Spotify is not authenticated
+
+    # Get the access token
+    access_token = get_spotify_access_token(user_profile)
+
+    # Fetch the user's top tracks
+    tracks_response = requests.get(
+        'https://api.spotify.com/v1/me/top/tracks?limit=50',  # Fetch top 50 tracks
+        headers={'Authorization': f'Bearer {access_token}'}
+    )
+
+    mood_count = {
+        "Happy": 0,
+        "Sad": 0,
+        "Energetic": 0,
+        "Relaxed": 0
+    }
+    favorite_mood = None
+
+    if tracks_response.status_code == 200:
+        tracks_data = tracks_response.json().get('items', [])
+        track_ids = [track['id'] for track in tracks_data]
+
+        # Fetch audio features for the top tracks
+        if track_ids:
+            audio_features_response = requests.get(
+                f'https://api.spotify.com/v1/audio-features?ids={",".join(track_ids)}',
+                headers={'Authorization': f'Bearer {access_token}'}
+            )
+
+            if audio_features_response.status_code == 200:
+                audio_features_data = audio_features_response.json().get('audio_features', [])
+                for feature in audio_features_data:
+                    if not feature:
+                        continue
+
+                    # Analyze track mood based on valence and energy
+                    valence = feature.get('valence', 0)
+                    energy = feature.get('energy', 0)
+
+                    if valence >= 0.5 and energy >= 0.5:
+                        mood_count["Happy"] += 1
+                    elif valence < 0.5 and energy < 0.5:
+                        mood_count["Sad"] += 1
+                    elif valence < 0.5 and energy >= 0.5:
+                        mood_count["Energetic"] += 1
+                    elif valence >= 0.5 and energy < 0.5:
+                        mood_count["Relaxed"] += 1
+
+        # Determine the favorite mood
+        favorite_mood = max(mood_count, key=mood_count.get)
+
+    # Format mood data for the template
+    mood_data = [{'mood': mood, 'count': count} for mood, count in mood_count.items()]
+    mood_data.sort(key=lambda x: x['mood'])
+
+    return render(request, 'spotifywrapper/favorite-mood.html', {
+        'mood_data': mood_data,
+        'favorite_mood': favorite_mood,
+    })
+
+@login_required
+def top_three_tracks(request):
+    """
+    View to display the top three tracks based on the user's Spotify data.
+    """
+    user_profile = UserProfile.objects.filter(user=request.user).first()
+    if not user_profile or not user_profile.spotify_access_token:
+        return redirect('spotify_login')  # Redirect if Spotify is not authenticated
+
+    # Get the access token
+    access_token = get_spotify_access_token(user_profile)
+
+    # Fetch the user's top tracks (limit to 3)
+    tracks_response = requests.get(
+        'https://api.spotify.com/v1/me/top/tracks?limit=3',  # Fetch top 3 tracks
+        headers={'Authorization': f'Bearer {access_token}'}
+    )
+
+    if tracks_response.status_code == 200:
+        tracks_data = tracks_response.json().get('items', [])
+    else:
+        tracks_data = []
+
+    return render(request, 'spotifywrapper/top-three-tracks.html', {
+        'tracks': tracks_data
+    })
+
+
+@login_required
+def listening_habits(request):
+    """
+    View to display the listening habits of the user based on their Spotify data.
+    This could include favorite genres, top tracks, and top artists.
+    """
+    user_profile = UserProfile.objects.filter(user=request.user).first()
+    if not user_profile or not user_profile.spotify_access_token:
+        return redirect('spotify_login')  # Redirect if Spotify is not authenticated
+
+    # Get the access token
+    access_token = get_spotify_access_token(user_profile)
+
+    # Fetch the user's top tracks (limit to 5 for variety)
+    tracks_response = requests.get(
+        'https://api.spotify.com/v1/me/top/tracks?limit=5',  # Top 5 tracks
+        headers={'Authorization': f'Bearer {access_token}'}
+    )
+
+    # Fetch the user's top artists (limit to 5 for variety)
+    artists_response = requests.get(
+        'https://api.spotify.com/v1/me/top/artists?limit=5',  # Top 5 artists
+        headers={'Authorization': f'Bearer {access_token}'}
+    )
+
+    # Fetch the user's top genres (this might require additional processing)
+    genres_response = requests.get(
+        'https://api.spotify.com/v1/me/top/artists?limit=50',  # Get more artists to infer genres
+        headers={'Authorization': f'Bearer {access_token}'}
+    )
+
+    if tracks_response.status_code == 200:
+        tracks_data = tracks_response.json().get('items', [])
+    else:
+        tracks_data = []
+
+    if artists_response.status_code == 200:
+        artists_data = artists_response.json().get('items', [])
+    else:
+        artists_data = []
+
+    if genres_response.status_code == 200:
+        genres_data = genres_response.json().get('items', [])
+        # Process genres from artists (as genres are not directly available in the user data)
+        genres = set()
+        for artist in genres_data:
+            genres.update(artist['genres'])
+        genres_data = list(genres)  # Get unique genres
+    else:
+        genres_data = []
+
+    return render(request, 'spotifywrapper/listening-habits.html', {
+        'tracks': tracks_data,
+        'artists': artists_data,
+        'genres': genres_data
+    })

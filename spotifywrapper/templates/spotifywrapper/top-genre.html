@@ -2,12 +2,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Spotify Wrapped</title>
-
-    <link rel="stylesheet" href="{% static 'spotifywrapped/homestyle.css' %}">
-    <script src="script.js" defer></script> <!-- Include the JavaScript file -->
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Top Genre</title>
+   <link rel="stylesheet" href="{% static 'spotifywrapped/breakdown.css' %}">
 
 </head>
 <script>
@@ -41,14 +39,12 @@
     function toggleNeon() {
         document.body.classList.toggle('neon-mode'); // Add/Remove neon mode
     }
-
 </script>
-
-<body>
-    <header>
+<body id="top-genre">
+   <header>
         <div class="logo">
             <img src="../../static/spotifywrapped/spotify.png" alt="Spotify Logo">
-            <h1>My Spotify Wrapped</h1>
+            <h1>My Top Genre</h1>
         </div>
         <div class="menu-icon" onclick="toggleMenu()">
             <div class="line"></div>
@@ -56,59 +52,24 @@
             <div class="line"></div>
         </div>
     </header>
-
-
-    <div class="dropdown-menu" id="dropdownMenu">
+  <div class="dropdown-menu" id="dropdownMenu">
         <ul>
-
             <li><a href="{% url 'settings' %}" id="settingsLink">Settings</a></li>
             <li><a href="{% url 'logout' %}">Log Out</a></li>
-
             <li><button onclick="toggleTheme()">Toggle Dark Mode</button></li>
             <li><button onclick="toggleNeon()">Toggle Neon Mode</button></li>
             <li><a href="#">Settings</a></li>
             <li><a href="#">Log Out</a></li>
-
         </ul>
     </div>
+   <section>
 
-    <section class="intro">
-        <h2>Your 2024 Wrapped is Here!</h2>
-
-        <p>You’ve had a long year, and we have your soundtrack to go with it...</p>
-        <div class="navigation-buttons">
-
-            <a href="{% url 'wrapped' %}" class="btn">Full Wrapped</a>
-            <a href="{% url 'top_genre' %}" class="btn">Wrapped Breakdown</a>
-            <a href="wrapped-summary.html" class="btn">Wrapped Summary</a>
-            <a href="" class="btn">Play this Game!</a>
-
-
-        </div>
-
-    </section>
-
-
-    <div class="pic-container">
-        <div id="blue-squiggle">
-                <img src="../../static/spotifywrapped/bluesquiggle.png" alt="Blue squiggle">
-        </div>
-
-        <div id="silver-squiggle">
-            <img src="../../static/spotifywrapped/silversquiggle.png" alt="Silver squiggle">
-        </div>
-
-        <div id="lavender">
-            <img src="../../static/spotifywrapped/lavender.png" alt="Lavender">
-        </div>
-
-        <div id="flower">
-           <img src="../../static/spotifywrapped/flower.png" alt="Flower">
-       </div>
-
-    </div>
-
-
-
+                <div id="cd-container">
+                    <div id="cd"></div>
+                    <div id="genre-name">{{ top_genre }}</div>
+                </div>
+        <a href="{% url 'home' %}" class="btn">Back</a>
+       <a href="{% url 'top_artists' %}" class="btn">Next</a>
+   </section>
 </body>
 </html>

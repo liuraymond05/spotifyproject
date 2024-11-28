@@ -1,0 +1,490 @@
+/* Base Styles (Light Mode) */
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Pushes the footer to the bottom */
+    align-items: center;
+    overflow-x: hidden;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #d529f0;
+    color: #333;
+}
+
+/* Neon mode styles */
+body.neon-mode {
+    background-color: #1a1a1a;
+    color: #0ff; /* Neon text color */
+    font-family: 'Courier New', Courier, monospace;
+}
+
+body.neon-mode h1, body.neon-mode h2, body.neon-mode h3, body.neon-mode h4 {
+    text-shadow: 0 0 5px #0ff, 0 0 10px #0ff, 0 0 15px #0ff; /* Neon glow effect */
+}
+
+body.neon-mode a {
+    color: #0ff; /* Neon link color */
+    text-shadow: 0 0 5px #0ff, 0 0 10px #0ff;
+    transition: color 0.3s ease;
+}
+
+body.neon-mode p {
+    color: white; /* Neon link color */
+    text-shadow: 0 0 5px #0ff, 0 0 10px #0ff;
+    transition: color 0.3s ease;
+}
+
+body.neon-mode a:hover {
+    color: #fff;
+    text-shadow: 0 0 15px #0ff, 0 0 20px #0ff, 0 0 30px #0ff;
+}
+
+body.neon-mode .menu-icon div {
+    background-color: #0ff; /* Neon color for menu lines */
+}
+
+body.neon-mode .btn {
+    background-color: #0ff;
+    color: #1a1a1a;
+    border: 1px solid #0ff;
+    transition: background-color 0.3s ease;
+}
+
+body.neon-mode .btn:hover {
+    background-color: #1a1a1a;
+    color: #0ff;
+}
+
+/* Neon Menu styles */
+body.neon-mode .dropdown-menu {
+    background-color: #1a1a1a;
+    border: 1px solid #0ff;
+}
+
+body.neon-mode .dropdown-menu a {
+    color: #0ff;
+    transition: color 0.3s ease;
+}
+
+body.neon-mode .dropdown-menu a:hover {
+    color: #fff;
+}
+
+
+/* Dark Mode */
+body.dark-mode {
+    background-color: #400763;
+    color: #f5f5f5;
+}
+
+/* Dropdown Menu */
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    right: 20px;
+    top: 70px; /* Adjusted to make it appear below the header */
+    background-color: black;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 10; /* Ensures the menu appears above the squiggles */
+}
+
+
+.dropdown-menu button {
+    background-color: #333;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-size: 1em;
+    cursor: pointer;
+    width: 100%;
+    text-align: center;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.dropdown-menu button:hover {
+    background-color: #555;
+    transform: scale(1.05);
+}
+
+body.dark-mode .dropdown-menu button {
+    background-color: #ccc;
+    color: #333;
+}
+
+body.dark-mode .dropdown-menu button:hover {
+    background-color: #ddd;
+}
+
+/* Style adjustments for dropdown items */
+.dropdown-menu ul {
+    padding: 0;
+    margin: 0;
+}
+
+.dropdown-menu li {
+    padding: 10px 0;
+    text-align: center;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: black;
+    padding: 25px 20px;
+    width: 100%;
+    box-sizing: border-box;
+    color: white;
+}
+
+body.dark-mode header {
+    background-color: black;
+}
+
+header .logo {
+    display: flex;
+    align-items: center;
+}
+
+header .logo img {
+    width: 40px;
+    height: auto;
+    margin-right: 10px;
+    vertical-align: middle;
+}
+
+header .logo h1 {
+    margin: 0;
+    margin-left: 10px;
+    font-size: 1.6em;
+}
+
+.menu-icon {
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+}
+
+.line {
+    width: 25px;
+    height: 3px;
+    background-color: white;
+    margin: 3px 0;
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    right: 20px;
+    top: 70px;
+    background-color: black;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+}
+
+body.dark-mode .dropdown-menu {
+    background-color: black;
+}
+
+.dropdown-menu ul {
+    list-style-type: none;
+    padding: 10px 0;
+    margin: 0;
+}
+
+.dropdown-menu li {
+    padding: 10px 20px;
+}
+
+.dropdown-menu li a {
+    color: white;
+    text-decoration: none;
+}
+
+.dropdown-menu li:hover {
+    background-color: hotpink;
+}
+
+/* Intro Section */
+.intro {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 100vh; /* Full viewport height */
+    margin: 0;
+    background: none; /* Remove the pink background */
+    color: black;
+    text-align: center;
+    position: relative; /* Enables positioning adjustments */
+    transform: translateY(-10%); /* Moves the intro section slightly up */
+}
+
+body.dark-mode .intro {
+    color: #f5f5f5; /* Adjust for dark mode */
+}
+
+.intro h2 {
+    font-size: 2.5em;
+    margin: 0;
+}
+
+.intro p {
+    font-size: 1.8em;
+    margin: 5px 0;
+}
+
+
+.navigation-buttons {
+    position: absolute; /* Position it relative to the nearest positioned ancestor */
+    bottom: 0; /* Align it to the bottom of the parent container */
+    left: 0; /* Align it to the left of the parent container */
+    right: 0; /* Align it to the right of the parent container */
+    margin-top: 20px; /* Maintain the top margin for spacing */
+    display: flex;
+    justify-content: center; /* Keep the buttons centered horizontally */
+    width: 100%;
+    padding: 20px 0; /* Adds padding at the bottom */
+}
+
+.btn {
+    background-color: hotpink;
+    color: white;
+    font-size: 1.5em;
+    font-weight: bold;
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    text-align: center;
+    margin-top: 20px;
+}
+
+.btn:hover {
+    background-color: #ff69b4; /* Slightly lighter pink on hover */
+    transform: scale(1.05); /* Slight zoom effect */
+}
+
+body.dark-mode .btn {
+    background-color: #d17fd1;
+    color: #222;
+}
+
+body.dark-mode .btn:hover {
+    background-color: #c95fc9;
+}
+
+/* Dropdown Menu */
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    right: 20px;
+    top: 70px; /* Adjusted to make it appear below the header */
+    background-color: black;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 10; /* Ensures the menu appears above the squiggles */
+}
+
+
+/* ---------------------------------------------- Top Genre Styling --------------------------------------------- */
+
+
+
+#top-genre {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #a820a5;
+    background-image: repeating-linear-gradient(
+        45deg,
+        #fffb00,
+        #fffb00 10%,
+        #6638f0 10%,
+        #6638f0 20%,
+        #ff33ff 20%,
+        #ff33ff 30%,
+        #0ff 30%,
+        #0ff 40%
+    );
+    background-size: 300px 300px;
+}
+
+
+/* Neon Mode specific styles */
+#top-genre.neon-mode {
+    background-color: #000000; /* Deep black for neon mode */
+    background-image: repeating-linear-gradient(
+        45deg,
+        #0ff,
+        #0ff 10%,
+        #ff33ff 10%,
+        #ff33ff 20%,
+        #00ff00 20%,
+        #00ff00 30%,
+        #ff426b 30%,
+        #ff426b 40%
+    );
+    background-size: 300px 300px; /* Smaller pattern for more intensity */
+    color: #fff; /* Bright white text for high contrast */
+}
+
+#top-genre.neon-mode * {
+    text-shadow: 0 0 10px #0ff, 0 0 20px #ff33ff, 0 0 30px #00ff00; /* Neon glow */
+}
+
+/* Dark Mode specific styles */
+#top-genre.dark-mode {
+    background-color: #1e1e1e; /* Deep dark gray for dark mode */
+    background-image: repeating-linear-gradient(
+        45deg,
+        #e3c34f, /* Darkened light khaki */
+        #e3c34f 10%,
+        #550cad 10%, /* Darkened dark orange */
+        #550cad 20%,
+        #a80cad 20%, /* Darkened blue violet */
+        #a80cad 30%,
+        #0c62ad 30%, /* Darkened dark turquoise */
+        #0c62ad 40%
+    );
+    background-size: 400px 400px; /* Larger, subtle pattern for dark mode */
+    color: #f5f5f5; /* Light gray text for contrast */
+}
+
+#top-genre.dark-mode * {
+    text-shadow: none; /* No text shadow for dark mode */
+}
+
+#top-genre #cd-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+#top-genre #cd {
+    width: 0;
+    height: 100%;
+    animation: wrapperEntry 1s ease-in-out;
+}
+
+#top-genre #genre-name {
+    font-size: 8vw;
+    color: #ffffff;
+    text-shadow: 1px 1px #000;
+    margin-top: 20px;
+    animation: slidein 1s ease-out;
+}
+
+@keyframes slidein {
+    0% { opacity: 0; transform: translateY(50px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+#top-genre .btn:hover {
+    background-color: #ff33ff;
+}
+
+/* Neon Mode specific styles */
+#top-genre.neon-mode {
+    background-color: #1a1a1a; /* Dark background for neon mode */
+    color: #0ff; /* Neon text color */
+}
+
+#top-genre.neon-mode #genre-name {
+    text-shadow: 0 0 10px #0ff, 0 0 20px #0ff, 0 0 30px #0ff; /* Neon glow effect */
+}
+
+/* Dark Mode specific styles */
+#top-genre.dark-mode {
+    background-color: #121212; /* Darker shade for dark mode */
+    color: #f5f5f5; /* Light text for contrast */
+}
+
+#top-genre.dark-mode #genre-name {
+    color: #f5f5f5; /* Ensuring readability in dark mode */
+}
+
+/* ---------------------------------------------- Top Artists Styling --------------------------------------------- */
+
+
+/* General styles for artist container and rows */
+.artist-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+}
+
+/* Row styling for each individual row */
+.artist-row {
+    display: flex;
+    justify-content: center; /* Centers the row items */
+    gap: 20px; /* Gap between cards in the same row */
+    width: 100%;
+    max-width: 1200px;  /* Set a max width for the row */
+}
+
+/* Artist card styling */
+.artist-card {
+    perspective: 1000px;
+    width: 150px;  /* Fixed width for each card */
+    height: 150px; /* Fixed height for each card to make it square */
+}
+
+/* Card inner styling for flipping */
+.card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transition: transform 0.6s;
+}
+
+.artist-card:hover .card-inner {
+    transform: rotateY(180deg);
+}
+
+/* Card front and back styling */
+.card-front, .card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Card front (image side) */
+.card-front {
+    background-color: #fff;
+}
+
+.artist-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 15px;
+}
+
+/* Card back (name side) */
+.card-back {
+    background-color: #282828;
+    color: #fff;
+    transform: rotateY(180deg);
+    font-size: 1.2em;
+    padding: 10px;
+    text-align: center;
+}

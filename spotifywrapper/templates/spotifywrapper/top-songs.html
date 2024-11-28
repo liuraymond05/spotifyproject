@@ -47,7 +47,7 @@
    <header>
         <div class="logo">
             <img src="../../static/spotifywrapped/spotify.png" alt="Spotify Logo">
-            <h1>Top Songs</h1>
+            <h1>My Top Songs</h1>
         </div>
         <div class="menu-icon" onclick="toggleMenu()">
             <div class="line"></div>
@@ -72,27 +72,27 @@
 
    <section>
 
-        <ul>
-            {% for track in top_tracks %}
-                <li>
-                    {{ track.name }} by {{ track.artist }}
-                    {% if track.preview_url %}
-                        <audio controls>
-                            <source src="{{ track.preview_url }}" type="audio/mpeg">
-                            Your browser does not support the audio element.
-                        </audio>
-                    {% else %}
-                        <br>No preview available for this track.
-                    {% endif %}
-                </li>
-            {% endfor %}
+       <div class="songs-container">
+            {% if top_songs %}
+                {% for song in top_songs %}
+                    <div class="song-card">
+                        <img src="{{ song.image }}" alt="{{ song.name }}" class="song-image">
+                        <div class="song-details">
+                            <p class="song-name">{{ song.name }}</p>
+                            <p class="song-artist">By: {{ song.artist }}</p>
+                            <p class="song-album">Album: {{ song.album }}</p>
+                            <a href="{{ song.url }}" target="_blank" class="song-link">Listen on Spotify</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No top songs found.</p>
+            {% endif %}
+        </div>
 
-        </ul>
 
-
-
-       <a href="{% url 'home' %}" class="btn">Back</a>
-       <a href="{% url 'top_artists' %}" class="btn">Next</a>
+       <a href="{% url 'top_albums' %}" class="btn">Back</a>
+       <a href="{% url 'top_playlist' %}" class="btn">Next</a>
    </section>
 </body>
 </html>
