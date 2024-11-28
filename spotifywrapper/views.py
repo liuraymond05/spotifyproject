@@ -532,3 +532,15 @@ from .models import SavedWrap
 def saved_wraps(request):
     saved_wraps = SavedWrap.objects.filter(user=request.user)
     return render(request, 'spotifywrapper/savedwraps.html', {'saved_wraps': saved_wraps})
+
+def top_songs(request):
+    return render(request, 'spotifywrapper/top-songs.html')
+
+def top_albums(request):
+    return render(request, 'spotifywrapper/top-albums.html')
+
+def top_artists(request):
+    return render(request, 'spotifywrapper/top-artists.html')
+
+def minutes_listened(request):
+    return render(request, 'spotifywrapper/minutes-listened.html')

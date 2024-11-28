@@ -23,6 +23,11 @@ urlpatterns = [
     path('wraps', views.wraps, name='wraps'),
     path('save_wrap/', views.save_wrap, name='save_wrap'),
     path('savedwraps/', views.saved_wraps, name='savedwraps'),
+    path('top-songs/', views.top_songs, name='top_songs'),
+    path('top-artists/', views.top_artists, name='top_artists'),
+    path('top-albums/', views.top_albums, name='top_albums'),
+    path('minutes-listened/', views.minutes_listened, name='minutes_listened'),
+
 
 
 ]

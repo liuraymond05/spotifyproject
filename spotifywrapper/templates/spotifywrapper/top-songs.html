@@ -2,14 +2,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Spotify Wrapped</title>
-
-    <link rel="stylesheet" href="{% static 'spotifywrapped/homestyle.css' %}">
-    <script src="script.js" defer></script> <!-- Include the JavaScript file -->
-
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Top Songs</title>
+   <link rel="stylesheet" href="{% static 'spotifywrapped/homestyle.css' %}">
 </head>
+
 <script>
     function toggleMenu() {
         const dropdown = document.getElementById("dropdownMenu");
@@ -39,16 +37,17 @@
     }
 
     function toggleNeon() {
-        document.body.classList.toggle('neon-mode'); // Add/Remove neon mode
+        document.body.classList.toggle('neon-mode');
     }
 
 </script>
 
+
 <body>
-    <header>
+   <header>
         <div class="logo">
             <img src="../../static/spotifywrapped/spotify.png" alt="Spotify Logo">
-            <h1>My Spotify Wrapped</h1>
+            <h1>Top Songs</h1>
         </div>
         <div class="menu-icon" onclick="toggleMenu()">
             <div class="line"></div>
@@ -57,8 +56,7 @@
         </div>
     </header>
 
-
-    <div class="dropdown-menu" id="dropdownMenu">
+  <div class="dropdown-menu" id="dropdownMenu">
         <ul>
 
             <li><a href="{% url 'settings' %}" id="settingsLink">Settings</a></li>
@@ -72,40 +70,23 @@
         </ul>
     </div>
 
-    <section class="intro">
-        <h2>Your 2024 Wrapped is Here!</h2>
+   <section>
 
-        <p>You’ve had a long year, and we have your soundtrack to go with it...</p>
-        <div class="navigation-buttons">
-
-            <a href="{% url 'top_songs' %}" class="btn">See My Wrapped</a>
-
-
-        </div>
-
-    </section>
-
-
-    <div class="pic-container">
-        <div id="blue-squiggle">
-                <img src="../../static/spotifywrapped/bluesquiggle.png" alt="Blue squiggle">
-        </div>
-
-        <div id="silver-squiggle">
-            <img src="../../static/spotifywrapped/silversquiggle.png" alt="Silver squiggle">
-        </div>
-
-        <div id="lavender">
-            <img src="../../static/spotifywrapped/lavender.png" alt="Lavender">
-        </div>
-
-        <div id="flower">
-           <img src="../../static/spotifywrapped/flower.png" alt="Flower">
-       </div>
-
-    </div>
+       <ul>
+    {% for track in top_tracks %}
+        <li>
+            <strong>{{ track.name }}</strong> by {{ track.artist }}<br>
+            <img src="{{ track.image }}" alt="{{ track.name }} album cover">
+            <audio controls>
+                <source src="{{ track.preview_url }}" type="audio/mpeg">
+            </audio>
+        </li>
+    {% endfor %}
+</ul>
 
 
-
+       <a href="{% url 'home' %}" class="btn">Back</a>
+       <a href="{% url 'top_artists' %}" class="btn">Next</a>
+   </section>
 </body>
 </html>
