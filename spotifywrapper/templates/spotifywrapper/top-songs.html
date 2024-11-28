@@ -72,17 +72,23 @@
 
    <section>
 
-       <ul>
-    {% for track in top_tracks %}
-        <li>
-            <strong>{{ track.name }}</strong> by {{ track.artist }}<br>
-            <img src="{{ track.image }}" alt="{{ track.name }} album cover">
-            <audio controls>
-                <source src="{{ track.preview_url }}" type="audio/mpeg">
-            </audio>
-        </li>
-    {% endfor %}
-</ul>
+        <ul>
+            {% for track in top_tracks %}
+                <li>
+                    {{ track.name }} by {{ track.artist }}
+                    {% if track.preview_url %}
+                        <audio controls>
+                            <source src="{{ track.preview_url }}" type="audio/mpeg">
+                            Your browser does not support the audio element.
+                        </audio>
+                    {% else %}
+                        <br>No preview available for this track.
+                    {% endif %}
+                </li>
+            {% endfor %}
+
+        </ul>
+
 
 
        <a href="{% url 'home' %}" class="btn">Back</a>

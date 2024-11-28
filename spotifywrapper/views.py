@@ -330,6 +330,7 @@ def set_language(request):
         return response
     # In case the form method isn't POST, redirect back
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+
 @login_required
 def top_spotify_data(request):
     """
@@ -537,7 +538,56 @@ def top_songs(request):
     return render(request, 'spotifywrapper/top-songs.html')
 
 def top_albums(request):
-    return render(request, 'spotifywrapper/top-albums.html')
+    """
+        View to get the user's top albums and display them in the template.
+    """
+    # Retrieve the user profile
+    user_profile = UserProfile.objects.filter(user=request.user).first()
+    if not user_profile or not user_profile.spotify_access_token:
+        return redirect('spotify_login')  # Redirect if user is not authenticated with Spotify
+
+    # Get the access token
+    access_token = get_spotify_access_token(user_profile)
+
+    # Get the time range selected by the user (default to 'long_term' if not provided)
+    time_range = request.GET.get('time_range', 'long_term')
+
+    # Fetch the top tracks (limit to 10 for a broader album sample)
+    top_tracks_response = requests.get(
+        f'https://api.spotify.com/v1/me/top/tracks?time_range={time_range}&limit=10',
+        headers={'Authorization': f'Bearer {access_token}'}
+    )
+    top_tracks = []
+    if top_tracks_response.status_code == 200:
+        top_tracks = top_tracks_response.json()['items']
+
+    # Organize album data
+    album_count = {}
+    album_details = {}
+    for track in top_tracks:
+        album_name = track['album']['name']
+        album_image = track['album']['images'][0]['url'] if track['album']['images'] else None
+        album_release_date = track['album']['release_date']
+
+        album_count[album_name] = album_count.get(album_name, 0) + 1
+        if album_name not in album_details:
+            album_details[album_name] = {
+                'name': album_name,
+                'image': album_image,
+                'release_date': album_release_date,
+                'details': track['album'].get('label', 'Unknown')  # You can use this for additional album details
+            }
+
+    # Get the top album (the one most frequently appearing in top tracks)
+    top_album = max(album_count, key=album_count.get) if album_count else None
+    album_details = album_details.get(top_album, None)
+
+    # Pass the top album details to the template
+    return render(request, 'spotifywrapper/top-albums.html', {
+        'top_album': top_album,
+        'album_details': album_details,
+        'top_tracks': top_tracks,  # You can also pass the list of top tracks to show more albums
+    })
 
 def top_artists(request):
     return render(request, 'spotifywrapper/top-artists.html')

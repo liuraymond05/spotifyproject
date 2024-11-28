@@ -47,7 +47,7 @@
    <header>
         <div class="logo">
             <img src="../../static/spotifywrapped/spotify.png" alt="Spotify Logo">
-            <h1>Top Albums</h1>
+            <h1>My Top Album</h1>
         </div>
         <div class="menu-icon" onclick="toggleMenu()">
             <div class="line"></div>
@@ -72,11 +72,23 @@
 
 
    <section>
-       <ul>
-           {% for album in top_albums %}
-               <li>{{ album.name }} by {{ album.artists|join:", " }}</li>
-           {% endfor %}
-       </ul>
+       <div class="album-card-container">
+            <div class="album-card" id="album-card">
+            <!-- Front of the card: Album cover -->
+                <div class="album-front">
+                    <img src="{{ album_details.image }}" alt="Top Album" class="album-image">
+                    <p><strong>Album:</strong> {{ album_details.name }}</p>
+                </div>
+                <!-- Back of the card: Album details -->
+                <div class="album-back">
+                    <div class="album-details">
+                        <p><strong>Album:</strong> {{ album_details.name }}</p>
+                        <p><strong>Release Date:</strong> {{ album_details.release_date }}</p>
+                        <p><strong>Label:</strong> {{ album_details.details }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
 
 
         <a href="{% url 'top_artists' %}" class="btn">Back</a>
