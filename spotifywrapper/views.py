@@ -1,3 +1,5 @@
+import random
+
 from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
@@ -396,6 +398,7 @@ def top_spotify_data(request):
         'username': username  # Pass the username to the template
     })
 
+
 def gamepage(request):
     """
     Game view that fetches the user's top tracks and selects three random tracks for the game.
@@ -428,24 +431,39 @@ def gamepage(request):
 
     # Parse and format the tracks data
     tracks_data = response.json().get("items", [])
-    #print("Tracks Data:", tracks_data)
     tracks = [
         {
             "title": track["name"],
             "artist": track["artists"][0]["name"],
-            "album_cover": track["album"]["images"][0]["url"] if track["album"]["images"] else "/static/spotifywrapped/placeholderimage.jpg",  # Fallback if no album cover
+            "album_cover": track["album"]["images"][0]["url"] if track["album"]["images"] else "/static/spotifywrapped/placeholderimage.jpg",
             "id": track["id"],
+            "album_id": track["album"]["id"],  # Include album ID for grouping
         }
         for track in tracks_data
     ]
-    print("Processed Tracks:", tracks)
 
     if not tracks:
         messages.error(request, "No top tracks found on Spotify. Please listen to more music and try again!")
-        return redirect('home')  # Or render a page with a user-friendly message
+        return redirect('home')
 
-    # Pass tracks to the template
-    return render(request, "spotifywrapper/games.html", {"tracks": tracks})
+    # Prepare game data
+    game_data = []
+    for track in tracks:
+        correct_song = track["title"]
+        album_cover = track["album_cover"]
 
+        # Generate distractors (other tracks not from the same album)
+        other_tracks = [t["title"] for t in tracks if t["album_id"] != track["album_id"]]
+        distractors = random.sample(other_tracks, 2) if len(other_tracks) >= 2 else []
+
+        # Add round data
+        game_data.append({
+            "album_cover": album_cover,
+            "correct_song": correct_song,
+            "options": random.sample([correct_song] + distractors, len(distractors) + 1),
+        })
+
+    # Pass tracks and game data to the template
+    return render(request, "spotifywrapper/games.html", {"game_data": game_data, "tracks": tracks})
 def wraps(request):
     return render(request, 'savedwraps.html')

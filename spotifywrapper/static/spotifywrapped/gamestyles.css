@@ -68,7 +68,6 @@ body {
   transform: scale(1.05);
 }
 
-
 /* Game Page */
 #game-page {
   display: flex;
@@ -97,33 +96,43 @@ body {
   width: 70%;
 }
 
+/* Album display */
+#album-display {
+  margin-bottom: 20px;
+}
+
+#album-display img {
+  width: 140px; /* Adjust size */
+  height: auto;
+  border-radius: 5px;
+}
+
+/* Options */
 .options {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   margin-top: 20px;
+  width: 100%;
 }
 
 .option {
   background-color: #34495e;
-  margin: 0 10px;
-  padding: 20px 10px;  /* Padding added for better layout */
+  margin: 10px 0;
+  padding: 15px 20px; /* Adjust padding for better layout */
+  font-size: 16px; /* Adjust font size */
   border: 2px solid #ecf0f1;
   border-radius: 8px;
   text-align: center;
-  width: 150px;
+  width: 200px; /* Set width of the options */
   transition: transform 0.2s ease, background-color 0.3s ease;
   cursor: pointer;
+  box-sizing: border-box; /* Ensure padding doesn't affect overall size */
 }
 
 .option:hover {
   background-color: #1abc9c;
   transform: scale(1.1);
-}
-
-.option img {
-    width: 100%; /* makes image responsive */
-    height: auto; /*vmaintains aspect ratio */
-    border-radius: 8px; /* matches the rounded corners */
 }
 
 /* Buttons for Play Again and Return to Start */
