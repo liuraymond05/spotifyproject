@@ -2,9 +2,11 @@ document.addEventListener("DOMContentLoaded", function () {
     let score = 0;
     let currentTrackIndex = 0;
     let timerInterval;
-    let timeLeft = 7;
+    let totalGameTime = 30; // Set total game time in seconds
     let gameEnded = false;
     let highScore = localStorage.getItem("highScore") || 0;
+    let hintsRemaining = 3; // User gets three hints per game
+    let correctTrack; // Track the correct answer for hints
 
     // DOM Elements
     const titleScreen = document.getElementById("title-screen");
@@ -18,19 +20,17 @@ document.addEventListener("DOMContentLoaded", function () {
     const playAgainButton = document.getElementById("play-again");
     const returnToStartButton = document.getElementById("return-to-start");
     const startButton = document.getElementById("start-button");
+    const howToPlayButton = document.getElementById("how-to-play-button");
+    const instructionsModal = document.getElementById("instructions-modal");
+    const closeInstructionsButton = document.getElementById("close-instructions");
+    const hintButton = document.getElementById("hint-button");
+    //reset high score button stuff
+    const resetHighScoreButton = document.createElement("button");
+    resetHighScoreButton.id = "reset-high-score";
+    resetHighScoreButton.textContent = "Reset High Score";
+    resetHighScoreButton.classList.add("hint-button"); // Assuming 'hint-button-style' styles your hint button
+    endPage.appendChild(resetHighScoreButton); // Append to end page
 
-    // Retrieve track data from the backend
-    const tracksElement = document.getElementById("tracks-data");
-    let rawData = tracksElement.textContent.trim();
-
-
-    if (rawData.startsWith("<")) {
-        const startIndex = rawData.indexOf("[");
-        const endIndex = rawData.lastIndexOf("]");
-        rawData = rawData.substring(startIndex, endIndex + 1);
-    }
-    const tracks = JSON.parse(rawData);
-    console.log(rawData.trim());
 
     // DOM elements for track options
     const optionElements = {
@@ -39,15 +39,40 @@ document.addEventListener("DOMContentLoaded", function () {
         c: document.getElementById("option-c"),
     };
 
+    // Open "How to Play" Modal
+    howToPlayButton.addEventListener("click", () => {
+        instructionsModal.style.display = "flex";
+    });
+
+    // Close "How to Play" Modal
+    closeInstructionsButton.addEventListener("click", () => {
+        instructionsModal.style.display = "none";
+    });
+
+    instructionsModal.addEventListener("click", (e) => {
+        if (e.target === instructionsModal) {
+            instructionsModal.style.display = "none";
+        }
+    });
+
+    // Retrieve track data from the backend
+    const tracksElement = document.getElementById("tracks-data");
+    let rawData = tracksElement.textContent.trim();
+
+    if (rawData.startsWith("<")) {
+        const startIndex = rawData.indexOf("[");
+        const endIndex = rawData.lastIndexOf("]");
+        rawData = rawData.substring(startIndex, endIndex + 1);
+    }
+    const tracks = JSON.parse(rawData);
+
     // Helper function to get random tracks
     function getRandomTracks(trackList, count) {
         const shuffled = trackList.sort(() => 0.5 - Math.random());
         return shuffled.slice(0, count);
     }
 
-
-
-    // Load the next track and reset the timer
+    // Load the next track
     function loadTrack() {
         if (currentTrackIndex >= tracks.length) {
             endGame("Game Over! Thanks for playing!");
@@ -55,35 +80,24 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         const randomTracks = getRandomTracks(tracks, 3);
-        const correctTrack = randomTracks[0];
-        console.log(correctTrack);
+        correctTrack = randomTracks[0];
+        const shuffledTracks = randomTracks.sort(() => Math.random() - 0.5);
 
-        // Display album cover
-        if (correctTrack.album_cover) {
-            albumCoverElement.src = correctTrack.album_cover;
-        } else {
-            albumCoverElement.src = "path/to/default-image.jpg"; // Use a default image if not available
-        }
+        albumCoverElement.src = correctTrack.album_cover || "path/to/default-image.jpg";
 
-        // Populate options with song titles
-        optionElements.a.textContent = randomTracks[0].title;
-        optionElements.b.textContent = randomTracks[1].title;
-        optionElements.c.textContent = randomTracks[2].title;
-
-        // Add event listeners to validate user choice
         Object.values(optionElements).forEach((button, index) => {
-            button.onclick = () => checkAnswer(randomTracks[index], correctTrack);
+            button.textContent = shuffledTracks[index].title;
+            button.onclick = () => checkAnswer(shuffledTracks[index]);
+            button.style.pointerEvents = "auto"; // Reset for reusability
+            button.classList.remove("disabled"); // Reset hint styles
         });
 
-        // Reset and start the timer
-        timeLeft = 7;
-        timerElement.textContent = `Time Left: ${timeLeft}s`;
-        clearInterval(timerInterval);
-        timerInterval = setInterval(updateTimer, 1000);
+        hintButton.disabled = hintsRemaining === 0; // Disable hint button if no hints left
+        hintButton.textContent = `Hint (${hintsRemaining} left)`;
     }
 
-    // Function to check the user's answer
-    function checkAnswer(selectedTrack, correctTrack) {
+    // Check the user's answer
+    function checkAnswer(selectedTrack) {
         if (gameEnded) return;
 
         if (selectedTrack.id === correctTrack.id) {
@@ -99,12 +113,35 @@ document.addEventListener("DOMContentLoaded", function () {
         loadTrack();
     }
 
-    // Update the timer
-    function updateTimer() {
-        timeLeft--;
-        timerElement.textContent = `Time Left: ${timeLeft}s`;
+    // Use a hint
+    function useHint() {
+        if (hintsRemaining <= 0 || gameEnded) return;
 
-        if (timeLeft <= 0) {
+        hintsRemaining--;
+        hintButton.textContent = `Hint (${hintsRemaining} left)`;
+
+        // Find all incorrect options
+        const incorrectOptions = Object.values(optionElements).filter(
+            (button) => button.textContent !== correctTrack.title && !button.classList.contains("disabled")
+        );
+
+        if (incorrectOptions.length > 0) {
+            const optionToDisable = incorrectOptions[0]; // Disable the first incorrect option
+            optionToDisable.classList.add("disabled");
+            optionToDisable.style.pointerEvents = "none"; // Make it unclickable
+        }
+
+        if (hintsRemaining === 0) {
+            hintButton.disabled = true; // Disable hint button if no hints remain
+        }
+    }
+
+    // Update the game timer
+    function updateTimer() {
+        totalGameTime--;
+        timerElement.textContent = `Time Left: ${totalGameTime}s`;
+
+        if (totalGameTime <= 0) {
             clearInterval(timerInterval);
             endGame("Time's up! Game Over.");
         }
@@ -112,9 +149,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Start the game
     startButton.addEventListener("click", () => {
-       titleScreen.style.display = "none";
-       gamePage.style.display = "block";
-       loadTrack();
+        titleScreen.style.display = "none";
+        gamePage.style.display = "block";
+        timerElement.textContent = `Time Left: ${totalGameTime}s`;
+
+        timerInterval = setInterval(updateTimer, 1000);
+        loadTrack();
     });
 
     // End the game
@@ -135,9 +175,13 @@ document.addEventListener("DOMContentLoaded", function () {
     playAgainButton.addEventListener("click", () => {
         score = 0;
         currentTrackIndex = 0;
+        totalGameTime = 30;
+        hintsRemaining = 3; // Reset hints
         gameEnded = false;
         gamePage.style.display = "block";
         endPage.style.display = "none";
+        timerElement.textContent = `Time Left: ${totalGameTime}s`;
+        timerInterval = setInterval(updateTimer, 1000);
         loadTrack();
     });
 
@@ -145,5 +189,20 @@ document.addEventListener("DOMContentLoaded", function () {
         titleScreen.style.display = "block";
         gamePage.style.display = "none";
         endPage.style.display = "none";
+        clearInterval(timerInterval);
+    });
+
+    // Add event listener for hint button
+    hintButton.addEventListener("click", useHint);
+
+    // Reset High Score functionality
+    resetHighScoreButton.addEventListener("click", () => {
+        const userConfirmed = confirm("Are you sure? This action cannot be undone.");
+        if (userConfirmed) {
+            highScore = 0;
+            localStorage.setItem("highScore", highScore);
+            highScoreElement.textContent = `High Score: ${highScore}`;
+            alert("High score has been reset!");
+        }
     });
 });

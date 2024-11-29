@@ -1,6 +1,9 @@
-{% include 'spotifywrapper/banner.html' %}
-
 <!DOCTYPE html>
+
+<div id="banner-container">
+    {% include 'spotifywrapper/banner.html' %}
+</div>
+
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -12,12 +15,32 @@
 <body>
   <!-- Title Screen -->
   <div id="title-screen" class="title-container">
-    <h1>Match That Lyric!</h1>
+<!--    <h1>Match That Song!</h1>-->
+    <img src="{% static 'spotifywrapped/match-that-song.gif' %}" alt="Game Start GIF" class="start-gif">
     {% if message %}
       <div class="error-message">{{ message }}</div>
     {% endif %}
     <button id="start-button" class="start-button">Click to Begin</button>
+    <button id="how-to-play-button" class="start-button">How To Play</button>
   </div>
+
+
+  <!-- Instructions Modal -->
+  <div id="instructions-modal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <h2>How to Play</h2>
+      <p><b>Welcome to Match That Song! Here's how to play:</b></p>
+      <ul>
+        <li>You will be shown an album cover and three song options.</li>
+        <li>Pick the song that belongs to that album cover shown.</li>
+        <li>Rack up as many points as you can before that clock hits 0!</li>
+        <li>Correct Answers: +3 points</li>
+        <li>Incorrect Answers: -1 points</li>
+      </ul>
+      <button id="close-instructions" class="close-button">Close</button>
+    </div>
+  </div>
+
 
   <!-- Game Page -->
   <div id="game-page" class="game-container" style="display: none;">
@@ -28,7 +51,7 @@
         {% endfor %}
       </div>
     {% endif %}
-    <h1 id="game-title">Match That Lyric!</h1>
+    <h1 id="game-title">Match That Song!</h1>
     <div id="score">Score: 0</div>
 
     <!-- Album Cover Display -->
@@ -44,11 +67,16 @@
     </div>
 
     <div id="timer">Time Left: 7s</div>
+
+    <!--  hint button-->
+    <button id="hint-button" class="hint-button">Hint (3 left)</button>
+
   </div>
 
   <!-- End Page -->
   <div id="end-page" class="end-container" style="display: none;">
-    <h1>Game Over!</h1>
+<!--    <h1>Game Over!</h1>-->
+    <img src="{% static 'spotifywrapped/game-over.gif' %}" alt="Game Over GIF" class="end-gif">
     <p id="final-score">Your Score: 0</p>
     <p id="high-score">High Score: 0</p>
     <button id="play-again">Play Again</button>
@@ -59,6 +87,34 @@
   <script id="tracks-data" type="application/json">
     {{ tracks|json_script:"tracks" }}
   </script>
+
+
+<!--  &lt;!&ndash; Inline Test Script &ndash;&gt;-->
+<!--  <script>-->
+<!--    document.addEventListener("DOMContentLoaded", function () {-->
+<!--      console.log("Inline script loaded and DOM fully loaded");-->
+
+<!--      const howToPlayButton = document.getElementById("how-to-play-button");-->
+<!--      const instructionsModal = document.getElementById("instructions-modal");-->
+<!--      const closeInstructionsButton = document.getElementById("close-instructions");-->
+
+<!--      console.log("How to Play Button:", howToPlayButton);-->
+
+<!--      // Open "How to Play" Modal-->
+<!--      howToPlayButton.addEventListener("click", () => {-->
+<!--        console.log("Inline: How to Play button was pressed");-->
+<!--        instructionsModal.style.display = "flex"; // Show modal-->
+<!--      });-->
+
+<!--      // Close "How to Play" Modal-->
+<!--      closeInstructionsButton.addEventListener("click", () => {-->
+<!--        console.log("Inline: Close button was pressed");-->
+<!--        instructionsModal.style.display = "none"; // Hide modal-->
+<!--      });-->
+<!--    });-->
+<!--  </script>-->
+
+
 
   <!-- Game Script -->
   <script src="{% static 'spotifywrapped/gamescript.js' %}"></script>
