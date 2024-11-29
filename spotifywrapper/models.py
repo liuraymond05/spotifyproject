@@ -29,12 +29,11 @@ def register_user(request):
 
 
 class SavedWrap(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    top_artists = models.JSONField()
-    top_tracks = models.JSONField()
-    top_albums = models.JSONField()
-    minutes_listened = models.IntegerField()
+    username = models.CharField(max_length=100)
     time_range = models.CharField(max_length=50)
+    top_genre = models.CharField(max_length=100)
+    top_artists = models.JSONField()  # Storing as JSON to handle lists
+    top_tracks = models.JSONField()
 
     def __str__(self):
-        return f"{self.user.username}'s Wrapped - {self.time_range}"
+        return f"{self.username} - {self.time_range}"

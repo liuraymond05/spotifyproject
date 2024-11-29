@@ -510,28 +510,29 @@ from .models import SavedWrap  # Assuming you have a SavedWrap model to store wr
 @csrf_exempt
 def save_wrap(request):
     if request.method == 'POST':
-        data = json.loads(request.body)
-        user = request.user
+        # Extract data from POST request
+        time_range = request.POST.get('time_range')
+        username = request.user.username  # Assuming the user is logged in
+        top_genre = request.POST.get('top_genre')
+        top_artists = request.POST.getlist('top_artists')  # Assuming a list of artists
+        top_tracks = request.POST.getlist('top_tracks')
 
-        # Save the wrapped data
-        saved_wrap = SavedWrap(
-            user=user,
-            top_artists=data['top_artists'],
-            top_tracks=data['top_tracks'],
-            top_albums=data['top_albums'],
-            minutes_listened=data['minutes_listened'],
-            time_range=data['time_range'],
+        # Save to the database
+        saved = SavedWrap.objects.create(
+            username=username,
+            time_range=time_range,
+            top_genre=top_genre,
+            top_artists=top_artists,
+            top_tracks=top_tracks
         )
-        saved_wrap.save()
+        saved.save()
 
-        return JsonResponse({'success': True})
-
-    return JsonResponse({'success': False})
+        return redirect('savedwraps')
 from django.shortcuts import render
 from .models import SavedWrap
 
 def saved_wraps(request):
-    saved_wraps = SavedWrap.objects.filter(user=request.user)
+    saved_wraps = SavedWrap.objects.filter(username=request.user.username)
     return render(request, 'spotifywrapper/savedwraps.html', {'saved_wraps': saved_wraps})
 
 
