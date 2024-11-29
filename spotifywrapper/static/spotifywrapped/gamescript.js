@@ -205,4 +205,24 @@ document.addEventListener("DOMContentLoaded", function () {
             alert("High score has been reset!");
         }
     });
+
+     const toggleButton = document.getElementById("toggle-theme");
+     const body = document.body;
+
+     // Load saved theme from localStorage
+     if (localStorage.getItem("theme") === "light") {
+       body.classList.add("light-mode");
+     }
+
+//     // Toggle light mode
+//     toggleButton.addEventListener("click", function () {
+//       body.classList.toggle("light-mode");
+//
+//       // Save the user's preference
+//       if (body.classList.contains("light-mode")) {
+//         localStorage.setItem("theme", "light");
+//       } else {
+//         localStorage.removeItem("theme");
+//       }
+//     });
 });
