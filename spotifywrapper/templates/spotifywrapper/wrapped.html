@@ -163,6 +163,11 @@
     <audio id="preview-audio" style="display:none" controls>
         Your browser does not support the audio element.
     </audio>
+    <form method="post" action="{% url 'save_wrapped' %}">
+        {% csrf_token %}
+        <input type="hidden" name="time_range" value="{{ selected_time_range }}">
+        <button type="submit">Save Wrapped</button>
+    </form>
 
 
 <script>
@@ -429,6 +434,8 @@
                 console.error('Audio player or source element not found.')
             }
         }
+
+        
 
 
 </script>
