@@ -7,23 +7,26 @@
 </head>
 <body>
     <h1>Saved Spotify Wrapped</h1>
-    {% for wrapped in saved_wrapped %}
-        <div class="wrapped">
-            <h2>{{ wrapped.username }}'s Wrapped for {{ wrapped.time_range }}</h2>
-            <p>Top Genre: {{ wrapped.top_genre }}</p>
-            <h3>Top Artists:</h3>
-            <ul>
-                {% for artist in wrapped.top_artists %}
-                    <li>{{ artist }}</li>
-                {% endfor %}
-            </ul>
-            <h3>Top Tracks:</h3>
-            <ul>
-                {% for track in wrapped.top_tracks %}
-                    <li>{{ track }}</li>
-                {% endfor %}
-            </ul>
+
+    {% for wrap in wraps %}
+        <div>
+            <p>Time Range: {{ wrap.time_range }}</p>
+            <p>Top Genre: {{ wrap.top_genre }}</p>
+            <p>Top Artists: {{ wrap.top_artists }}</p>
+            <p>Top Tracks: {{ wrap.top_tracks }}</p>
+            <p>Favorite Mood: {{ wrap.favorite_mood }}</p>
+            <p>Favorite Decade: {{ wrap.favorite_decade }}</p>
+            <p>Peak Hour: {{ wrap.peak_hour }}</p>
+
+            <!-- Add a delete button for each saved wrap -->
+            <form method="post" action="{% url 'delete_wrap' wrap.id %}">
+                {% csrf_token %}
+                <button type="submit">Delete</button>
+            </form>
         </div>
+    {% empty %}
+        <p>No wraps found.</p>
     {% endfor %}
+
 </body>
 </html>

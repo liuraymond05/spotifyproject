@@ -32,6 +32,7 @@ urlpatterns = [
     path('top-three-tracks/', views.top_three_tracks, name='top_three_tracks'),
     path('favorite-mood/', views.favorite_mood, name='favorite_mood'),
     path('listening-habits/', views.listening_habits, name='listening_habits'),
+    path('delete_wrap/<int:wrap_id>/', views.delete_wrap, name='delete_wrap'),
 
 
 

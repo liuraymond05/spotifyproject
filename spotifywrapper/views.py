@@ -1,8 +1,9 @@
 from collections import Counter
+import json
 
 from django.contrib.auth.models import User
 from django.http import JsonResponse
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib import messages
 from django.utils import timezone
 from datetime import datetime, timedelta
@@ -507,33 +508,225 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .models import SavedWrap  # Assuming you have a SavedWrap model to store wrapped data
 
+
+from django.http import JsonResponse
+from .models import SavedWrap
+
 @csrf_exempt
 def save_wrap(request):
-    if request.method == 'POST':
-        # Extract data from POST request
-        time_range = request.POST.get('time_range')
-        username = request.user.username  # Assuming the user is logged in
-        top_genre = request.POST.get('top_genre')
-        top_artists = request.POST.getlist('top_artists')  # Assuming a list of artists
-        top_tracks = request.POST.getlist('top_tracks')
+    """
+    View that saves the user's spotify data into the SavedWrap model. 
+    """
+    user_profile = UserProfile.objects.filter(user=request.user).first()
+    if not user_profile or not user_profile.spotify_access_token:
+        return redirect(spotify_login)
+    access_token = get_spotify_access_token(user_profile)
+    time_range = request.POST.get('time_range', 'long_term')
+    # Fetch the user's top artists
+    top_artists_response = requests.get(
+        f'https://api.spotify.com/v1/me/top/artists?time_range={time_range}&limit=10',
+        headers={'Authorization': f'Bearer {access_token}'}
+    )
 
-        # Save to the database
-        saved = SavedWrap.objects.create(
-            username=username,
-            time_range=time_range,
-            top_genre=top_genre,
-            top_artists=top_artists,
-            top_tracks=top_tracks
-        )
-        saved.save()
+    top_artists_data = []
+    if top_artists_response.status_code == 200:
+        top_artists = top_artists_response.json()['items']
+        for artist in top_artists:
+            top_artists_data.append({
+                'name': artist['name'],
+                'image': artist['images'][0]['url'] if 'images' in artist and artist['images'] else None,
+                'genres': artist.get('genres', []),
+                'popularity': artist.get('popularity', 'Unknown'),
+            })
 
-        return redirect('savedwraps')
+    # Fetch other data (e.g., top tracks, playlists, mood)
+    top_genre_data = get_top_genre(access_token)
+    favorite_decade_data = get_favorite_decade(access_token)
+    top_tracks_data = get_top_tracks_data(access_token)
+    top_playlist_data = get_top_playlist_data(access_token)
+    favorite_mood = get_favorite_mood_data(access_token)
+    peak_hour = get_peak_hour_data(access_token)
+    favorite_decade = get_favorite_decade(access_token)
+
+
+    # Save the data to the SavedWrap model
+    saved_wrap = SavedWrap(
+        username=request.user.username,
+        time_range=time_range,
+        top_artists=top_artists_data,
+        top_tracks=top_tracks_data,
+        top_playlist=top_playlist_data['name'] if top_playlist_data else None,
+        favorite_mood=get_favorite_mood_data(access_token)
+        # Save other fields as necessary, e.g., top_genre, favorite_decade, etc.
+    )
+    saved_wrap.save()
+
+    return redirect('savedwraps')   
+
+def get_peak_hour_data(access_token):
+    """
+    Helper function to determine the user's peak listening hour based on recently played tracks.
+    """
+    # Fetch the user's recently played tracks (limit to 50 for simplicity)
+    tracks_response = requests.get(
+        'https://api.spotify.com/v1/me/player/recently-played?limit=50',
+        headers={'Authorization': f'Bearer {access_token}'}
+    )
+
+    if tracks_response.status_code != 200:
+        return None  # Return None if there's an error fetching tracks
+
+    tracks_data = tracks_response.json().get('items', [])
+    
+    # Extract the timestamps of when the tracks were played
+    played_hours = []
+    for track in tracks_data:
+        timestamp = track['played_at']
+        played_time = datetime.strptime(timestamp, '%Y-%m-%dT%H:%M:%S.%fZ')
+        played_hours.append(played_time.hour)
+
+    # Count the occurrences of each hour (0-23)
+    hour_count = Counter(played_hours)
+
+    # Determine the peak hour (the hour with the most plays)
+    peak_hour = max(hour_count, key=hour_count.get) if hour_count else None
+
+    return peak_hour
+
+
+def get_top_genre(access_token):
+    top_artists_response = requests.get(
+        'https://api.spotify.com/v1/me/top/artists?limit=50',  # Increased limit to get more artists
+        headers={'Authorization': f'Bearer {access_token}'}
+    )
+    
+    genres = []
+    if top_artists_response.status_code == 200:
+        top_artists = top_artists_response.json()['items']
+        for artist in top_artists:
+            genres.extend(artist.get('genres', []))  # Add all genres associated with each artist
+    
+    # Determine the top genre (most frequent genre in the list)
+    top_genre = max(Counter(genres), key=Counter(genres).get) if genres else None
+    
+    return top_genre
+
+def get_favorite_decade(access_token):
+    top_tracks_response = requests.get(
+        'https://api.spotify.com/v1/me/top/tracks?limit=50',  # Increased limit to get more tracks
+        headers={'Authorization': f'Bearer {access_token}'}
+    )
+
+    decades = []
+    if top_tracks_response.status_code == 200:
+        top_tracks = top_tracks_response.json()['items']
+        for track in top_tracks:
+            release_year = track['album']['release_date'][:4]  # Get the year from release_date
+            decade = (int(release_year) // 10) * 10  # Round to nearest decade
+            decades.append(decade)
+    
+    # Determine the most frequent decade
+    favorite_decade = max(Counter(decades), key=Counter(decades).get) if decades else None
+    
+    return favorite_decade
+
+def get_favorite_mood_data(access_token):
+    """
+    Helper function to determine the user's favorite mood based on Spotify's audio features.
+    """
+    # Fetch the user's top tracks
+    tracks_response = requests.get(
+        'https://api.spotify.com/v1/me/top/tracks?limit=50',  # Fetch top 50 tracks
+        headers={'Authorization': f'Bearer {access_token}'}
+    )
+
+    mood_count = {
+        "Happy": 0,
+        "Sad": 0,
+        "Energetic": 0,
+        "Relaxed": 0
+    }
+    favorite_mood = None
+
+    if tracks_response.status_code == 200:
+        tracks_data = tracks_response.json().get('items', [])
+        track_ids = [track['id'] for track in tracks_data]
+
+        # Fetch audio features for the top tracks
+        if track_ids:
+            audio_features_response = requests.get(
+                f'https://api.spotify.com/v1/audio-features?ids={",".join(track_ids)}',
+                headers={'Authorization': f'Bearer {access_token}'}
+            )
+
+            if audio_features_response.status_code == 200:
+                audio_features_data = audio_features_response.json().get('audio_features', [])
+                for feature in audio_features_data:
+                    if not feature:
+                        continue
+
+                    # Analyze track mood based on valence and energy
+                    valence = feature.get('valence', 0)
+                    energy = feature.get('energy', 0)
+
+                    if valence >= 0.5 and energy >= 0.5:
+                        mood_count["Happy"] += 1
+                    elif valence < 0.5 and energy < 0.5:
+                        mood_count["Sad"] += 1
+                    elif valence < 0.5 and energy >= 0.5:
+                        mood_count["Energetic"] += 1
+                    elif valence >= 0.5 and energy < 0.5:
+                        mood_count["Relaxed"] += 1
+
+        # Determine the favorite mood
+        favorite_mood = max(mood_count, key=mood_count.get)
+
+    return favorite_mood
+
+
+def get_top_tracks_data(access_token):
+    response = requests.get(
+        'https://api.spotify.com/v1/me/top/tracks?limit=10',
+        headers={'Authorization': f'Bearer {access_token}'}
+    )
+    if response.status_code == 200:
+        tracks = response.json().get('items', [])
+        return [{'name': track['name'], 'artist': track['artists'][0]['name']} for track in tracks]
+    return []
+
+def get_top_playlist_data(access_token):
+    response = requests.get(
+        'https://api.spotify.com/v1/me/playlists?limit=1',
+        headers={'Authorization': f'Bearer {access_token}'}
+    )
+    if response.status_code == 200:
+        playlists = response.json().get('items', [])
+        if playlists:
+            return {
+                'name': playlists[0]['name'],
+                'description': playlists[0].get('description', '')
+            }
+    return None
+
+
+
+
 from django.shortcuts import render
 from .models import SavedWrap
 
 def saved_wraps(request):
     saved_wraps = SavedWrap.objects.filter(username=request.user.username)
-    return render(request, 'spotifywrapper/savedwraps.html', {'saved_wraps': saved_wraps})
+    print(saved_wraps)
+    return render(request, 'spotifywrapper/savedwraps.html', {'wraps': saved_wraps})
+
+def delete_wrap(request, wrap_id):
+    """View to delete a saved wrap."""
+    if request.method == 'POST':
+        wrap = get_object_or_404(SavedWrap, id=wrap_id, username=request.user.username)
+        wrap.delete()  # Delete the wrap from the database
+        messages.success(request, "Your saved wrap was successfully deleted!")
+        return redirect('savedwraps')  # Redirect to the saved wraps page after deletion
+
 
 
 def top_genre(request):
