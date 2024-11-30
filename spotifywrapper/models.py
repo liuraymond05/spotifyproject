@@ -32,7 +32,7 @@ class SavedWrap(models.Model):
     username = models.CharField(max_length=100)
     time_range = models.CharField(max_length=50)
     top_genre = models.CharField(max_length=100, null=True, blank=True)
-    
+    top_album = models.CharField(max_length=100, null=True, blank=True)
     top_artists = models.JSONField(default=list, blank=True)  # Storing as JSON to handle lists
     top_tracks = models.JSONField(default=list, blank=True)
     favorite_mood = models.CharField(max_length=100, null=True, blank=True)

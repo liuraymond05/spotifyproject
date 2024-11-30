@@ -17,6 +17,9 @@
             <p>Favorite Mood: {{ wrap.favorite_mood }}</p>
             <p>Favorite Decade: {{ wrap.favorite_decade }}</p>
             <p>Peak Hour: {{ wrap.peak_hour }}</p>
+            <p>Favorite Album: {{ wrap.top_album }}</p>
+            <img src="{{ wrap.top_album.image }}" alt="Album Image">
+            <p>Top Playlist: {{ wrap.top_playlist }}</p>
 
             <!-- Add a delete button for each saved wrap -->
             <form method="post" action="{% url 'delete_wrap' wrap.id %}">

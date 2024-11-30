@@ -547,21 +547,53 @@ def save_wrap(request):
     favorite_mood = get_favorite_mood_data(access_token)
     peak_hour = get_peak_hour_data(access_token)
     favorite_decade = get_favorite_decade(access_token)
+    top_album_data = get_top_album(access_token, time_range)
 
 
     # Save the data to the SavedWrap model
     saved_wrap = SavedWrap(
         username=request.user.username,
+        top_genre = top_genre_data,
         time_range=time_range,
         top_artists=top_artists_data,
         top_tracks=top_tracks_data,
         top_playlist=top_playlist_data['name'] if top_playlist_data else None,
-        favorite_mood=get_favorite_mood_data(access_token)
+        favorite_mood=get_favorite_mood_data(access_token),
+        top_album = top_album_data,
+        favorite_decade = favorite_decade_data,
         # Save other fields as necessary, e.g., top_genre, favorite_decade, etc.
     )
     saved_wrap.save()
 
     return redirect('savedwraps')   
+
+def get_top_album(access_token, time_range):
+    headers = {
+        'Authorization': f'Bearer {access_token}'
+    }
+
+    # Fetch top tracks to get the album information
+    url = f'https://api.spotify.com/v1/me/top/tracks?time_range={time_range}&limit=1'  # Using the top tracks endpoint
+
+    response = requests.get(url, headers=headers)
+    
+    if response.status_code == 200:
+        data = response.json()
+        if data['items']:
+            # Fetch the album related to the top track
+            top_track = data['items'][0]
+            top_album = {
+                'name': top_track['album']['name'],  # Album name
+                'image': top_track['album']['images'][0]['url'],  # Album image URL
+                'release_date': top_track['album']['release_date'],  # Release date of the album
+                'details': top_track['album']['external_urls']['spotify'],  # Album's Spotify URL
+            }
+            return top_album
+        else:
+            return None
+    else:
+        return None
+
 
 def get_peak_hour_data(access_token):
     """
@@ -595,20 +627,23 @@ def get_peak_hour_data(access_token):
 
 
 def get_top_genre(access_token):
+    # Get the time range selected by the user (default to 'long_term' if not provided)
+    time_range = 'long_term'  # You can modify this if needed to pass the time_range explicitly
+
+    # Fetch the user's top artists
     top_artists_response = requests.get(
-        'https://api.spotify.com/v1/me/top/artists?limit=50',  # Increased limit to get more artists
+        f'https://api.spotify.com/v1/me/top/artists?time_range={time_range}&limit=10',
         headers={'Authorization': f'Bearer {access_token}'}
     )
-    
+
     genres = []
     if top_artists_response.status_code == 200:
         top_artists = top_artists_response.json()['items']
         for artist in top_artists:
             genres.extend(artist.get('genres', []))  # Add all genres associated with each artist
-    
+
     # Determine the top genre (most frequent genre in the list)
     top_genre = max(Counter(genres), key=Counter(genres).get) if genres else None
-    
     return top_genre
 
 def get_favorite_decade(access_token):
