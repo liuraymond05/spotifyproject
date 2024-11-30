@@ -439,6 +439,113 @@ body.dark-mode .top-tracks-list li:hover {
 }
 
 
+/*----------------------------- contact developers page -------------------------------------------------*/
 
+/* General Styles for Developers Page */
+body#developers {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #ff5f6d, #ffc371, #43cea2);
+    color: #333;
+    text-align: center;
+    margin: 0;
+    padding: 50px 20px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow-x: hidden;
+}
 
+/* Meet the Team Header */
+body#developers h2 {
+    font-size: 2.5em;
+    color: #fff;
+    margin-bottom: 50px;
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
 
+/* Team Member List */
+body#developers ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+body#developers ul li {
+    margin: 30px 0;
+    position: relative;
+}
+
+/* Team Member Name in Circle */
+body#developers ul li .team-member strong {
+    display: inline-block;
+    width: 150px;
+    height: 150px;
+    line-height: 150px;
+    border-radius: 50%;
+    font-size: 1.3em;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    transition: transform 0.3s ease;
+}
+
+/* Different Colors for Each Team Member */
+body#developers ul li:nth-child(1) .team-member strong {
+    background-color: #ff7e5f; /* Coral */
+}
+
+body#developers ul li:nth-child(2) .team-member strong {
+    background-color: #6a82fb; /* Light Blue */
+}
+
+body#developers ul li:nth-child(3) .team-member strong {
+    background-color: #fc5c7d; /* Pink */
+}
+
+body#developers ul li:nth-child(4) .team-member strong {
+    background-color: #42e695; /* Green */
+}
+
+body#developers ul li:nth-child(5) .team-member strong {
+    background-color: #ff9a9e; /* Light Coral */
+}
+
+/* Team Member Role Styling */
+body#developers ul li .team-member span {
+    display: block;
+    margin-top: 15px;
+    font-size: 1em;
+    color: #fff;
+}
+
+/* Email Link Styling */
+body#developers ul li .team-member a {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 1em;
+    color: #fff;
+    text-decoration: none;
+    animation: bounce 2s infinite ease-in-out;
+}
+
+/* Bounce Animation for Email Links */
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-15px);
+    }
+    60% {
+        transform: translateY(-10px);
+    }
+}
+
+/* Email Hover Effect */
+body#developers ul li .team-member a:hover {
+    color: #ffc371;
+    text-shadow: 0 0 10px #ffc371;
+    transition: color 0.3s ease, text-shadow 0.3s ease;
+}

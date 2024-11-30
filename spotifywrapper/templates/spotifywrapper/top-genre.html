@@ -1,49 +1,221 @@
 {% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-   <meta charset="UTF-8">
-   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>Top Genre</title>
-   <link rel="stylesheet" href="{% static 'spotifywrapped/breakdown.css' %}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Top Genre</title>
+    <link rel="stylesheet" href="{% static 'spotifywrapped/breakdown.css' %}">
 
-</head>
-<script>
-    function toggleMenu() {
-        const dropdown = document.getElementById("dropdownMenu");
-        dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
-    }
-
-    document.addEventListener("DOMContentLoaded", function () {
-        const cards = document.querySelectorAll(".card");
-
-        function revealCards() {
-            cards.forEach(card => {
-                const cardTop = card.getBoundingClientRect().top;
-                const windowHeight = window.innerHeight;
-
-                if (cardTop < windowHeight - 50) {
-                    card.classList.add("visible");
-                }
-            });
+    <style>
+        /* Base Styles (Light Mode) */
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #d529f0;
+            color: #333;
+            overflow-x: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
-        window.addEventListener("scroll", revealCards);
-        revealCards();
-    });
+        /* Updated Header Styling (Bigger Banner) */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: black;
+            padding: 25px 20px;
+            box-sizing: border-box;
+            color: white;
+            z-index: 1000;
+        }
 
-    function toggleTheme() {
-        document.body.classList.toggle('dark-mode');
-    }
+        header .logo {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
 
-    function toggleNeon() {
-        document.body.classList.toggle('neon-mode'); // Add/Remove neon mode
-    }
-</script>
+        header .logo img {
+            width: 40px;
+            height: auto;
+            margin-right: 10px;
+        }
+
+        header .logo h1 {
+            margin: 0;
+            font-size: 1.6em;
+        }
+
+        /* Dropdown Menu */
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 20px;
+            top: 90px;
+            background-color: black;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1001;
+            width: 200px;
+            text-align: center;
+        }
+
+        .dropdown-menu ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .dropdown-menu li {
+            padding: 10px 0;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .dropdown-menu li:hover {
+            background-color: hotpink;
+        }
+
+        .dropdown-menu a {
+            color: white;
+            text-decoration: none;
+            font-size: 1em;
+            display: block;
+            text-align: center;
+        }
+
+        /* Default Light Mode */
+        #top-genre {
+            margin: 0;
+            padding-top: 120px;
+            overflow: hidden;
+            background-color: #a820a5;
+            background-image: repeating-linear-gradient(
+                45deg,
+                #fffb00,
+                #fffb00 10%,
+                #6638f0 10%,
+                #6638f0 20%,
+                #ff33ff 20%,
+                #ff33ff 30%,
+                #0ff 30%,
+                #0ff 40%
+            );
+            background-size: 300px 300px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+            position: relative;
+            transition: background 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        /* Dark Mode */
+        body.dark-mode #top-genre {
+            background-color: #222;
+            background-image: repeating-linear-gradient(
+                45deg,
+                #333,
+                #333 10%,
+                #444 10%,
+                #444 20%,
+                #555 20%,
+                #555 30%,
+                #666 30%,
+                #666 40%
+            );
+        }
+
+        /* Neon Mode */
+        body.neon-mode #top-genre {
+            background-color: #000;
+            background-image: repeating-linear-gradient(
+                45deg,
+                #ff00ff,
+                #ff00ff 10%,
+                #00ffff 10%,
+                #00ffff 20%,
+                #ffff00 20%,
+                #ffff00 30%,
+                #ff33ff 30%,
+                #00ff00 40%
+            );
+            box-shadow: 0 0 20px #ff00ff, 0 0 30px #00ffff, 0 0 40px #ffff00;
+        }
+
+        /* Circle for Genre Name */
+        #genre-circle {
+            width: 350px;
+            height: 350px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #ff33ff, #fffb00, #0ff);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            margin-bottom: 40px;
+            animation: spin 10s linear infinite;
+        }
+
+        #genre-name {
+            font-size: 6em;
+            color: #ffffff;
+            text-shadow: 2px 2px #000;
+            text-align: center;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Buttons Styling */
+        .buttons-container {
+            position: fixed;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            z-index: 1000;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 15px 25px;
+
+            font-size: 1em;
+            font-weight: bold;
+            text-decoration: none;
+            border-radius: 25px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
 <body id="top-genre">
-   <header>
+
+    <header>
         <div class="logo">
-            <img src="../../static/spotifywrapped/spotify.png" alt="Spotify Logo">
+            <img src="{% static 'spotifywrapped/spotify.png' %}" alt="Spotify Logo">
             <h1>My Top Genre</h1>
         </div>
         <div class="menu-icon" onclick="toggleMenu()">
@@ -52,24 +224,45 @@
             <div class="line"></div>
         </div>
     </header>
-  <div class="dropdown-menu" id="dropdownMenu">
+
+    <div class="dropdown-menu" id="dropdownMenu">
         <ul>
-            <li><a href="{% url 'settings' %}" id="settingsLink">Settings</a></li>
-            <li><a href="{% url 'logout' %}">Log Out</a></li>
             <li><button onclick="toggleTheme()">Toggle Dark Mode</button></li>
             <li><button onclick="toggleNeon()">Toggle Neon Mode</button></li>
-            <li><a href="#">Settings</a></li>
-            <li><a href="#">Log Out</a></li>
+            <li><a href="{% url 'gamepage' %}" id="games">Games</a></li>
+            <li><a href="{% url 'wraps' %}" id="wraps">My Wraps</a></li>
+            <li><a href="{% url 'settings' %}" id="settingsLink">Settings</a></li>
+            <li><a href="{% url 'logout' %}">Log Out</a></li>
         </ul>
     </div>
-   <section>
 
-                <div id="cd-container">
-                    <div id="cd"></div>
-                    <div id="genre-name">{{ top_genre }}</div>
-                </div>
-        <a href="{% url 'home' %}" class="btn">Back</a>
-       <a href="{% url 'top_artists' %}" class="btn">Next</a>
-   </section>
+    <section>
+        <div id="cd-container">
+            <div id="genre-circle">
+                <div id="genre-name">{{ top_genre }}</div>
+            </div>
+        </div>
+    </section>
+
+    <div class="buttons-container">
+        <a href="{% url 'home' %}" class="btn">Home</a>
+        <a href="{% url 'top_artists' %}" class="btn">Next</a>
+    </div>
+
+    <script>
+        function toggleMenu() {
+            const dropdown = document.getElementById("dropdownMenu");
+            dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+        }
+
+        function toggleNeon() {
+            document.body.classList.toggle('neon-mode');
+        }
+    </script>
+
 </body>
 </html>
