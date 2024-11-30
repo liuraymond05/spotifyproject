@@ -457,6 +457,8 @@ body#developers {
     overflow-x: hidden;
 }
 
+
+
 /* Meet the Team Header */
 body#developers h2 {
     font-size: 2.5em;
@@ -478,7 +480,7 @@ body#developers ul li {
 }
 
 /* Team Member Name in Circle */
-body#developers ul li .team-member strong {
+body#developers ul li strong {
     display: inline-block;
     width: 150px;
     height: 150px;
@@ -492,38 +494,30 @@ body#developers ul li .team-member strong {
 }
 
 /* Different Colors for Each Team Member */
-body#developers ul li:nth-child(1) .team-member strong {
+body#developers ul li:nth-child(1) strong {
     background-color: #ff7e5f; /* Coral */
 }
 
-body#developers ul li:nth-child(2) .team-member strong {
+body#developers ul li:nth-child(2) strong {
     background-color: #6a82fb; /* Light Blue */
 }
 
-body#developers ul li:nth-child(3) .team-member strong {
+body#developers ul li:nth-child(3) strong {
     background-color: #fc5c7d; /* Pink */
 }
 
-body#developers ul li:nth-child(4) .team-member strong {
+body#developers ul li:nth-child(4) strong {
     background-color: #42e695; /* Green */
 }
 
-body#developers ul li:nth-child(5) .team-member strong {
+body#developers ul li:nth-child(5) strong {
     background-color: #ff9a9e; /* Light Coral */
 }
 
-/* Team Member Role Styling */
-body#developers ul li .team-member span {
-    display: block;
-    margin-top: 15px;
-    font-size: 1em;
-    color: #fff;
-}
-
 /* Email Link Styling */
-body#developers ul li .team-member a {
+body#developers ul li a {
     display: inline-block;
-    margin-top: 10px;
+    margin-top: 15px;
     font-size: 1em;
     color: #fff;
     text-decoration: none;
@@ -544,8 +538,10 @@ body#developers ul li .team-member a {
 }
 
 /* Email Hover Effect */
-body#developers ul li .team-member a:hover {
+body#developers ul li a:hover {
     color: #ffc371;
     text-shadow: 0 0 10px #ffc371;
     transition: color 0.3s ease, text-shadow 0.3s ease;
 }
+
+
