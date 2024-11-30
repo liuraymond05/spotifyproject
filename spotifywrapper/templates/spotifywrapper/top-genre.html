@@ -9,21 +9,44 @@
     <link rel="stylesheet" href="{% static 'spotifywrapped/breakdown.css' %}">
 
     <style>
-        /* Base Styles (Light Mode) */
+        /* Base Styles */
         body {
-            min-height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            color: #fff;
             display: flex;
             flex-direction: column;
             align-items: center;
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background-color: #d529f0;
-            color: #333;
-            overflow-x: hidden;
-            transition: background-color 0.3s ease, color 0.3s ease;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+            transition: all 0.5s ease;
         }
 
-        /* Updated Header Styling (Bigger Banner) */
+        /* Light Mode */
+        body.light-mode {
+            background: linear-gradient(135deg, #71d145, #c3edaf);
+        }
+
+        /* Dark Mode */
+        body.dark-mode {
+            background: linear-gradient(135deg, #275bf5, #391f8f);
+            color: #ccc;
+        }
+
+        /* Neon Mode */
+        body.neon-mode {
+            background: linear-gradient(135deg, #4affc0, #ff4a95);
+            box-shadow: 0 0 50px #ff00ff, 0 0 100px #00ffff;
+            color: #fff;
+        }
+
+        /* Neon Elements */
+        body.neon-mode h1, body.neon-mode .btn, body.neon-mode #genre-name {
+            text-shadow: 0 0 10px #ff00ff, 0 0 20px #00ffff, 0 0 30px #ff33ff;
+        }
+
+        /* Updated Header Styling */
         header {
             position: fixed;
             top: 0;
@@ -48,7 +71,6 @@
         header .logo img {
             width: 40px;
             height: auto;
-            margin-right: 10px;
         }
 
         header .logo h1 {
@@ -94,86 +116,43 @@
             text-align: center;
         }
 
-        /* Default Light Mode */
+        /* Genre Section */
         #top-genre {
-            margin: 0;
-            padding-top: 120px;
-            overflow: hidden;
-            background-color: #a820a5;
-            background-image: repeating-linear-gradient(
-                45deg,
-                #fffb00,
-                #fffb00 10%,
-                #6638f0 10%,
-                #6638f0 20%,
-                #ff33ff 20%,
-                #ff33ff 30%,
-                #0ff 30%,
-                #0ff 40%
-            );
-            background-size: 300px 300px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 100vh;
             text-align: center;
-            position: relative;
-            transition: background 0.3s ease, box-shadow 0.3s ease;
+            gap: 30px;
+            padding-top: 100px;
+            background-size: 300% 300%;
+            animation: backgroundMove 10s linear infinite;
         }
 
-        /* Dark Mode */
-        body.dark-mode #top-genre {
-            background-color: #222;
-            background-image: repeating-linear-gradient(
-                45deg,
-                #333,
-                #333 10%,
-                #444 10%,
-                #444 20%,
-                #555 20%,
-                #555 30%,
-                #666 30%,
-                #666 40%
-            );
+        @keyframes backgroundMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
-        /* Neon Mode */
-        body.neon-mode #top-genre {
-            background-color: #000;
-            background-image: repeating-linear-gradient(
-                45deg,
-                #ff00ff,
-                #ff00ff 10%,
-                #00ffff 10%,
-                #00ffff 20%,
-                #ffff00 20%,
-                #ffff00 30%,
-                #ff33ff 30%,
-                #00ff00 40%
-            );
-            box-shadow: 0 0 20px #ff00ff, 0 0 30px #00ffff, 0 0 40px #ffff00;
-        }
-
-        /* Circle for Genre Name */
+        /* Genre Circle */
         #genre-circle {
-            width: 350px;
-            height: 350px;
+            width: 400px;
+            height: 400px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(135deg, #ff33ff, #fffb00, #0ff);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-            margin-bottom: 40px;
+            background: linear-gradient(135deg, #ff33ff, #fffb00, #00ffff);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
             animation: spin 10s linear infinite;
         }
 
         #genre-name {
-            font-size: 6em;
-            color: #ffffff;
-            text-shadow: 2px 2px #000;
-            text-align: center;
+            font-size: 8rem;
+            color: #fff;
+            text-shadow: 0 2px 5px #000;
+            animation: wave 3s ease-in-out infinite;
         }
 
         @keyframes spin {
@@ -181,37 +160,38 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* Buttons Styling */
+        @keyframes wave {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* Buttons */
         .buttons-container {
-            position: fixed;
-            bottom: 20px;
-            left: 0;
-            right: 0;
+            margin-top: 20px;
             display: flex;
             justify-content: center;
             gap: 20px;
-            z-index: 1000;
         }
 
         .btn {
             display: inline-block;
-            padding: 15px 25px;
-
-            font-size: 1em;
+            padding: 15px 30px;
+            font-size: 1rem;
             font-weight: bold;
             text-decoration: none;
             border-radius: 25px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            transition: background-color 0.3s ease, transform 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
         .btn:hover {
             transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
         }
+
     </style>
 </head>
-<body id="top-genre">
+<body class="light-mode">
 
     <header>
         <div class="logo">
@@ -236,11 +216,9 @@
         </ul>
     </div>
 
-    <section>
-        <div id="cd-container">
-            <div id="genre-circle">
-                <div id="genre-name">{{ top_genre }}</div>
-            </div>
+    <section id="top-genre">
+        <div id="genre-circle">
+            <div id="genre-name">{{ top_genre }}</div>
         </div>
     </section>
 
@@ -256,11 +234,15 @@
         }
 
         function toggleTheme() {
-            document.body.classList.toggle('dark-mode');
+            const body = document.body;
+            body.classList.toggle('dark-mode');
+            body.classList.remove('neon-mode');
         }
 
         function toggleNeon() {
-            document.body.classList.toggle('neon-mode');
+            const body = document.body;
+            body.classList.toggle('neon-mode');
+            body.classList.remove('dark-mode');
         }
     </script>
 

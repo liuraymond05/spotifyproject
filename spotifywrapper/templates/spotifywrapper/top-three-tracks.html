@@ -4,50 +4,238 @@
 <head>
    <meta charset="UTF-8">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>Top 3 Tracks</title>
-   <link rel="stylesheet" href="{% static 'spotifywrapped/homestyle.css' %}">
-</head>
+   <title>Top Three Tracks</title>
+   <link rel="stylesheet" href="{% static 'spotifywrapped/breakdown.css' %}">
 
-<script>
-    function toggleMenu() {
-        const dropdown = document.getElementById("dropdownMenu");
-        dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
-    }
+   <style>
+        /* Base Styles */
+        body {
+           margin: 0;
+           font-family: 'Helvetica', sans-serif;
+           color: white;
+           background: linear-gradient(135deg, #1DB954, #121212);
+           background-size: 400% 400%;
+           animation: gradientBackground 8s ease infinite;
+           overflow: hidden;
+           display: flex;
+           flex-direction: column;
+           align-items: center;
+           height: 100vh;
+           transition: background 0.5s ease, color 0.5s ease;
+       }
 
-    document.addEventListener("DOMContentLoaded", function () {
-        const cards = document.querySelectorAll(".card");
 
-        function revealCards() {
-            cards.forEach(card => {
-                const cardTop = card.getBoundingClientRect().top;
-                const windowHeight = window.innerHeight;
+       @keyframes gradientBackground {
+           0% { background-position: 0% 50%; }
+           50% { background-position: 100% 50%; }
+           100% { background-position: 0% 50%; }
+       }
 
-                if (cardTop < windowHeight - 50) {
-                    card.classList.add("visible");
-                }
-            });
+
+       /* Dark Mode */
+       body.dark-mode {
+           background: linear-gradient(135deg, #121212, #0d47a1); /* Dark blue gradient */
+       }
+
+
+       @keyframes gradientBackgroundDark {
+           0% { background-position: 0% 50%; }
+           50% { background-position: 100% 50%; }
+           100% { background-position: 0% 50%; }
+       }
+
+
+       /* Light Mode */
+       body.neon-mode {
+           background: linear-gradient(135deg, #f9e7cf, #f56b2a); /* Warm orange gradient */
+       }
+
+
+        /* Updated Header Styling to Match Genre Page */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: black;
+            padding: 25px 20px;
+            box-sizing: border-box;
+            color: white;
+            z-index: 1000;
         }
 
-        window.addEventListener("scroll", revealCards);
-        revealCards();
-    });
+        header .logo {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
 
-    function toggleTheme() {
-        document.body.classList.toggle('dark-mode');
-    }
+        header .logo img {
+            width: 40px;
+            height: auto;
+        }
 
-    function toggleNeon() {
-        document.body.classList.toggle('neon-mode');
-    }
+        header .logo h1 {
+            margin: 0;
+            font-size: 1.6em;
+        }
 
-</script>
+        /* Dropdown Menu */
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 20px;
+            top: 90px;
+            background-color: black;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1001;
+            width: 200px;
+            text-align: center;
+        }
 
+        .dropdown-menu ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .dropdown-menu li {
+            padding: 10px 0;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .dropdown-menu li:hover {
+            background-color: hotpink;
+        }
+
+        .dropdown-menu a {
+            color: white;
+            text-decoration: none;
+            font-size: 1em;
+            display: block;
+            text-align: center;
+        }
+
+        /* Podium Section */
+        .podium-container {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            height: 70%;
+            margin-top: 100px;
+            position: relative;
+        }
+
+        .podium {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+        }
+
+        .podium-step {
+            background: linear-gradient(135deg, #ffcc00, #ff007b);
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            color: white;
+            margin: 0 20px;
+            box-shadow: 0 8px 20px rgba(255, 0, 123, 0.5);
+            position: relative;
+            height: 300px; /* Default height */
+            width: 180px; /* Default width */
+        }
+
+        .podium-step:nth-child(1) {
+            height: 350px;
+        }
+
+        .podium-step:nth-child(2) {
+            height: 420px; /* Highest pedestal */
+            width: 220px;
+        }
+
+        .podium-step:nth-child(3) {
+            height: 300px;
+        }
+
+        .podium-step img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            position: absolute;
+            top: -90px; /* Floating above the pedestal */
+        }
+
+        .podium-step .track-info {
+            text-align: center;
+            padding: 15px;
+            font-size: 1.2rem;
+        }
+
+        .play-button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            font-size: 1rem;
+            color: #fff;
+            background: #ff007b;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .play-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Buttons Styling */
+       .buttons-container {
+           position: fixed;
+           bottom: 20px;
+           left: 0;
+           right: 0;
+           display: flex;
+           justify-content: center;
+           gap: 20px;
+           z-index: 1000;
+       }
+
+
+
+       .btn {
+           display: inline-block;
+           padding: 15px 25px;
+
+           font-size: 1em;
+           font-weight: bold;
+           text-decoration: none;
+           border-radius: 25px;
+           box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+           transition: background-color 0.3s ease, transform 0.3s ease;
+       }
+
+       .btn:hover {
+           transform: translateY(-5px);
+           box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+       }
+
+
+   </style>
+</head>
 
 <body>
-   <header>
+  <header>
         <div class="logo">
-            <img src="../../static/spotifywrapped/spotify.png" alt="Spotify Logo">
-            <h1>My Top 3 Tracks</h1>
+            <img src="{% static 'spotifywrapped/spotify.png' %}" alt="Spotify Logo">
+            <h1>My Top Tracks</h1>
         </div>
         <div class="menu-icon" onclick="toggleMenu()">
             <div class="line"></div>
@@ -56,40 +244,63 @@
         </div>
     </header>
 
-  <div class="dropdown-menu" id="dropdownMenu">
+    <div class="dropdown-menu" id="dropdownMenu">
         <ul>
-
-            <li><a href="{% url 'settings' %}" id="settingsLink">Settings</a></li>
-            <li><a href="{% url 'logout' %}">Log Out</a></li>
-
             <li><button onclick="toggleTheme()">Toggle Dark Mode</button></li>
             <li><button onclick="toggleNeon()">Toggle Neon Mode</button></li>
-            <li><a href="#">Settings</a></li>
-            <li><a href="#">Log Out</a></li>
-
+            <li><a href="{% url 'gamepage' %}" id="games">Games</a></li>
+            <li><a href="{% url 'wraps' %}" id="wraps">My Wraps</a></li>
+            <li><a href="{% url 'settings' %}" id="settingsLink">Settings</a></li>
+            <li><a href="{% url 'logout' %}">Log Out</a></li>
         </ul>
     </div>
 
-   <section>
-
-       {% if tracks %}
-            <div class="top-tracks">
+    <!-- Podium Section -->
+    <div class="podium-container">
+        <div class="podium">
+            {% if tracks %}
                 {% for track in tracks %}
-                    <div class="track-card">
-                        <img src="{{ track.album.images.0.url }}" alt="{{ track.name }} album cover" class="album-cover">
-                        <p class="track-name">{{ track.name }}</p>
-                        <p class="artist-name">by {{ track.artists.0.name }}</p>
-                        <p class="album-name">Album: {{ track.album.name }}</p>
+                    <div class="podium-step">
+                        <img src="{{ track.album.images.0.url }}" alt="{{ track.name }}">
+                        <div class="track-info">
+                            <p class="track-name">{{ track.name }}</p>
+                            <p>by {{ track.artists.0.name }}</p>
+                            <button class="play-button" onclick="playAudio('{{ track.preview_url }}')">Play Me</button>
+                        </div>
                     </div>
                 {% endfor %}
-            </div>
-        {% else %}
-            <p>We couldn't retrieve your top tracks at this moment. Please try again later.</p>
-        {% endif %}
+            {% endif %}
+        </div>
+    </div>
 
-       <a href="{% url 'favorite_mood' %}" class="btn">Back</a>
-       <!-- <a href="{% url 'listening_habits' %}" class="btn">Next</a> -->
-       <a href="{% url 'home' %}" class="btn">Back To Home</a>
-   </section>
+    <!-- Buttons Section -->
+    <div class="buttons-container">
+        <a href="{% url 'favorite_mood' %}" class="btn">Back</a>
+        <a href="{% url 'home' %}" class="btn">Home</a>
+    </div>
+
+    <!-- Audio Player -->
+    <audio id="audioPlayer"></audio>
+
+    <script>
+        function playAudio(url) {
+            const audioPlayer = document.getElementById("audioPlayer");
+            audioPlayer.src = url;
+            audioPlayer.play();
+        }
+
+        function toggleMenu() {
+        const dropdown = document.getElementById("dropdownMenu");
+        dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+    }
+
+    function toggleTheme() {
+        document.body.classList.toggle('dark-mode');
+    }
+
+    function toggleNeon() {
+        document.body.classList.toggle('neon-mode');
+    }
+    </script>
 </body>
 </html>
