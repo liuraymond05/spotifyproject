@@ -1,4 +1,5 @@
 {% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,6 +7,202 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Top Artists</title>
     <link rel="stylesheet" href="{% static 'spotifywrapped/breakdown.css' %}">
+
+    <style>
+        /* Gradient Background for Artist Page */
+        body#artist {
+            background: linear-gradient(135deg, #fc03ba, #9003fc, #03befc);
+            background-size: 300% 300%;
+            animation: gradientAnimation 10s ease infinite;
+        }
+
+        body.dark-mode#artist {
+            background: linear-gradient(135deg, #8a1d60, #5e0f6e, #083382);
+            background-size: 300% 300%;
+            animation: gradientAnimation 10s ease infinite;
+        }
+
+        body.neon-mode#artist {
+            background: linear-gradient(135deg, #f6ff75, #91ff75, #75f4ff);
+            background-size: 300% 300%;
+            animation: gradientAnimation 10s ease infinite;
+        }
+
+        @keyframes gradientAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Updated Header Styling to Match Genre Page */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: black;
+            padding: 25px 20px;
+            box-sizing: border-box;
+            color: white;
+            z-index: 1000;
+        }
+
+        header .logo {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        header .logo img {
+            width: 40px;
+            height: auto;
+        }
+
+        header .logo h1 {
+            margin: 0;
+            font-size: 1.6em;
+        }
+
+        /* Dropdown Menu */
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 20px;
+            top: 90px;
+            background-color: black;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1001;
+            width: 200px;
+            text-align: center;
+        }
+
+        .dropdown-menu ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .dropdown-menu li {
+            padding: 10px 0;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .dropdown-menu li:hover {
+            background-color: hotpink;
+        }
+
+        .dropdown-menu a {
+            color: white;
+            text-decoration: none;
+            font-size: 1em;
+            display: block;
+            text-align: center;
+        }
+
+        /* Artist Container and Cards */
+        .artist-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            padding: 120px 20px 20px; /* Added padding for fixed header */
+        }
+
+        .artist-row {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .artist-card {
+            perspective: 1000px;
+            width: 150px;
+            height: 150px;
+        }
+
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+        }
+
+        .artist-card:hover .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-front {
+            background-color: #fff;
+        }
+
+        .artist-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 15px;
+        }
+
+        .card-back {
+            background-color: #282828;
+            color: #fff;
+            transform: rotateY(180deg);
+            font-size: 1.2em;
+            padding: 10px;
+            text-align: center;
+        }
+
+        /* Buttons Styling */
+       .buttons-container {
+           position: fixed;
+           bottom: 20px;
+           left: 0;
+           right: 0;
+           display: flex;
+           justify-content: center;
+           gap: 20px;
+           z-index: 1000;
+       }
+
+
+
+       .btn {
+           display: inline-block;
+           padding: 15px 25px;
+
+           font-size: 1em;
+           font-weight: bold;
+           text-decoration: none;
+           border-radius: 25px;
+           box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+           transition: background-color 0.3s ease, transform 0.3s ease;
+       }
+
+       .btn:hover {
+           transform: translateY(-5px);
+           box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+       }
+    </style>
 </head>
 
 <script>
@@ -14,30 +211,12 @@
         dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
     }
 
-    document.addEventListener("DOMContentLoaded", function () {
-        const cards = document.querySelectorAll(".card");
-
-        function revealCards() {
-            cards.forEach(card => {
-                const cardTop = card.getBoundingClientRect().top;
-                const windowHeight = window.innerHeight;
-
-                if (cardTop < windowHeight - 50) {
-                    card.classList.add("visible");
-                }
-            });
-        }
-
-        window.addEventListener("scroll", revealCards);
-        revealCards();
-    });
-
     function toggleTheme() {
         document.body.classList.toggle('dark-mode');
     }
 
     function toggleNeon() {
-        document.body.classList.toggle('neon-mode'); // Add/Remove neon mode
+        document.body.classList.toggle('neon-mode');
     }
 </script>
 
@@ -56,89 +235,94 @@
 
     <div class="dropdown-menu" id="dropdownMenu">
         <ul>
-            <li><a href="{% url 'settings' %}" id="settingsLink">Settings</a></li>
-            <li><a href="{% url 'logout' %}">Log Out</a></li>
             <li><button onclick="toggleTheme()">Toggle Dark Mode</button></li>
             <li><button onclick="toggleNeon()">Toggle Neon Mode</button></li>
+            <li><a href="{% url 'gamepage' %}" id="games">Games</a></li>
+            <li><a href="{% url 'wraps' %}" id="wraps">My Wraps</a></li>
+            <li><a href="{% url 'settings' %}" id="settingsLink">Settings</a></li>
+            <li><a href="{% url 'logout' %}">Log Out</a></li>
         </ul>
     </div>
 
     <section>
-    <div class="artist-container">
-        <!-- First Row: 1 Artist -->
-        {% if top_artists|length > 0 %}
-            <div class="artist-row artist-row-1">
-                <div class="artist-card">
-                    <div class="card-inner">
-                        <div class="card-front">
-                            <img src="{{ top_artists.0.image }}" alt="{{ top_artists.0.name }}" class="artist-image">
-                        </div>
-                        <div class="card-back">
-                            <p class="artist-name">{{ top_artists.0.name }}</p>
+        <div class="artist-container">
+            <!-- First Row: 1 Artist -->
+            {% if top_artists|length > 0 %}
+                <div class="artist-row artist-row-1">
+                    <div class="artist-card">
+                        <div class="card-inner">
+                            <div class="card-front">
+                                <img src="{{ top_artists.0.image }}" alt="{{ top_artists.0.name }}" class="artist-image">
+                            </div>
+                            <div class="card-back">
+                                <p class="artist-name">{{ top_artists.0.name }}</p>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        {% endif %}
+            {% endif %}
 
-        <!-- Second Row: 2 Artists -->
-        {% if top_artists|length > 1 %}
-            <div class="artist-row artist-row-2">
-                {% for artist in top_artists|slice:"1:3" %}
-                    <div class="artist-card">
-                        <div class="card-inner">
-                            <div class="card-front">
-                                <img src="{{ artist.image }}" alt="{{ artist.name }}" class="artist-image">
-                            </div>
-                            <div class="card-back">
-                                <p class="artist-name">{{ artist.name }}</p>
+            <!-- Second Row: 2 Artists -->
+            {% if top_artists|length > 1 %}
+                <div class="artist-row artist-row-2">
+                    {% for artist in top_artists|slice:"1:3" %}
+                        <div class="artist-card">
+                            <div class="card-inner">
+                                <div class="card-front">
+                                    <img src="{{ artist.image }}" alt="{{ artist.name }}" class="artist-image">
+                                </div>
+                                <div class="card-back">
+                                    <p class="artist-name">{{ artist.name }}</p>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                {% endfor %}
-            </div>
-        {% endif %}
+                    {% endfor %}
+                </div>
+            {% endif %}
 
-        <!-- Third Row: 3 Artists -->
-        {% if top_artists|length > 3 %}
-            <div class="artist-row artist-row-3">
-                {% for artist in top_artists|slice:"3:6" %}
-                    <div class="artist-card">
-                        <div class="card-inner">
-                            <div class="card-front">
-                                <img src="{{ artist.image }}" alt="{{ artist.name }}" class="artist-image">
-                            </div>
-                            <div class="card-back">
-                                <p class="artist-name">{{ artist.name }}</p>
+            <!-- Third Row: 3 Artists -->
+            {% if top_artists|length > 3 %}
+                <div class="artist-row artist-row-3">
+                    {% for artist in top_artists|slice:"3:6" %}
+                        <div class="artist-card">
+                            <div class="card-inner">
+                                <div class="card-front">
+                                    <img src="{{ artist.image }}" alt="{{ artist.name }}" class="artist-image">
+                                </div>
+                                <div class="card-back">
+                                    <p class="artist-name">{{ artist.name }}</p>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                {% endfor %}
-            </div>
-        {% endif %}
+                    {% endfor %}
+                </div>
+            {% endif %}
 
-        <!-- Fourth Row: 4 Artists -->
-        {% if top_artists|length > 6 %}
-            <div class="artist-row artist-row-4">
-                {% for artist in top_artists|slice:"6:10" %}
-                    <div class="artist-card">
-                        <div class="card-inner">
-                            <div class="card-front">
-                                <img src="{{ artist.image }}" alt="{{ artist.name }}" class="artist-image">
-                            </div>
-                            <div class="card-back">
-                                <p class="artist-name">{{ artist.name }}</p>
+            <!-- Fourth Row: 4 Artists -->
+            {% if top_artists|length > 6 %}
+                <div class="artist-row artist-row-4">
+                    {% for artist in top_artists|slice:"6:10" %}
+                        <div class="artist-card">
+                            <div class="card-inner">
+                                <div class="card-front">
+                                    <img src="{{ artist.image }}" alt="{{ artist.name }}" class="artist-image">
+                                </div>
+                                <div class="card-back">
+                                    <p class="artist-name">{{ artist.name }}</p>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                {% endfor %}
-            </div>
-        {% endif %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </section>
+
+    <div class="buttons-container">
+        <a href="{% url 'top_genre' %}" class="btn">Back</a>
+
+        <a href="{% url 'home' %}" class="btn">Home</a>
+        <a href="{% url 'top_albums' %}" class="btn">Next</a>
     </div>
-
-    <a href="{% url 'top_genre' %}" class="btn">Back</a>
-    <a href="{% url 'top_albums' %}" class="btn">Next</a>
-    <a href="{% url 'home' %}" class="btn">Back To Home</a>
-</section>
 </body>
 </html>
