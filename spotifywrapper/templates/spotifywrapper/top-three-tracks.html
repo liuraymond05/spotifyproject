@@ -234,7 +234,9 @@
 <body>
   <header>
         <div class="logo">
+            <a href="{% url 'home' %}">
             <img src="{% static 'spotifywrapped/spotify.png' %}" alt="Spotify Logo">
+        </a>
             <h1>My Top Tracks</h1>
         </div>
         <div class="menu-icon" onclick="toggleMenu()">

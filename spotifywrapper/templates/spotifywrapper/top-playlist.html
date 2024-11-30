@@ -226,7 +226,9 @@
 <body class="light-mode">
     <header>
         <div class="logo">
+            <a href="{% url 'home' %}">
             <img src="{% static 'spotifywrapped/spotify.png' %}" alt="Spotify Logo">
+        </a>
             <h1>My Top Playlist</h1>
         </div>
         <div class="menu-icon" onclick="toggleMenu()">

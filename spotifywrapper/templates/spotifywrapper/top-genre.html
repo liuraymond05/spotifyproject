@@ -25,20 +25,40 @@
 
         /* Light Mode */
         body.light-mode {
-            background: linear-gradient(135deg, #71d145, #c3edaf);
+            background: radial-gradient(circle at center, #e069d6, #f2caaa, #f2e85a);
+            animation: light-mode-animation 10s infinite linear;
+        }
+
+        @keyframes light-mode-animation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
         /* Dark Mode */
         body.dark-mode {
-            background: linear-gradient(135deg, #275bf5, #391f8f);
-            color: #ccc;
+            background: radial-gradient(circle at center, #1b2735, #275bf5, #0d1c49);
+            animation: dark-mode-animation 12s infinite linear;
+        }
+
+        @keyframes dark-mode-animation {
+            0% { background-position: 50% 0%; }
+            50% { background-position: 50% 100%; }
+            100% { background-position: 50% 0%; }
         }
 
         /* Neon Mode */
         body.neon-mode {
-            background: linear-gradient(135deg, #4affc0, #ff4a95);
+            background: radial-gradient(circle at center, #4affc0, #ff4a95, #ff33ff, #00ffff);
+            animation: neon-mode-animation 8s infinite ease-in-out;
             box-shadow: 0 0 50px #ff00ff, 0 0 100px #00ffff;
             color: #fff;
+        }
+
+        @keyframes neon-mode-animation {
+            0% { background-position: 0% 0%; }
+            50% { background-position: 100% 100%; }
+            100% { background-position: 0% 0%; }
         }
 
         /* Neon Elements */
@@ -125,14 +145,6 @@
             text-align: center;
             gap: 30px;
             padding-top: 100px;
-            background-size: 300% 300%;
-            animation: backgroundMove 10s linear infinite;
-        }
-
-        @keyframes backgroundMove {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
         }
 
         /* Genre Circle */
@@ -188,14 +200,15 @@
             transform: translateY(-5px);
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
         }
-
     </style>
 </head>
 <body class="light-mode">
 
     <header>
         <div class="logo">
+            <a href="{% url 'home' %}">
             <img src="{% static 'spotifywrapped/spotify.png' %}" alt="Spotify Logo">
+        </a>
             <h1>My Top Genre</h1>
         </div>
         <div class="menu-icon" onclick="toggleMenu()">

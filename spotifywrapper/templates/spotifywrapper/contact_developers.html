@@ -1,9 +1,11 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contact Developers</title>
+    <link rel="stylesheet" href="{% static 'spotifywrapped/homestyle.css' %}">
 
     <style>
         /* General Styles for Developers Page */
@@ -21,14 +23,90 @@
             overflow-x: hidden;
         }
 
-        /* Fixed Banner Styling */
-        #banner {
+
+
+        body#developers.dark-mode {
+            background: linear-gradient(135deg, #1db954, #191414, #0c0c0c);
+        }
+
+        body#developers.neon-mode {
+            background: linear-gradient(135deg, #ff00ff, #00ffff, #ffff00);
+        }
+
+        /* Updated Header Styling to Match Genre Page */
+        header {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: black;
+            padding: 25px 20px;
             box-sizing: border-box;
-            z-index: 1000; /* Ensure the banner stays on top */
+            color: white;
+            z-index: 1000;
+        }
+
+        header .logo {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        header .logo img {
+            width: 40px;
+            height: auto;
+        }
+
+        header .logo h1 {
+            margin: 0;
+            font-size: 1.6em;
+        }
+
+        /* Dropdown Menu */
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 20px;
+            top: 70px;
+            background-color: black;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1001;
+            width: 150px;
+            text-align: left;
+        }
+
+        .dropdown-menu ul {
+            list-style: none;
+            margin: 0;
+            padding: 10px 0;
+        }
+
+        .dropdown-menu li {
+            padding: 10px;
+            cursor: pointer;
+            text-align: center;
+            transition: background-color 0.3s ease;
+        }
+
+        .dropdown-menu li:hover {
+            background-color: hotpink;
+        }
+
+        .dropdown-menu a {
+            color: white;
+            text-decoration: none;
+            font-size: 1em;
+            display: block;
+            transition: color 0.3s ease, text-shadow 0.3s ease;
+        }
+
+        .dropdown-menu a:hover {
+            color: hotpink;
+            text-shadow: 0 0 10px hotpink;
         }
 
         /* Meet the Team Header */
@@ -48,7 +126,7 @@
         }
 
         /* Team Member List Items */
-        body#developers ul {
+        .team-container ul {
             list-style: none;
             padding: 0;
             margin: 0;
@@ -58,13 +136,13 @@
             justify-content: space-around;
         }
 
-        body#developers ul li {
+        .team-container ul li {
             width: 30%;
             margin-bottom: 40px;
         }
 
-        /* Team Member Name in Circle (Bouncing Animation) */
-        body#developers ul li .team-member strong {
+        /* Team Member Name (Bouncing Animation) */
+        .team-container ul li .team-member strong {
             display: inline-block;
             width: 150px;
             height: 150px;
@@ -79,52 +157,47 @@
             transition: transform 0.3s ease;
         }
 
-        /* Different Colors for Each Team Member */
-        body#developers ul li:nth-child(1) .team-member strong {
-            background-color: #ff7e5f; /* Coral */
-        }
-
-        body#developers ul li:nth-child(2) .team-member strong {
-            background-color: #6a82fb; /* Light Blue */
-        }
-
-        body#developers ul li:nth-child(3) .team-member strong {
-            background-color: #fc5c7d; /* Pink */
-        }
-
-        body#developers ul li:nth-child(4) .team-member strong {
-            background-color: #42e695; /* Green */
-        }
-
-        body#developers ul li:nth-child(5) .team-member strong {
-            background-color: #ff9a9e; /* Light Coral */
+        /* Bounce Animation for Emails */
+        .team-container ul li .team-member a {
+            display: inline-block;
+            margin-top: 10px;
+            font-size: 1em;
+            color: #00f; /* Blue color */
+            text-decoration: underline;
+            animation: bounce 2s infinite ease-in-out;
+            animation-delay: 1s; /* Slight delay to distinguish from name bounce */
         }
 
         /* Team Member Role Styling */
-        body#developers ul li .team-member span {
+        .team-container ul li .team-member span {
             display: block;
             margin-top: 15px;
             font-size: 1em;
             color: #fff;
         }
 
-        /* Email Link Styling (Different Color and Underlined) */
-        body#developers ul li .team-member a {
-            display: inline-block;
-            margin-top: 10px;
-            font-size: 1em;
-            color: #00f; /* Blue color */
-            text-decoration: underline; /* Always underlined */
-            transition: color 0.3s ease, text-shadow 0.3s ease;
+        /* Different Colors for Each Team Member */
+        .team-container ul li:nth-child(1) .team-member strong {
+            background-color: #ff7e5f; /* Coral */
         }
 
-        /* Email Hover Effect */
-        body#developers ul li .team-member a:hover {
-            color: #ffa500; /* Orange color when hovered */
-            text-shadow: 0 0 10px #ffa500;
+        .team-container ul li:nth-child(2) .team-member strong {
+            background-color: #6a82fb; /* Light Blue */
         }
 
-        /* Bounce Animation for Team Member Names */
+        .team-container ul li:nth-child(3) .team-member strong {
+            background-color: #fc5c7d; /* Pink */
+        }
+
+        .team-container ul li:nth-child(4) .team-member strong {
+            background-color: #42e695; /* Green */
+        }
+
+        .team-container ul li:nth-child(5) .team-member strong {
+            background-color: #ff9a9e; /* Light Coral */
+        }
+
+        /* Bounce Animation for Names and Emails */
         @keyframes bounce {
             0%, 20%, 50%, 80%, 100% {
                 transform: translateY(0);
@@ -141,9 +214,29 @@
 </head>
 <body id="developers">
 
-    <!-- Fixed Banner at the Top of the Page -->
-    <div id="banner">
-        {% include 'spotifywrapper/banner.html' %}
+    <header>
+        <div class="logo">
+            <a href="{% url 'home' %}">
+                <img src="{% static 'spotifywrapped/spotify.png' %}" alt="Spotify Logo">
+            </a>
+            <h1>My Favorite Mood</h1>
+        </div>
+        <div class="menu-icon" onclick="toggleMenu()">
+            <div class="line"></div>
+            <div class="line"></div>
+            <div class="line"></div>
+        </div>
+    </header>
+
+    <div class="dropdown-menu" id="dropdownMenu">
+        <ul>
+            <li><button onclick="toggleTheme()">Toggle Dark Mode</button></li>
+            <li><button onclick="toggleNeon()">Toggle Neon Mode</button></li>
+            <li><a href="{% url 'gamepage' %}" id="games">Games</a></li>
+            <li><a href="{% url 'wraps' %}" id="wraps">My Wraps</a></li>
+            <li><a href="{% url 'settings' %}" id="settingsLink">Settings</a></li>
+            <li><a href="{% url 'logout' %}">Log Out</a></li>
+        </ul>
     </div>
 
     <h2>Meet the Team</h2>
@@ -189,24 +282,20 @@
     </div>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            console.log("JavaScript running for the Developers page");
+        function toggleMenu() {
+            const dropdown = document.getElementById("dropdownMenu");
+            dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+        }
 
-            // Get all team members' names for interaction
-            const teamMembers = document.querySelectorAll('.team-member strong');
-            console.log("Team members found: ", teamMembers.length);
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            document.body.classList.remove('neon-mode');
+        }
 
-            // Add hover effects to team members' names (slight scaling)
-            teamMembers.forEach(member => {
-                member.addEventListener('mouseenter', () => {
-                    member.style.transform = 'scale(1.1)';
-                });
-                member.addEventListener('mouseleave', () => {
-                    member.style.transform = 'scale(1)';
-                });
-            });
-        });
+        function toggleNeon() {
+            document.body.classList.toggle('neon-mode');
+            document.body.classList.remove('dark-mode');
+        }
     </script>
-
 </body>
 </html>

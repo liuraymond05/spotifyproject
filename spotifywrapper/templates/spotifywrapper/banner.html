@@ -28,6 +28,8 @@
     <!-- Dropdown menu -->
     <div class="dropdown-menu" id="dropdownMenu">
         <ul>
+             <li><button onclick="toggleTheme()">Toggle Dark Mode</button></li>
+            <li><button onclick="toggleNeon()">Toggle Neon Mode</button></li>
             <li><a href="{% url 'gamepage' %}" id="games">Games</a></li>
             <li><a href="{% url 'wraps' %}" id="wraps">My Wraps</a></li>
             <li><a href="{% url 'settings' %}" id="settingsLink">Settings</a></li>
@@ -46,6 +48,19 @@
             const dropdown = document.getElementById("dropdownMenu");
             // Toggle the display of the dropdown menu
             dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+        }
+
+
+        function toggleTheme() {
+            const body = document.body;
+            body.classList.toggle('dark-mode');
+            body.classList.remove('neon-mode');
+        }
+
+        function toggleNeon() {
+            const body = document.body;
+            body.classList.toggle('neon-mode');
+            body.classList.remove('dark-mode');
         }
     </script>
 
