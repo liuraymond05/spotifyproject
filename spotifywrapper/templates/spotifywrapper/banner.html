@@ -1,10 +1,11 @@
 {% load static %}
+{% load i18n %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}My Spotify Wrapped{% endblock %}</title>
+    <title>{% block title %}{% trans "My Spotify Wrapped" %}{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'spotifywrapped/homestyle.css' %}">
     <script src="{% static 'spotifywrapped/script.js' %}" defer></script>
 </head>
@@ -16,7 +17,7 @@
         <a href="{% url 'home' %}">
             <img src="{% static 'spotifywrapped/spotify.png' %}" alt="Spotify Logo">
         </a>
-        <h1>My Spotify Wrapped</h1>
+        <h1>{% trans "My Spotify Wrapped" %}</h1>
         </div>
         <div class="menu-icon" onclick="toggleMenu()">
             <div class="line"></div>
@@ -28,12 +29,12 @@
     <!-- Dropdown menu -->
     <div class="dropdown-menu" id="dropdownMenu">
         <ul>
-             <li><button onclick="toggleTheme()">Toggle Dark Mode</button></li>
-            <li><button onclick="toggleNeon()">Toggle Neon Mode</button></li>
-            <li><a href="{% url 'gamepage' %}" id="games">Games</a></li>
-            <li><a href="{% url 'wraps' %}" id="wraps">My Wraps</a></li>
-            <li><a href="{% url 'settings' %}" id="settingsLink">Settings</a></li>
-            <li><a href="{% url 'logout' %}">Log Out</a></li>
+             <li><button onclick="toggleTheme()">{% trans "Toggle Dark Mode" %}</button></li>
+            <li><button onclick="toggleNeon()">{% trans "Toggle Neon Mode" %}</button></li>
+            <li><a href="{% url 'gamepage' %}" id="games">{% trans "Games" %}</a></li>
+            <li><a href="{% url 'wraps' %}" id="wraps">{% trans "My Wraps" %}</a></li>
+            <li><a href="{% url 'settings' %}" id="settingsLink">{% trans "Settings" %}</a></li>
+            <li><a href="{% url 'logout' %}">{% trans "Log Out" %}</a></li>
         </ul>
     </div>
 
