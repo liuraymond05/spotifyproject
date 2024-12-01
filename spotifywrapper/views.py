@@ -762,8 +762,7 @@ def delete_wrap(request, wrap_id):
         messages.success(request, "Your saved wrap was successfully deleted!")
         return redirect('savedwraps')  # Redirect to the saved wraps page after deletion
 
-
-
+@login_required
 def top_genre(request):
     """
     View to get the user's top genre from their top artists on Spotify and display it in the template.
@@ -779,9 +778,9 @@ def top_genre(request):
     # Get the time range selected by the user (default to 'long_term' if not provided)
     time_range = request.GET.get('time_range', 'long_term')
 
-    # Fetch the user's top artists
+    # Fetch the user's top artists for the selected time range
     top_artists_response = requests.get(
-        f'https://api.spotify.com/v1/me/top/artists?time_range={time_range}&limit=10',
+        f'https://api.spotify.com/v1/me/top/artists?time_range={time_range}&limit=50',  # Fetch top 50 artists for better analysis
         headers={'Authorization': f'Bearer {access_token}'}
     )
 
@@ -797,12 +796,19 @@ def top_genre(request):
     # Additional genre data for visualization or debugging
     genre_counts = Counter(genres)
 
+    # Prepare genre data for the template
+    genre_data = [{'genre': genre, 'count': count} for genre, count in genre_counts.items()]
+    genre_data.sort(key=lambda x: x['count'], reverse=True)  # Sort genres by frequency
+
     return render(request, 'spotifywrapper/top-genre.html', {
         'top_genre': top_genre,
         'genre_counts': genre_counts,  # Pass genre counts for additional context or visualizations
         'genres': genres,  # Pass all genres if needed for the template
-        'repeat_times': range(10)
+        'genre_data': genre_data,  # Pass genre data sorted by frequency
+        'repeat_times': range(10),
+        'time_range': time_range  # Pass the time range to the template for possible use
     })
+
 
 @login_required
 def top_artists(request):
@@ -817,8 +823,16 @@ def top_artists(request):
     # Get the access token
     access_token = get_spotify_access_token(user_profile)
 
-    # Get the time range selected by the user (default to 'long_term' if not provided)
-    time_range = request.GET.get('time_range', 'long_term')
+    # Get the time range selected by the user from the session (default to 'long_term' if not set)
+    time_range = request.session.get('term', 'long')  # 'long' is the default value if not set in session
+
+    # Map the session value to the appropriate Spotify time range
+    time_range_mapping = {
+        'long': 'long_term',
+        'medium': 'medium_term',
+        'short': 'short_term',
+    }
+    time_range = time_range_mapping.get(time_range, 'long_term')  # Ensure we have a valid time range
 
     # Fetch the user's top artists
     top_artists_response = requests.get(
@@ -843,9 +857,10 @@ def top_artists(request):
     })
 
 
+@login_required
 def top_albums(request):
     """
-        View to get the user's top albums and display them in the template.
+    View to get the user's top albums and display them in the template.
     """
     # Retrieve the user profile
     user_profile = UserProfile.objects.filter(user=request.user).first()
@@ -855,8 +870,16 @@ def top_albums(request):
     # Get the access token
     access_token = get_spotify_access_token(user_profile)
 
-    # Get the time range selected by the user (default to 'long_term' if not provided)
-    time_range = request.GET.get('time_range', 'long_term')
+    # Get the time range selected by the user from the session (default to 'long_term' if not set)
+    time_range = request.session.get('term', 'long')  # 'long' is the default value if not set in session
+
+    # Map the session value to the appropriate Spotify time range
+    time_range_mapping = {
+        'long': 'long_term',
+        'medium': 'medium_term',
+        'short': 'short_term',
+    }
+    time_range = time_range_mapping.get(time_range, 'long_term')  # Ensure we have a valid time range
 
     top_tracks_response = requests.get(
         f'https://api.spotify.com/v1/me/top/tracks?time_range={time_range}&limit=5',
@@ -901,6 +924,7 @@ def top_albums(request):
         'top_tracks': top_tracks,  # You can also pass the list of top tracks to show more albums
     })
 
+
 @login_required
 def top_songs(request):
     """
@@ -913,9 +937,20 @@ def top_songs(request):
     # Get the access token
     access_token = get_spotify_access_token(user_profile)
 
+    # Get the time range selected by the user from the session (default to 'long_term' if not set)
+    time_range = request.session.get('term', 'long')  # 'long' is the default value if not set in session
+
+    # Map the session value to the appropriate Spotify time range
+    time_range_mapping = {
+        'long': 'long_term',
+        'medium': 'medium_term',
+        'short': 'short_term',
+    }
+    time_range = time_range_mapping.get(time_range, 'long_term')  # Ensure we have a valid time range
+
     # Fetch the user's top tracks
     tracks_response = requests.get(
-        'https://api.spotify.com/v1/me/top/tracks?limit=10',  # Fetch the top 10 tracks
+        f'https://api.spotify.com/v1/me/top/tracks?time_range={time_range}&limit=10',  # Fetch the top 10 tracks
         headers={'Authorization': f'Bearer {access_token}'}
     )
 
@@ -934,6 +969,7 @@ def top_songs(request):
 
     return render(request, 'spotifywrapper/top-songs.html', {
         'top_songs': top_tracks,
+        'selected_time_range': time_range,  # Pass the selected time range to the template
     })
 
 @login_required
@@ -948,9 +984,20 @@ def top_playlist(request):
     # Get the access token
     access_token = get_spotify_access_token(user_profile)
 
+    # Get the time range selected by the user from the session (default to 'long_term' if not set)
+    time_range = request.session.get('term', 'long')  # 'long' is the default value if not set in session
+
+    # Map the session value to the appropriate Spotify time range
+    time_range_mapping = {
+        'long': 'long_term',
+        'medium': 'medium_term',
+        'short': 'short_term',
+    }
+    time_range = time_range_mapping.get(time_range, 'long_term')  # Ensure we have a valid time range
+
     # Fetch the user's playlists
     playlists_response = requests.get(
-        'https://api.spotify.com/v1/me/playlists?limit=10',  # Fetch more playlists for context
+        f'https://api.spotify.com/v1/me/playlists?time_range={time_range}&limit=10',  # Fetch more playlists for context
         headers={'Authorization': f'Bearer {access_token}'}
     )
 
@@ -971,21 +1018,35 @@ def top_playlist(request):
         'top_playlist': top_playlist_data,
     })
 
+
 @login_required
 def favorite_decade(request):
     """
     View to display the user's favorite decade based on Spotify data.
+    Dynamically fetches data based on time range: short_term, medium_term, or long_term.
     """
+    # Retrieve the user profile
     user_profile = UserProfile.objects.filter(user=request.user).first()
     if not user_profile or not user_profile.spotify_access_token:
-        return redirect('spotify_login')  # Redirect if Spotify is not authenticated
+        return redirect('spotify_login')  # Redirect if user is not authenticated with Spotify
 
     # Get the access token
     access_token = get_spotify_access_token(user_profile)
 
-    # Fetch the user's top tracks
+    # Get the time range selected by the user from the session (default to 'long' if not set)
+    time_range = request.session.get('term', 'long')  # 'long' is the default value if not set in session
+
+    # Map the session value to the appropriate Spotify time range
+    time_range_mapping = {
+        'long': 'long_term',
+        'medium': 'medium_term',
+        'short': 'short_term',
+    }
+    time_range = time_range_mapping.get(time_range, 'long_term')  # Ensure we have a valid time range
+
+    # Fetch the user's top tracks based on the selected time range
     tracks_response = requests.get(
-        'https://api.spotify.com/v1/me/top/tracks?limit=50',  # Fetch the top 50 tracks for better analysis
+        f'https://api.spotify.com/v1/me/top/tracks?limit=50&time_range={time_range}',
         headers={'Authorization': f'Bearer {access_token}'}
     )
 
@@ -994,18 +1055,15 @@ def favorite_decade(request):
     if tracks_response.status_code == 200:
         tracks_data = tracks_response.json().get('items', [])
         for track in tracks_data:
-            # Get the release year from the album's release date
             release_date = track['album']['release_date']
             if release_date:
                 year = int(release_date[:4])
                 decade = (year // 10) * 10  # Calculate the decade (e.g., 1980, 1990)
                 decade_count[decade] = decade_count.get(decade, 0) + 1
 
-        # Determine the top decade
         if decade_count:
             top_decade = max(decade_count, key=decade_count.get)
 
-    # Format decade data for the template
     decade_data = [{'decade': decade, 'count': count} for decade, count in decade_count.items()]
     decade_data.sort(key=lambda x: x['decade'])  # Sort decades chronologically
 
@@ -1014,21 +1072,35 @@ def favorite_decade(request):
         'top_decade': top_decade,
     })
 
+
 @login_required
 def favorite_mood(request):
     """
     View to determine the user's favorite mood based on Spotify data.
+    Dynamically fetches data based on time range: short_term, medium_term, or long_term.
     """
+    # Retrieve the user profile
     user_profile = UserProfile.objects.filter(user=request.user).first()
     if not user_profile or not user_profile.spotify_access_token:
-        return redirect('spotify_login')  # Redirect if Spotify is not authenticated
+        return redirect('spotify_login')  # Redirect if user is not authenticated with Spotify
 
     # Get the access token
     access_token = get_spotify_access_token(user_profile)
 
-    # Fetch the user's top tracks
+    # Get the time range selected by the user from the session (default to 'long' if not set)
+    time_range = request.session.get('term', 'long')  # 'long' is the default value if not set in session
+
+    # Map the session value to the appropriate Spotify time range
+    time_range_mapping = {
+        'long': 'long_term',
+        'medium': 'medium_term',
+        'short': 'short_term',
+    }
+    time_range = time_range_mapping.get(time_range, 'long_term')  # Ensure we have a valid time range
+
+    # Fetch the user's top tracks based on the selected time range
     tracks_response = requests.get(
-        'https://api.spotify.com/v1/me/top/tracks?limit=50',  # Fetch top 50 tracks
+        f'https://api.spotify.com/v1/me/top/tracks?limit=50&time_range={time_range}',
         headers={'Authorization': f'Bearer {access_token}'}
     )
 
@@ -1070,10 +1142,8 @@ def favorite_mood(request):
                     elif valence >= 0.5 and energy < 0.5:
                         mood_count["Relaxed"] += 1
 
-        # Determine the favorite mood
         favorite_mood = max(mood_count, key=mood_count.get)
 
-    # Format mood data for the template
     mood_data = [{'mood': mood, 'count': count} for mood, count in mood_count.items()]
     mood_data.sort(key=lambda x: x['mood'])
 
@@ -1082,28 +1152,39 @@ def favorite_mood(request):
         'favorite_mood': favorite_mood,
     })
 
+
 @login_required
 def top_three_tracks(request):
     """
     View to display the top three tracks based on the user's Spotify data.
+    Dynamically fetches data based on time range: short_term, medium_term, or long_term.
     """
+    # Retrieve the user profile
     user_profile = UserProfile.objects.filter(user=request.user).first()
     if not user_profile or not user_profile.spotify_access_token:
-        return redirect('spotify_login')  # Redirect if Spotify is not authenticated
+        return redirect('spotify_login')  # Redirect if user is not authenticated with Spotify
 
     # Get the access token
     access_token = get_spotify_access_token(user_profile)
 
-    # Fetch the user's top tracks (limit to 3)
+    # Get the time range selected by the user from the session (default to 'long' if not set)
+    time_range = request.session.get('term', 'long')  # 'long' is the default value if not set in session
+
+    # Map the session value to the appropriate Spotify time range
+    time_range_mapping = {
+        'long': 'long_term',
+        'medium': 'medium_term',
+        'short': 'short_term',
+    }
+    time_range = time_range_mapping.get(time_range, 'long_term')  # Ensure we have a valid time range
+
+    # Fetch the user's top tracks (limit to 3) based on the selected time range
     tracks_response = requests.get(
-        'https://api.spotify.com/v1/me/top/tracks?limit=3',  # Fetch top 3 tracks
+        f'https://api.spotify.com/v1/me/top/tracks?limit=3&time_range={time_range}',
         headers={'Authorization': f'Bearer {access_token}'}
     )
 
-    if tracks_response.status_code == 200:
-        tracks_data = tracks_response.json().get('items', [])
-    else:
-        tracks_data = []
+    tracks_data = tracks_response.json().get('items', []) if tracks_response.status_code == 200 else []
 
     return render(request, 'spotifywrapper/top-three-tracks.html', {
         'tracks': tracks_data
@@ -1115,54 +1196,52 @@ def listening_habits(request):
     """
     View to display the listening habits of the user based on their Spotify data.
     This could include favorite genres, top tracks, and top artists.
+    Dynamically fetches data based on time range: short_term, medium_term, or long_term.
     """
+    # Retrieve the user profile
     user_profile = UserProfile.objects.filter(user=request.user).first()
     if not user_profile or not user_profile.spotify_access_token:
-        return redirect('spotify_login')  # Redirect if Spotify is not authenticated
+        return redirect('spotify_login')  # Redirect if user is not authenticated with Spotify
 
     # Get the access token
     access_token = get_spotify_access_token(user_profile)
 
+    # Get the time range selected by the user from the session (default to 'long' if not set)
+    time_range = request.session.get('term', 'long')  # 'long' is the default value if not set in session
+
+    # Map the session value to the appropriate Spotify time range
+    time_range_mapping = {
+        'long': 'long_term',
+        'medium': 'medium_term',
+        'short': 'short_term',
+    }
+    time_range = time_range_mapping.get(time_range, 'long_term')  # Ensure we have a valid time range
+
     # Fetch the user's top tracks (limit to 5 for variety)
     tracks_response = requests.get(
-        'https://api.spotify.com/v1/me/top/tracks?limit=5',  # Top 5 tracks
+        f'https://api.spotify.com/v1/me/top/tracks?limit=5&time_range={time_range}',
         headers={'Authorization': f'Bearer {access_token}'}
     )
 
     # Fetch the user's top artists (limit to 5 for variety)
     artists_response = requests.get(
-        'https://api.spotify.com/v1/me/top/artists?limit=5',  # Top 5 artists
+        f'https://api.spotify.com/v1/me/top/artists?limit=5&time_range={time_range}',
         headers={'Authorization': f'Bearer {access_token}'}
     )
 
-    # Fetch the user's top genres (this might require additional processing)
-    genres_response = requests.get(
-        'https://api.spotify.com/v1/me/top/artists?limit=50',  # Get more artists to infer genres
-        headers={'Authorization': f'Bearer {access_token}'}
-    )
-
-    if tracks_response.status_code == 200:
-        tracks_data = tracks_response.json().get('items', [])
-    else:
-        tracks_data = []
-
-    if artists_response.status_code == 200:
-        artists_data = artists_response.json().get('items', [])
-    else:
-        artists_data = []
-
-    if genres_response.status_code == 200:
-        genres_data = genres_response.json().get('items', [])
-        # Process genres from artists (as genres are not directly available in the user data)
-        genres = set()
-        for artist in genres_data:
-            genres.update(artist['genres'])
-        genres_data = list(genres)  # Get unique genres
-    else:
-        genres_data = []
+    tracks_data = tracks_response.json().get('items', []) if tracks_response.status_code == 200 else []
+    artists_data = artists_response.json().get('items', []) if artists_response.status_code == 200 else []
 
     return render(request, 'spotifywrapper/listening-habits.html', {
         'tracks': tracks_data,
-        'artists': artists_data,
-        'genres': genres_data
+        'artists': artists_data
     })
+
+def choice(request):
+    if request.method == "POST":
+        term = request.POST.get("term")  # Get the term selected by the user
+        if term in ["long", "medium", "short"]:  # Validate term
+            request.session['term'] = term  # Store the term in the session
+            return redirect("top_genre")  # Redirect to the 'top_genre' page
+    return render(request, "spotifywrapper/choice.html")
+
