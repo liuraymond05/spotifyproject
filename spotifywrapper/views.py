@@ -1224,44 +1224,59 @@ def end_wrapped(request):
         'top_tracks': top_tracks,
         'top_artists': top_artists,
     })
-def get_user_data(access_token):
-    """Retrieve the user's top artists, albums, and other relevant information from Spotify."""
-    # Fetch top artists
-    top_artists_response = requests.get(
-        'https://api.spotify.com/v1/me/top/artists?time_range=long_term&limit=10',
-        headers={'Authorization': f'Bearer {access_token}'}
-    )
-
-    top_artists = []
-    if top_artists_response.status_code == 200:
-        top_artists = top_artists_response.json()['items']
-
-    # Fetch top albums
-    top_albums_response = requests.get(
-        'https://api.spotify.com/v1/me/top/albums?time_range=long_term&limit=10',
-        headers={'Authorization': f'Bearer {access_token}'}
-    )
-
-    top_albums = []
-    if top_albums_response.status_code == 200:
-        top_albums = top_albums_response.json()['items']
-
-    # Collecting relevant information
-    artist_names = [artist['name'] for artist in top_artists]
-    album_names = [album['name'] for album in top_albums]
-    genres = []
-    for artist in top_artists:
-        genres.extend(artist.get('genres', []))
-
-    top_genre = max(Counter(genres), key=Counter(genres).get) if genres else None
-
+def get_user_data(access_token, time_range='long_term'):
+    """
+    Fetch user data from Spotify API including top artists, albums, genres, and listening elements.
+    Dynamically fetches based on the specified time range.
+    """
     user_data = {
-        'artist_names': artist_names,
-        'album_names': album_names,
-        'top_genre': top_genre,
+        "top_genre": "N/A",
+        "top_artists": [],
+        "artist_images": [],
+        "top_album": "N/A",
+        "listening_element": "N/A",
     }
 
+    # Fetch top tracks
+    tracks_response = requests.get(
+        f'https://api.spotify.com/v1/me/top/tracks?limit=1&time_range={time_range}',
+        headers={'Authorization': f'Bearer {access_token}'}
+    )
+    if tracks_response.status_code == 200:
+        tracks_data = tracks_response.json().get('items', [])
+        if tracks_data:
+            # Use the album from the top track as the top album
+            user_data["top_album"] = tracks_data[0]['album']['name']
+
+    # Fetch top artists
+    artists_response = requests.get(
+        f'https://api.spotify.com/v1/me/top/artists?limit=3&time_range={time_range}',
+        headers={'Authorization': f'Bearer {access_token}'}
+    )
+    if artists_response.status_code == 200:
+        artists_data = artists_response.json().get('items', [])
+        if artists_data:
+            user_data["top_artists"] = [artist['name'] for artist in artists_data]
+            user_data["artist_images"] = [artist['images'][0]['url'] for artist in artists_data if artist['images']]
+
+            # Guess the top genre from the first artist
+            user_data["top_genre"] = artists_data[0]['genres'][0] if artists_data[0]['genres'] else "N/A"
+
+    # Define listening element (e.g., "Fire", "Water", etc.)
+    # Use custom logic here, e.g., based on genres or mood
+    listening_elements = {
+        "pop": "Air",
+        "rock": "Fire",
+        "classical": "Earth",
+        "hip hop": "Water"
+    }
+    for genre, element in listening_elements.items():
+        if genre in user_data["top_genre"].lower():
+            user_data["listening_element"] = element
+            break
+
     return user_data
+
 
 def share_wrap(request):
     """Generate the wrap summary image and provide shareable links."""
@@ -1272,8 +1287,17 @@ def share_wrap(request):
     # Get the access token
     access_token = get_spotify_access_token(user_profile)
 
-    # Retrieve user data (top artists, albums, genre)
-    user_data = get_user_data(access_token)
+    # Get the time range selected by the user from the session (default to 'long_term' if not set)
+    time_range = request.session.get('term', 'long')  # 'long' is the default value if not set
+    time_range_mapping = {
+        'long': 'long_term',
+        'medium': 'medium_term',
+        'short': 'short_term',
+    }
+    time_range = time_range_mapping.get(time_range, 'long_term')
+
+    # Retrieve user data
+    user_data = get_user_data(access_token, time_range)
 
     # Generate the image
     image_io = generate_wrap_summary_image(user_data)
@@ -1295,6 +1319,7 @@ def share_wrap(request):
     }
 
     return render(request, 'share_wrap.html', context)
+
 
 
 def choice(request):

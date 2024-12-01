@@ -16,6 +16,7 @@ def get_spotify_access_token(user_profile):
 
 def generate_wrap_summary_image(user_data):
     """Generate a visually styled Spotify Wrapped summary image."""
+
     # Define canvas size and colors
     image_width, image_height = 1080, 1080
     gradient_start = (30, 30, 50)  # Dark purple
@@ -44,10 +45,11 @@ def generate_wrap_summary_image(user_data):
     draw.text((50, 50), title_text, font=font_large, fill=accent_color)
 
     # Add user data sections
+
     sections = [
-        ("Top Genre", user_data.get("top_genre", "N/A")),
-        ("Top Album", user_data.get("top_album", "N/A")),
-        ("Listening Element", user_data.get("listening_element", "N/A")),
+        ("Top Genre", user_data["top_genre"]),
+        ("Top Album", user_data["top_album"]),
+        ("Listening Element", user_data["listening_element"]),
     ]
 
     y_offset = 150
