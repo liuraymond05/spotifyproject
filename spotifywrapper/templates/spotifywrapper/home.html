@@ -242,39 +242,115 @@
 
 
    /* Squiggles */
-   #blue-squiggle, #silver-squiggle, #lavender, #flower {
-       position: absolute;
-       z-index: 1;
-       opacity: 0.8;
-   }
+#blue-squiggle, #silver-squiggle, #lavender, #flower {
+    position: absolute;
+    z-index: -1; /* Ensure squiggles stay behind the text */
+    opacity: 0.8;
+    pointer-events: none; /* Prevent interaction with squiggles */
+}
+
+#blue-squiggle {
+    left: -300px;
+    top: 32%;
+    transform: translateY(-50%);
+}
+
+#lavender {
+    left: -50px;
+    top: 90%;
+    transform: translateY(-50%);
+}
+
+#silver-squiggle {
+    right: -230px;
+    top: 43%;
+    transform: translateY(-50%) scale(0.75);
+}
+
+#flower {
+    right: -85px;
+    top: 93%;
+    transform: translateY(-50%) scale(1.2);
+}
+
+/* Media Queries */
+@media (max-width: 1024px) {
+    #blue-squiggle {
+        left: -700px; /* Move farther off-screen */
+    }
+
+    #silver-squiggle {
+        right: -600px;
+    }
+
+    #lavender {
+        left: -100px;
+    }
+
+    #flower {
+        right: -150px;
+    }
+}
+
+@media (max-width: 768px) {
+    #blue-squiggle {
+        left: -600px;
+    }
+
+    #silver-squiggle {
+        right: -700px;
+    }
+
+    #lavender {
+        left: -200px;
+    }
+
+    #flower {
+        right: -250px;
+    }
+}
+
+@media (max-width: 1200px) {
+    #blue-squiggle {
+        left: -500px; /* Move completely off-screen */
+        top: 200px;
+    }
+
+    #silver-squiggle {
+        right: -400px;
+        top: 200px;
+
+    }
+
+    #lavender {
+        left: -300px;
+    }
+
+    #flower {
+        right: -350px;
+    }
+}
+
+@media (max-width: 800px) {
+    #blue-squiggle {
+        display: none; /* Hide completely */
+    }
+
+    #silver-squiggle {
+        display: none;
+    }
+
+    #lavender {
+        display: none;
+    }
+
+    #flower {
+        display: none;
+    }
+}
 
 
-   #blue-squiggle {
-       left: -300px;
-       top: 32%;
-       transform: translateY(-50%);
-   }
 
-
-   #lavender {
-       left: -50px;
-       top: 90%;
-       transform: translateY(-50%);
-   }
-
-
-   #silver-squiggle {
-       right: -230px;
-       top: 43%;
-       transform: translateY(-50%) scale(0.75);
-   }
-
-
-   #flower {
-       right: -85px;
-       top: 93%;
-       transform: translateY(-50%) scale(1.2);
-   }
    </style>
 </head>
 

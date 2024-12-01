@@ -1,9 +1,15 @@
+{% load static %}
+{% load i18n %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Select Term</title>
+       <link rel="stylesheet" href="{% static 'spotifywrapped/homestyle.css' %}">
+
+        <script src="{% static 'spotifywrapped/theme.js' %}" defer></script>
+
     <style>
         /* Gradient Background */
         body {
@@ -18,7 +24,16 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            padding-top: 100px; /* Adjust this to match the height of the header */
             height: 100vh;
+        }
+
+        body.dark-mode {
+            background: linear-gradient(135deg, #054aab, #2c05ab, #860c91);
+        }
+
+        body.neon-mode {
+            background: linear-gradient(135deg, #ceffb8, #ff8819, #ffbaf7);
         }
 
         @keyframes gradientAnimation {
@@ -56,9 +71,143 @@
             transform: translateY(-5px);
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
         }
+
+
+        /* Header */
+   header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: black;
+    padding: 25px 20px;
+    width: 100%;
+    box-sizing: border-box;
+    color: white;
+    z-index: 10;
+    position: fixed; /* Ensures the header stays at the top */
+    top: 0; /* Aligns the header to the top of the page */
+    left: 0; /* Aligns the header to the left */
+}
+
+
+
+   header .logo {
+       display: flex;
+       align-items: center;
+   }
+
+
+   header .logo img {
+       width: 40px;
+       height: auto;
+       margin-right: 10px;
+   }
+
+
+   .menu-icon {
+       display: flex;
+       flex-direction: column;
+       cursor: pointer;
+   }
+
+   /* Center the form and heading */
+main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative; /* Ensures precise positioning */
+    top: -100px; /* Moves the content up; adjust as needed */
+    text-align: center;
+}
+
+/* Adjust form buttons for consistent spacing */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+
+   .line {
+       width: 25px;
+       height: 3px;
+       background-color: white;
+       margin: 3px 0;
+   }
+
+
+   /* Dropdown Menu */
+   .dropdown-menu {
+       display: none;
+       position: absolute;
+       right: 20px;
+       top: 70px;
+       background-color: black;
+       border-radius: 5px;
+       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+       z-index: 10;
+   }
+
+
+   body.dark-mode .dropdown-menu {
+       background-color: #121212;
+   }
+
+
+   body.neon-mode .dropdown-menu {
+       background-color: #0f0f0f;
+       border: 1px solid #0ff;
+   }
+
+
+   .dropdown-menu ul {
+       padding: 0;
+       margin: 0;
+       list-style-type: none;
+   }
+
+
+   .dropdown-menu li {
+       padding: 10px 20px;
+   }
+
+
+   .dropdown-menu li:hover {
+       background-color: hotpink;
+   }
+
+
     </style>
 </head>
 <body>
+    <header>
+    <div class="logo">
+        <a href="{% url 'home' %}">
+            <img src="{% static 'spotifywrapped/spotify.png' %}" alt="Spotify Logo">
+        </a>
+        <h1>{% trans "Select Term" %}</h1>
+    </div>
+    <div class="menu-icon" onclick="toggleMenu()">
+        <div class="line"></div>
+        <div class="line"></div>
+        <div class="line"></div>
+    </div>
+</header>
+
+
+   <div class="dropdown-menu" id="dropdownMenu">
+       <ul>
+           <li><a href="{% url 'gamepage' %}" id="games">{% trans "Games" %}</a></li>
+           <li><a href="{% url 'wraps' %}" id="wraps">{% trans "My Wraps" %}</a></li>
+           <li><a href="{% url 'settings' %}" id="settingsLink">{% trans "Settings" %}</a></li>
+           <li><a href="{% url 'logout' %}">{% trans "Log Out" %}</a></li>
+       </ul>
+   </div>
+
+
+
+    <main>
     <h1>Select a Time Range</h1>
     <form method="POST" action="{% url 'choice' %}">
         {% csrf_token %}
@@ -66,5 +215,14 @@
         <button type="submit" name="term" value="medium">Medium-Term</button>
         <button type="submit" name="term" value="short">Short-Term</button>
     </form>
+</main>
+
+<script>
+    function toggleMenu() {
+       const dropdown = document.getElementById("dropdownMenu");
+       dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+   }
+</script>
+
 </body>
 </html>
