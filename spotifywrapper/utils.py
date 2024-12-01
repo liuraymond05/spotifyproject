@@ -50,6 +50,7 @@ def generate_wrap_summary_image(user_data):
         ("Listening Element", user_data["listening_element"]),
         ("Favorite Decade", user_data.get("favorite_decade", "N/A")),
         ("Popularity Level", user_data.get("popularity_level", "N/A")),
+        ("Top Album", user_data["top_artists"]),
     ]
 
     y_offset = 150
