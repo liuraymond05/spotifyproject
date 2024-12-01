@@ -551,12 +551,6 @@ audio {
     animation: gradientSparkle 2s ease-in-out infinite; /* Apply the sparkling animation */
 }
 
-/* Fiery Mood */
-#favorite-mood.fiery {
-    background-image: linear-gradient(to bottom, #FF4500, #D32F2F); /* Gradient from fiery red-orange to dark red */
-    transform: scale(1.05);
-    animation: gradientSparkle 2s ease-in-out infinite; /* Apply the sparkling animation */
-}
 
 /* Melancholic Mood */
 #favorite-mood.melancholic {

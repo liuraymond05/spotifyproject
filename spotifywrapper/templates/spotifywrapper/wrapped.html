@@ -109,10 +109,10 @@
                 </div>
 
                 <div class="card">
-                    <h2>{% trans "Top Playlist" %}</h2>
+                    <h2>{% trans "Your Classical Element!" %}</h2>
                     <div id="playlist-pulse-container">
                         <div id="pulse-circle">
-                            <span id="playlist-name">{{ top_playlist }}</span>
+                            <span id="playlist-name">{{ user_element }}</span>
                         </div>
                     </div>
                 </div>
@@ -126,8 +126,8 @@
                 </div>
 
                 <div class="card" id="favorite-mood">
-                    <h2>{% trans "Favorite Mood" %}</h2>
-                    <p>{{ favorite_mood }}</p>
+                    <h2>{% trans "Your Top Song's Popularity" %}</h2>
+                    <p>{{ popularity_level }}</p>
                 </div>
 
                 <div class="card">
@@ -168,11 +168,6 @@
                             </div>
                         {% endfor %}
                     </div>
-                </div>
-
-                <div class="card" id="listening-habits">
-                    <h2>{% trans "Listening Habits" %}</h2>
-                    <p>{% trans "You listen to music most at" %} <strong>{{ peak_hour }}:00</strong>!</p>
                 </div>
 
             </div>
@@ -236,11 +231,7 @@
             } else if  (currentIndex === 4) {
                 animateWaveform(currentIndex);
             } else if (currentIndex === 7) {
-                animateFavoriteMoodCard();
-            } else if (currentIndex === 9) {
-                // Set the initial state for the Listening Habits card
-                const peakHour = {{ peak_hour }};
-                updateListeningHabitsCard(peakHour);
+                animatePopularityCard();
             }
 
 
@@ -421,21 +412,19 @@
         }
 
         // Function to animate the "Favorite Mood" card with a gradient transition
-        function animateFavoriteMoodCard() {
+        function animatePopularityCard() {
             const moodCard = document.querySelector('#favorite-mood');
-            const mood = "{{ favorite_mood }}"; // Get the mood value from the server
+            const mood = "{{ popularity_level }}"; // Get the mood value from the server
 
             // Reset any previous mood styles
-            moodCard.classList.remove('euphoric', 'chill', 'fiery', 'melancholic');
+            moodCard.classList.remove('High', 'Medium', 'Low');
 
             // Add the appropriate class based on the mood
-            if (mood === 'Euphoric') {
+            if (mood === 'High') {
                 moodCard.classList.add('euphoric');
-            } else if (mood === 'Chill') {
+            } else if (mood === 'Medium') {
                 moodCard.classList.add('chill');
-            } else if (mood === 'Fiery') {
-                moodCard.classList.add('fiery');
-            } else if (mood === 'Melancholic') {
+            } else if (mood === 'Low') {
                 moodCard.classList.add('melancholic');
             }
 
@@ -443,23 +432,6 @@
             moodCard.style.backgroundPosition = "0 100%";
         }
 
-        // Function to update the Listening Habits card based on the peak listening hour
-        function updateListeningHabitsCard(peakHour) {
-            const listeningHabitsCard = document.querySelector('#listening-habits');
-
-
-            // Remove any previous time-based classes
-            listeningHabitsCard.classList.remove('early-morning', 'midday', 'late-night');
-
-            // Add the appropriate class based on the peak hour from Spotify
-            if (peakHour >= 6 && peakHour < 12) {
-                listeningHabitsCard.classList.add('early-morning'); // Sunrise animation (6 AM to 11:59 AM)
-            } else if (peakHour >= 12 && peakHour < 18) {
-                listeningHabitsCard.classList.add('midday'); // Midday (12 PM to 5:59 PM)
-            } else {
-                listeningHabitsCard.classList.add('late-night'); // Moonrise animation (6 PM to 5:59 AM)
-            }
-        }
 
         function playPreview(url) {
             const audioPlayer = document.getElementById('preview-audio');
