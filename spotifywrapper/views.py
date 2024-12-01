@@ -1226,8 +1226,8 @@ def end_wrapped(request):
     })
 def get_user_data(access_token, time_range='long_term'):
     """
-    Fetch user data from Spotify API including top artists, albums, genres, and listening elements.
-    Dynamically fetches based on the specified time range.
+    Fetch user data from Spotify API including top genre, top artists, album, and other elements.
+    Dynamically fetches based on the specified time range using modular get_ methods.
     """
     user_data = {
         "top_genre": "N/A",
@@ -1235,48 +1235,30 @@ def get_user_data(access_token, time_range='long_term'):
         "artist_images": [],
         "top_album": "N/A",
         "listening_element": "N/A",
+        "favorite_decade": "N/A",
+        "popularity_level": "N/A",
     }
 
-    # Fetch top tracks
-    tracks_response = requests.get(
-        f'https://api.spotify.com/v1/me/top/tracks?limit=1&time_range={time_range}',
-        headers={'Authorization': f'Bearer {access_token}'}
-    )
-    if tracks_response.status_code == 200:
-        tracks_data = tracks_response.json().get('items', [])
-        if tracks_data:
-            # Use the album from the top track as the top album
-            user_data["top_album"] = tracks_data[0]['album']['name']
+    try:
+        top_tracks_data = get_top_tracks(access_token, time_range)
+        top_artists_data = get_top_artists(access_token, time_range)
 
-    # Fetch top artists
-    artists_response = requests.get(
-        f'https://api.spotify.com/v1/me/top/artists?limit=3&time_range={time_range}',
-        headers={'Authorization': f'Bearer {access_token}'}
-    )
-    if artists_response.status_code == 200:
-        artists_data = artists_response.json().get('items', [])
-        if artists_data:
-            user_data["top_artists"] = [artist['name'] for artist in artists_data]
-            user_data["artist_images"] = [artist['images'][0]['url'] for artist in artists_data if artist['images']]
+        # Use the modular methods to populate user data
+        user_data["top_genre"] = get_top_genre(access_token, time_range)
+        user_data["top_album"] = get_top_album(top_tracks_data)
+        user_data["top_artists"] = get_top_song(top_tracks_data)
+        user_data["artist_images"] = [
+            artist.get('images', [{}])[0].get('url', None) for artist in top_tracks_data[:3]
+        ]
+        user_data["listening_element"] = get_user_element(user_data["top_genre"])
+        user_data["favorite_decade"] = get_favorite_decade(top_tracks_data)
+        user_data["popularity_level"] = get_popularity_level(top_tracks_data)
 
-            # Guess the top genre from the first artist
-            user_data["top_genre"] = artists_data[0]['genres'][0] if artists_data[0]['genres'] else "N/A"
-
-    # Define listening element (e.g., "Fire", "Water", etc.)
-    # Use custom logic here, e.g., based on genres or mood
-    listening_elements = {
-        "pop": "Air",
-        "rock": "Fire",
-        "classical": "Earth",
-        "hip hop": "Water"
-    }
-    for genre, element in listening_elements.items():
-        if genre in user_data["top_genre"].lower():
-            user_data["listening_element"] = element
-            break
+    except Exception as e:
+        # Log the error or handle it as needed
+        print(f"Error fetching user data: {e}")
 
     return user_data
-
 
 def share_wrap(request):
     """Generate the wrap summary image and provide shareable links."""
