@@ -7,7 +7,6 @@
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
    <title>{% trans "Top Three Tracks" %}</title>
    <link rel="stylesheet" href="{% static 'spotifywrapped/breakdown.css' %}">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script src="{% static 'spotifywrapped/theme.js' %}" defer></script>
 
 
@@ -316,26 +315,10 @@
     <div class="buttons-container">
         <a href="{% url 'favorite_mood' %}" class="btn">{% trans "Back" %}</a>
         <a href="{% url 'home' %}" class="btn">{% trans "Home" %}</a>
-        <!-- Add the 'btn' class to style it like the other buttons -->
-    <button type="submit" form="saveForm" class="btn" id="saveButton">{% trans "Save Wrapped" %}</button>
     </div>
 
     <!-- Audio Player -->
     <audio id="audioPlayer"></audio>
-
-    <!-- Include JSON data safely using json_script -->
-    <script id="top_artists" type="application/json">
-        {{ top_artists|json_script:"top_artists" }}
-    </script>
-    <script id="top_tracks" type="application/json">
-        {{ top_tracks|json_script:"top_tracks" }}
-    </script>
-
-    <!-- Form for saving data -->
-    <form id="saveForm" method="post" action="{% url 'save_wrap' %}">
-        {% csrf_token %}
-        <input type="hidden" name="time_range" value="{{ selected_time_range }}">
-    </form>
 
     <script>
          function toggleMenu() {
@@ -348,52 +331,6 @@
             audioPlayer.src = url;
             audioPlayer.play();
         }
-
-
-    // Use AJAX to submit the form without redirecting
-    $(document).ready(function() {
-    $('#saveForm').on('submit', function(event) {
-        event.preventDefault();  // Prevent default form submission
-
-        // Fetch the JSON data safely from <script> tags
-        const wrappedData = {
-            top_artists: JSON.parse(document.getElementById('top_artists').textContent),
-            top_tracks: JSON.parse(document.getElementById('top_tracks').textContent),
-            top_genre: "{{ top_genre }}",
-            favorite_mood: "{{ favorite_mood }}",
-            top_playlist: "{{ top_playlist }}",
-            favorite_decade: "{{ favorite_decade }}",
-            peak_hour: {{ peak_hour }},
-            time_range: $('#time_range').val(),  // Get the value of the selected time range
-        };
-
-        $.ajax({
-            type: 'POST',
-            url: $(this).attr('action'),  // Ensure this is the correct URL for saving data
-            data: {
-                'top_artists': JSON.stringify(wrappedData.top_artists),
-                'top_tracks': JSON.stringify(wrappedData.top_tracks),
-                'top_genre': wrappedData.top_genre,
-                'favorite_mood': wrappedData.favorite_mood,
-                'top_playlist': wrappedData.top_playlist,
-                'favorite_decade': wrappedData.favorite_decade,
-                'peak_hour': wrappedData.peak_hour,
-                'time_range': wrappedData.time_range,  // Include the selected time range
-                'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val(),
-            },
-            success: function(response) {
-                // Display success message
-                alert('Your wrapped data has been saved!');
-                console.log(response); // Optional debugging
-            },
-            error: function(xhr, errmsg, err) {
-                // Handle error
-                alert('Error saving your wrapped data. Please try again.');
-                console.log(xhr.responseText); // Debugging
-            }
-        });
-    });
-    });
     </script>
 </body>
 </html>
