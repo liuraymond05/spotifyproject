@@ -1,4 +1,6 @@
+from django.conf import settings
 from django.urls import path
+from django.conf.urls.static import static
 from . import views  # Import views from the current directory
 
 urlpatterns = [
@@ -14,7 +16,7 @@ urlpatterns = [
     path('spotify/access/', views.get_spotify_access_token, name='get_spotify_access_token'),
     path('spotify/profile/', views.get_spotify_profile, name='get_spotify_profile'),
     path('spotify/refresh/', views.refresh_spotify_token, name='refresh_spotify_token'),
-    path('settings/', views.settings, name='settings'),
+    path('settings/', views.user_settings, name='settings'),
     path('delete-account/', views.delete_account, name='delete_account'),
     path('contact-developers/', views.contact_developers, name='contact_developers'),
     path('set_language/', views.set_language, name='set_language'),
@@ -28,15 +30,17 @@ urlpatterns = [
     path('top-genre/', views.top_genre, name='top_genre'),
     path('top-songs/', views.top_songs, name='top_songs'),
     path('top-artists/', views.top_artists, name='top_artists'),
-    path('top-playlist/', views.user_element, name='top_playlist'),
+    path('top-playlist/', views.top_playlist, name='top_playlist'),
     path('top-albums/', views.top_albums, name='top_albums'),
     path('favorite-decade/', views.favorite_decade, name='favorite_decade'),
     path('top-three-tracks/', views.top_three_tracks, name='top_three_tracks'),
     path('end_wrapped/', views.end_wrapped, name='end_wrapped'),
-    path('favorite-mood/', views.popularity_level, name='favorite_mood'),
+    path('favorite-mood/', views.favorite_mood, name='favorite_mood'),
     path('listening-habits/', views.listening_habits, name='listening_habits'),
     path('delete_wrap/<int:wrap_id>/', views.delete_wrap, name='delete_wrap'),
+    path('generate-wrap-summary-image/', views.generate_wrap_summary_image, name='generate_wrap_summary_image'),
 
 
 
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+

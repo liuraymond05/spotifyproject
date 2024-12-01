@@ -1,32 +1,32 @@
 from collections import Counter
+from django.conf import settings
+import os
 import json
 from urllib.parse import quote_plus
 from django.contrib.auth.models import User
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib import messages
 from django.utils import timezone
 from datetime import datetime, timedelta
 import requests
 import base64
-from django.shortcuts import redirect
-from django.utils.translation import get_language
-from django.utils import translation
-from django.http import HttpResponseRedirect
+from django.utils.translation import get_language, activate, get_language_from_request
 from spotifyproject.settings import SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, SPOTIFY_REDIRECT_URI
 from .forms import PasswordResetCustomForm, CustomUserForm
 from .models import UserProfile
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm
-from django.utils.translation import activate, get_language_from_request
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from .models import SavedWrap
-from django.shortcuts import render
-
-
-
+from PIL import Image, ImageDraw, ImageFont
+from io import BytesIO
+from django.shortcuts import render, redirect
+from django.conf import settings
+import os
+import requests
+from .models import UserProfile
+from .utils import get_spotify_access_token, generate_wrap_summary_image, save_wrap_summary_image
+from collections import Counter
 
 
 def login_view(request):
@@ -58,6 +58,7 @@ def logout_view(request):
     """Logs out the user and redirects to the login page."""
     logout(request)
     return redirect('login')
+
 
 @login_required
 @login_required
@@ -106,14 +107,12 @@ def home(request):
         return redirect('login')
 
 
-
 # Spotify API credentials and URLs
 SPOTIFY_AUTH_URL = "https://accounts.spotify.com/authorize"
 SPOTIFY_TOKEN_URL = "https://accounts.spotify.com/api/token"
 
 
 def spotify_login(request):
-
     """Initiates Spotify login and authorization flow"""
     if not request.user.is_authenticated:
         return redirect('login')
@@ -134,6 +133,7 @@ def spotify_login(request):
         )
         return redirect(auth_url)
     return redirect('home')
+
 
 @login_required
 def spotify_callback(request):
@@ -161,7 +161,6 @@ def spotify_callback(request):
             },
         )
 
-
         token_data = token_response.json()
         access_token = token_data.get('access_token')
         refresh_token = token_data.get('refresh_token')
@@ -177,6 +176,7 @@ def spotify_callback(request):
 
     messages.error(request, "Spotify authentication failed. No code provided.")
     return redirect('login')
+
 
 def refresh_spotify_token(user_profile):
     """Refreshes the Spotify access token if expired."""
@@ -218,7 +218,6 @@ def get_spotify_access_token(user_profile):
         return user_profile.spotify_access_token
 
 
-
 @login_required
 def get_spotify_profile(request):
     "Fetches the access token from the Spotify API and the User's Profile."
@@ -247,8 +246,6 @@ def get_spotify_profile(request):
         return redirect('home')
 
 
-
-
 def register_view(request):
     """Handles the user's ability to make an account."""
     form = CustomUserForm()
@@ -262,7 +259,6 @@ def register_view(request):
     else:
         messages.error(request, 'Please complete the entire form.')
     return render(request, 'spotifywrapper/register.html', {'form': form})
-
 
 
 def reset_password_view(request):
@@ -284,11 +280,14 @@ def reset_password_view(request):
     else:
         form = PasswordResetCustomForm()
     return render(request, 'spotifywrapper/reset.html', {"form": form})
-def settings(request):
+
+
+def user_settings(request):
     language_code = request.LANGUAGE_CODE  # Use get_language to get the current language
     return render(request, 'settings.html', {
         'language_code': language_code,
     })
+
 
 @login_required
 def delete_account(request):
@@ -304,15 +303,16 @@ def delete_account(request):
         return redirect('login')  # Or redirect to login page if preferred
 
     return render(request, 'settings/delete_account.html')
+
+
 def contact_developers(request):
     # Render a template that displays the contact information or a contact form
     return render(request, 'contact_developers.html')
 
 
 def set_language(request):
-
     if request.method == 'POST':
-        #Get the current language
+        # Get the current language
         language_code = request.POST.get('language')
 
         # Define supported languages
@@ -320,7 +320,8 @@ def set_language(request):
 
         # If the language code is not supported, redirect back to the referring page or fallback to home
         if language_code not in supported_languages:
-            return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))  # Redirect to previous page or home if unsupported
+            return HttpResponseRedirect(
+                request.META.get('HTTP_REFERER', '/'))  # Redirect to previous page or home if unsupported
 
         # Activate the selected language
         activate(language_code)
@@ -336,6 +337,7 @@ def set_language(request):
         return response
     # In case the form method isn't POST, redirect back
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+
 
 @login_required
 def top_spotify_data(request):
@@ -355,14 +357,14 @@ def top_spotify_data(request):
         headers={'Authorization': f'Bearer {access_token}'}
     )
 
-    username = profile_response.json().get('display_name', 'Unknown') if profile_response.status_code == 200 else 'Unknown'
-
+    username = profile_response.json().get('display_name',
+                                           'Unknown') if profile_response.status_code == 200 else 'Unknown'
 
     # Get the time range selected by the user (default to 'long_term' if not provided)
     time_range = request.GET.get('time_range', 'long_term')
 
     top_tracks_response = requests.get(
-        f'https://api.spotify.com/v1/me/top/tracks?time_range={time_range}&limit=5',
+        f'https://api.spotify.com/v1/me/top/tracks?time_range={time_range}&limit=3',
         headers={'Authorization': f'Bearer {access_token}'}
     )
     top_tracks = []
@@ -381,10 +383,9 @@ def top_spotify_data(request):
 
         })
 
-
-    # Fetch the top artists (limit to 10) based on the selected time range
+    # Fetch the top artists (limit to 3) based on the selected time range
     top_artists_response = requests.get(
-        f'https://api.spotify.com/v1/me/top/artists?time_range={time_range}&limit=10',
+        f'https://api.spotify.com/v1/me/top/artists?time_range={time_range}&limit=3',
         headers={'Authorization': f'Bearer {access_token}'}
     )
     top_artists_data = []
@@ -398,16 +399,12 @@ def top_spotify_data(request):
     else:
         return redirect('home')  # Redirect back if there was an error fetching top artists
 
-
     # Get the top genre (most frequent genre from top artists)
     genres = []
-    if top_artists_response.status_code == 200:
-        top_artists = top_artists_response.json()['items']
-        for artist in top_artists:
-            genres.extend(artist.get('genres', []))  # Add all genres associated with each artist
+    for artist in top_artists:
+        genres.extend(artist['genres'])
 
-    # Determine the top genre (most frequent genre in the list)
-    top_genre = max(Counter(genres), key=Counter(genres).get) if genres else None
+    top_genre = max(set(genres), key=genres.count) if genres else None
 
     # Get the top album
     album_count = {}
@@ -450,26 +447,25 @@ def top_spotify_data(request):
 
     # Define the genre-to-element mapping
     genre_to_element = {
-        'country': 'earth','folk': 'earth','bluegrass': 'earth','americana': 'earth','indie folk': 'earth',
-        'acoustic': 'earth','blues': 'earth','soul': 'earth','reggae': 'earth',
-        'alternative rock': 'earth','indie': 'earth',
+        'country': 'earth', 'folk': 'earth', 'bluegrass': 'earth', 'americana': 'earth', 'indie folk': 'earth',
+        'acoustic': 'earth', 'blues': 'earth', 'soul': 'earth', 'reggae': 'earth',
+        'alternative rock': 'earth', 'indie': 'earth',
 
-        'hard rock': 'fire','metal': 'fire','punk rock': 'fire','trap': 'fire','salsa': 'fire',
-        'hip-hop': 'fire', 'punk': 'fire','emo': 'fire','edm': 'fire','dancehall': 'fire',
-        'pop': 'fire','rap': 'fire',
+        'hard rock': 'fire', 'metal': 'fire', 'punk rock': 'fire', 'trap': 'fire', 'salsa': 'fire',
+        'hip-hop': 'fire', 'punk': 'fire', 'emo': 'fire', 'edm': 'fire', 'dancehall': 'fire',
+        'pop': 'fire', 'rap': 'fire',
 
-        'r&b': 'water','lo-fi hip-hop': 'water','chillout': 'water','chillwave': 'water',
-        'smooth jazz': 'water','bossa nova': 'water','reggaeton': 'water','tango': 'water',
-        'lofi': 'water','jazz': 'water',
+        'r&b': 'water', 'lo-fi hip-hop': 'water', 'chillout': 'water', 'chillwave': 'water',
+        'smooth jazz': 'water', 'bossa nova': 'water', 'reggaeton': 'water', 'tango': 'water',
+        'lofi': 'water', 'jazz': 'water',
 
-        'indie pop': 'air','synthpop': 'air','electropop': 'air','k-pop': 'air','alternative indie': 'air',
-        'funk': 'air','disco': 'air','afrobeats': 'air','experimental': 'air','ambient': 'air','classical': 'air',
-        'jazz fusion': 'air','progressive rock': 'air','synthwave': 'air'
+        'indie pop': 'air', 'synthpop': 'air', 'electropop': 'air', 'k-pop': 'air', 'alternative indie': 'air',
+        'funk': 'air', 'disco': 'air', 'afrobeats': 'air', 'experimental': 'air', 'ambient': 'air', 'classical': 'air',
+        'jazz fusion': 'air', 'progressive rock': 'air', 'synthwave': 'air'
     }
 
     # Default to 'Unknown' if the genre doesn't match any known category
     user_element = genre_to_element.get(top_genre, 'air')
-
 
     return render(request, 'spotifywrapper/wrapped.html', {
         'top_genre': top_genre,
@@ -477,7 +473,7 @@ def top_spotify_data(request):
         'selected_time_range': time_range,  # Pass the selected time range to the template
         'top_song': top_song,
         'user_element': user_element,
-        'username': username, # Pass the username to the template
+        'username': username,  # Pass the username to the template
         'favorite_decade': favorite_decade,
         'popularity_level': popularity_level,
         'top_album': top_album,
@@ -486,22 +482,27 @@ def top_spotify_data(request):
 
     })
 
+
 def gamepage(request):
     return render(request, 'games.html')
+
+
 def wraps(request):
     return render(request, 'savedwraps.html')
+
+
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .models import SavedWrap  # Assuming you have a SavedWrap model to store wrapped data
 
-
 from django.http import JsonResponse
 from .models import SavedWrap
+
 
 @csrf_exempt
 def save_wrap(request):
     """
-    View that saves the user's Spotify data into the SavedWrap model. 
+    View that saves the user's Spotify data into the SavedWrap model.
     """
     user_profile = UserProfile.objects.filter(user=request.user).first()
     if not user_profile or not user_profile.spotify_access_token:
@@ -543,6 +544,7 @@ def save_wrap(request):
 def get_top_song(top_tracks):
     return top_tracks[0]['name']
 
+
 def get_top_tracks(access_token, time_range='long_term', limit=3):
     response = requests.get(
         f'https://api.spotify.com/v1/me/top/tracks?time_range={time_range}&limit={limit}',
@@ -551,6 +553,7 @@ def get_top_tracks(access_token, time_range='long_term', limit=3):
     if response.status_code == 200:
         return response.json()['items']
     return []
+
 
 def get_top_artists(access_token, time_range='long_term', limit=3):
     """
@@ -594,7 +597,7 @@ def get_top_artists(access_token, time_range='long_term', limit=3):
 def get_top_genre(access_token, time_range='long_term'):
     """
     Function to retrieve the top genre from the user's top artists on Spotify.
-    
+
     Parameters:
     - access_token (str): The Spotify access token for the user.
     - time_range (str): The time range to get top artists data ('long_term', 'medium_term', or 'short_term').
@@ -639,22 +642,25 @@ def get_top_album(top_tracks):
     top_album = max(album_count, key=album_count.get) if album_count else None
     return album_details.get(top_album, None)
 
+
 def get_favorite_decade(top_tracks):
-    decades = [int(track['album']['release_date'][:4]) // 10 * 10 for track in top_tracks if 'release_date' in track['album']]
+    decades = [int(track['album']['release_date'][:4]) // 10 * 10 for track in top_tracks if
+               'release_date' in track['album']]
     favorite_decade = max(set(decades), key=decades.count) if decades else None
     return f"{favorite_decade}" if favorite_decade else None
+
 
 def get_popularity_level(top_tracks):
     top_song = None
     top_popularity = None
     popularity_level = None
-    
+
     # Check if top_tracks is not empty
     if top_tracks:
         # Assuming top_tracks is a list of dictionaries with track data
         top_song = top_tracks[0]['name']  # First track as the top song
         top_popularity = top_tracks[0]['popularity']  # Popularity of the top song
-        
+
         # Define popularity thresholds
         if top_popularity >= 80:
             popularity_level = 'High'
@@ -662,14 +668,15 @@ def get_popularity_level(top_tracks):
             popularity_level = 'Medium'
         else:
             popularity_level = 'Low'
-    
+
     return popularity_level
 
 
 def get_user_element(top_genre):
     genre_to_element = {
         'country': 'earth', 'folk': 'earth', 'bluegrass': 'earth', 'americana': 'earth', 'indie folk': 'earth',
-        'acoustic': 'earth', 'blues': 'earth', 'soul': 'earth', 'reggae': 'earth', 'alternative rock': 'earth', 'indie': 'earth',
+        'acoustic': 'earth', 'blues': 'earth', 'soul': 'earth', 'reggae': 'earth', 'alternative rock': 'earth',
+        'indie': 'earth',
         'hard rock': 'fire', 'metal': 'fire', 'punk rock': 'fire', 'trap': 'fire', 'salsa': 'fire',
         'hip-hop': 'fire', 'punk': 'fire', 'emo': 'fire', 'edm': 'fire', 'dancehall': 'fire',
         'pop': 'fire', 'rap': 'fire',
@@ -680,17 +687,18 @@ def get_user_element(top_genre):
         'funk': 'air', 'disco': 'air', 'afrobeats': 'air', 'experimental': 'air', 'ambient': 'air', 'classical': 'air',
         'jazz fusion': 'air', 'progressive rock': 'air', 'synthwave': 'air'
     }
-    return genre_to_element.get(top_genre, 'air')
-
+    return genre_to_element.get(top_genre, 'Air')
 
 
 from django.shortcuts import render
 from .models import SavedWrap
 
+
 def saved_wraps(request):
     saved_wraps = SavedWrap.objects.filter(username=request.user.username)
     print(saved_wraps)
     return render(request, 'spotifywrapper/savedwraps.html', {'wraps': saved_wraps})
+
 
 def delete_wrap(request, wrap_id):
     """View to delete a saved wrap."""
@@ -699,6 +707,7 @@ def delete_wrap(request, wrap_id):
         wrap.delete()  # Delete the wrap from the database
         messages.success(request, "Your saved wrap was successfully deleted!")
         return redirect('savedwraps')  # Redirect to the saved wraps page after deletion
+
 
 def top_genre(request):
     """
@@ -747,6 +756,7 @@ def top_genre(request):
         'genres': genres,  # Pass all genres if needed for the template
         'repeat_times': range(10)
     })
+
 
 @login_required
 def top_artists(request):
@@ -910,10 +920,11 @@ def top_songs(request):
         'selected_time_range': time_range,  # Pass the selected time range to the template
     })
 
+
 @login_required
-def user_element(request):
+def top_playlist(request):
     """
-    View to display the user's classical element based on their music taste.
+    View to display the user's top Spotify playlist based on the top Spotify data view.
     """
     user_profile = UserProfile.objects.filter(user=request.user).first()
     if not user_profile or not user_profile.spotify_access_token:
@@ -933,56 +944,27 @@ def user_element(request):
     }
     time_range = time_range_mapping.get(time_range, 'long_term')  # Ensure we have a valid time range
 
-    # Fetch the top artists (limit to 3) based on the selected time range
-    top_artists_response = requests.get(
-        f'https://api.spotify.com/v1/me/top/artists?time_range={time_range}&limit=10',
+    # Fetch the user's playlists
+    playlists_response = requests.get(
+        f'https://api.spotify.com/v1/me/playlists?time_range={time_range}&limit=10',  # Fetch more playlists for context
         headers={'Authorization': f'Bearer {access_token}'}
     )
-    top_artists_data = []
-    if top_artists_response.status_code == 200:
-        top_artists = top_artists_response.json()['items']
-        for artist in top_artists:
-            top_artists_data.append({
-                'name': artist['name'],
-                'image': artist['images'][0]['url'] if 'images' in artist else None,
-            })
-    else:
-        return redirect('home')  # Redirect back if there was an error fetching top artists
 
-    genres = []
-    if top_artists_response.status_code == 200:
-        top_artists = top_artists_response.json()['items']
-        for artist in top_artists:
-            genres.extend(artist.get('genres', []))  # Add all genres associated with each artist
-
-    # Determine the top genre (most frequent genre in the list)
-    top_genre = max(Counter(genres), key=Counter(genres).get) if genres else None
-
-    # Define the genre-to-element mapping
-    genre_to_element = {
-        'country': 'earth', 'folk': 'earth', 'bluegrass': 'earth', 'americana': 'earth', 'indie folk': 'earth',
-        'acoustic': 'earth', 'blues': 'earth', 'soul': 'earth', 'reggae': 'earth',
-        'alternative rock': 'earth', 'indie': 'earth',
-
-        'hard rock': 'fire', 'metal': 'fire', 'punk rock': 'fire', 'trap': 'fire', 'salsa': 'fire',
-        'hip-hop': 'fire', 'punk': 'fire', 'emo': 'fire', 'edm': 'fire', 'dancehall': 'fire',
-        'pop': 'fire', 'rap': 'fire',
-
-        'r&b': 'water', 'lo-fi hip-hop': 'water', 'chillout': 'water', 'chillwave': 'water',
-        'smooth jazz': 'water', 'bossa nova': 'water', 'reggaeton': 'water', 'tango': 'water',
-        'lofi': 'water', 'jazz': 'water',
-
-        'indie pop': 'air', 'synthpop': 'air', 'electropop': 'air', 'k-pop': 'air', 'alternative indie': 'air',
-        'funk': 'air', 'disco': 'air', 'afrobeats': 'air', 'experimental': 'air', 'ambient': 'air', 'classical': 'air',
-        'jazz fusion': 'air', 'progressive rock': 'air', 'synthwave': 'air'
-    }
-
-    # Default to 'Unknown' if the genre doesn't match any known category
-    user_element = genre_to_element.get(top_genre, 'air')
+    top_playlist_data = None
+    if playlists_response.status_code == 200:
+        playlists = playlists_response.json().get('items', [])
+        if playlists:
+            top_playlist = playlists[0]  # Assume the first playlist is the "top" one
+            top_playlist_data = {
+                'name': top_playlist['name'],
+                'description': top_playlist.get('description', ''),
+                'image': top_playlist['images'][0]['url'] if top_playlist['images'] else None,
+                'url': top_playlist['external_urls']['spotify'],
+                'track_count': top_playlist['tracks']['total'],
+            }
 
     return render(request, 'spotifywrapper/top-playlist.html', {
-        'top_genre': top_genre,
-        'user_element': user_element,
+        'top_playlist': top_playlist_data,
     })
 
 
@@ -1041,9 +1023,9 @@ def favorite_decade(request):
 
 
 @login_required
-def popularity_level(request):
+def favorite_mood(request):
     """
-    View to determine the user's top song's popularity level on Spotify platforms.
+    View to determine the user's favorite mood based on Spotify data.
     Dynamically fetches data based on time range: short_term, medium_term, or long_term.
     """
     # Retrieve the user profile
@@ -1065,44 +1047,58 @@ def popularity_level(request):
     }
     time_range = time_range_mapping.get(time_range, 'long_term')  # Ensure we have a valid time range
 
-    top_tracks_response = requests.get(
-        f'https://api.spotify.com/v1/me/top/tracks?time_range={time_range}&limit=5',
+    # Fetch the user's top tracks based on the selected time range
+    tracks_response = requests.get(
+        f'https://api.spotify.com/v1/me/top/tracks?limit=50&time_range={time_range}',
         headers={'Authorization': f'Bearer {access_token}'}
     )
-    top_tracks = []
-    if top_tracks_response.status_code == 200:
-        top_tracks = top_tracks_response.json()['items']
 
-    top_tracks_data = []
-    for track in top_tracks:
-        top_tracks_data.append({
-            'name': track['name'],
-            'artist': ', '.join([artist['name'] for artist in track['artists']]),
-            'album': track['album']['name'],
-            'image': track['album']['images'][0]['url'] if track['album']['images'] else None,
-            'preview_url': track['preview_url'],
-            'popularity': track['popularity'],
+    mood_count = {
+        "Happy": 0,
+        "Sad": 0,
+        "Energetic": 0,
+        "Relaxed": 0
+    }
+    favorite_mood = None
 
-        })
+    if tracks_response.status_code == 200:
+        tracks_data = tracks_response.json().get('items', [])
+        track_ids = [track['id'] for track in tracks_data]
 
-    top_song = None
-    top_popularity = None
-    popularity_level = None
-    if top_tracks:
-        top_song = top_tracks[0]['name']
-        top_popularity = top_tracks[0]['popularity']
+        # Fetch audio features for the top tracks
+        if track_ids:
+            audio_features_response = requests.get(
+                f'https://api.spotify.com/v1/audio-features?ids={",".join(track_ids)}',
+                headers={'Authorization': f'Bearer {access_token}'}
+            )
 
-        # Define popularity thresholds
-        if top_popularity >= 80:
-            popularity_level = 'High'
-        elif top_popularity >= 50:
-            popularity_level = 'Medium'
-        else:
-            popularity_level = 'Low'
+            if audio_features_response.status_code == 200:
+                audio_features_data = audio_features_response.json().get('audio_features', [])
+                for feature in audio_features_data:
+                    if not feature:
+                        continue
+
+                    # Analyze track mood based on valence and energy
+                    valence = feature.get('valence', 0)
+                    energy = feature.get('energy', 0)
+
+                    if valence >= 0.5 and energy >= 0.5:
+                        mood_count["Happy"] += 1
+                    elif valence < 0.5 and energy < 0.5:
+                        mood_count["Sad"] += 1
+                    elif valence < 0.5 and energy >= 0.5:
+                        mood_count["Energetic"] += 1
+                    elif valence >= 0.5 and energy < 0.5:
+                        mood_count["Relaxed"] += 1
+
+        favorite_mood = max(mood_count, key=mood_count.get)
+
+    mood_data = [{'mood': mood, 'count': count} for mood, count in mood_count.items()]
+    mood_data.sort(key=lambda x: x['mood'])
 
     return render(request, 'spotifywrapper/favorite-mood.html', {
-        'top_song': top_song,
-        'popularity_level': popularity_level,
+        'mood_data': mood_data,
+        'favorite_mood': favorite_mood,
     })
 
 
@@ -1189,6 +1185,8 @@ def listening_habits(request):
         'tracks': tracks_data,
         'artists': artists_data
     })
+
+
 @login_required
 def end_wrapped(request):
     """
@@ -1227,71 +1225,78 @@ def end_wrapped(request):
     })
 
 
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
-import urllib.parse
+def get_user_data(access_token):
+    """Retrieve the user's top artists, albums, and other relevant information from Spotify."""
+    # Fetch top artists
+    top_artists_response = requests.get(
+        'https://api.spotify.com/v1/me/top/artists?time_range=long_term&limit=10',
+        headers={'Authorization': f'Bearer {access_token}'}
+    )
 
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
-import urllib.parse
+    top_artists = []
+    if top_artists_response.status_code == 200:
+        top_artists = top_artists_response.json()['items']
 
+    # Fetch top albums
+    top_albums_response = requests.get(
+        'https://api.spotify.com/v1/me/top/albums?time_range=long_term&limit=10',
+        headers={'Authorization': f'Bearer {access_token}'}
+    )
 
-@login_required
-def share_wrap(request):
-    user = request.user
+    top_albums = []
+    if top_albums_response.status_code == 200:
+        top_albums = top_albums_response.json()['items']
 
-    # Retrieve the SavedWrap object associated with the logged-in user
-    saved_wrap = SavedWrap.objects.filter(username=user.username).first()
+    # Collecting relevant information
+    artist_names = [artist['name'] for artist in top_artists]
+    album_names = [album['name'] for album in top_albums]
+    genres = []
+    for artist in top_artists:
+        genres.extend(artist.get('genres', []))
 
-    # Check if saved_wrap exists
-    if not saved_wrap:
-        return render(request, 'share_wrap.html', {
-            'error_message': 'No Spotify Wrapped data available. Please complete your wrapped data first.'
-        })
+    top_genre = max(Counter(genres), key=Counter(genres).get) if genres else None
 
-    try:
-        # Handle top_artists as a list of dictionaries with 'name' keys
-        top_artists = ", ".join(artist.get('name', '') for artist in saved_wrap.top_artists if isinstance(artist, dict))
-
-        # Handle top_album as a string directly
-        top_album = saved_wrap.top_album if isinstance(saved_wrap.top_album, str) else 'Unknown'
-
-        # Handle top_tracks as a list of dictionaries with 'title' keys
-        top_tracks = ", ".join(track.get('title', '') for track in saved_wrap.top_tracks if isinstance(track, dict))
-
-    except AttributeError as e:
-        return render(request, 'share_wrap.html', {
-            'error_message': f"An error occurred while processing your wrapped data: {str(e)}"
-        })
-
-    # Prefill form data with the current wrap
-    prefilled_data = {
-        'top_genre': saved_wrap.top_genre,
-        'top_album': top_album,  # Make sure to use the simplified album name
-        'top_artists': top_artists,
-        'top_tracks': top_tracks,
-        'top_song': saved_wrap.top_song,
-        'user_element': saved_wrap.user_element,
-        'favorite_decade': saved_wrap.favorite_decade,
-        'top_song_popularity': saved_wrap.top_song_popularity
+    user_data = {
+        'artist_names': artist_names,
+        'album_names': album_names,
+        'top_genre': top_genre,
     }
 
-    # Create a shareable text for social media based on the current wrap
-    share_text = f"Here is my Spotify Wrapped! My top genre was {saved_wrap.top_genre}, my top artists were {top_artists}, and my listening element was {saved_wrap.user_element}."
+    return user_data
 
-    # URL encode the share text
-    encoded_share_text = urllib.parse.quote(share_text)
 
-    # Build URLs for Twitter and LinkedIn
-    twitter_url = f"https://twitter.com/intent/tweet?text={encoded_share_text}"
-    linkedin_url = f"https://www.linkedin.com/shareArticle?mini=true&url={urllib.parse.quote(request.build_absolute_uri())}&title=Spotify Wrapped&summary={encoded_share_text}"
+def share_wrap(request):
+    """Generate the wrap summary image and provide shareable links."""
+    user_profile = UserProfile.objects.filter(user=request.user).first()
+    if not user_profile or not user_profile.spotify_access_token:
+        return redirect('spotify_login')  # Redirect if user is not authenticated with Spotify
 
-    return render(request, 'share_wrap.html', {
-        'prefilled_data': prefilled_data,
-        'twitter_url': twitter_url,
-        'linkedin_url': linkedin_url,
-        'error_message': None
-    })
+    # Get the access token
+    access_token = get_spotify_access_token(user_profile)
+
+    # Retrieve user data (top artists, albums, genre)
+    user_data = get_user_data(access_token)
+
+    # Generate the image
+    image_io = generate_wrap_summary_image(user_data)
+
+    # Save the image to the server
+    image_path = save_wrap_summary_image(image_io)
+
+    # Generate the image URL
+    image_url = os.path.join(settings.MEDIA_URL, 'wrap_summaries', os.path.basename(image_path))
+
+    # Generate Twitter and LinkedIn shareable URLs
+    twitter_share_url = f"https://twitter.com/intent/tweet?text=Check%20out%20my%20wrap%20summary&url={image_url}"
+    linkedin_share_url = f"https://www.linkedin.com/sharing/share-offsite/?url={image_url}"
+
+    context = {
+        'image_url': image_url,
+        'twitter_share_url': twitter_share_url,
+        'linkedin_share_url': linkedin_share_url,
+    }
+
+    return render(request, 'share_wrap.html', context)
 
 
 def choice(request):
@@ -1301,4 +1306,5 @@ def choice(request):
             request.session['term'] = term  # Store the term in the session
             return redirect("top_genre")  # Redirect to the 'top_genre' page
     return render(request, "spotifywrapper/choice.html")
+
 
