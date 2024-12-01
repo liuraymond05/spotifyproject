@@ -244,49 +244,27 @@
         }
 
         // Use AJAX to submit the form without redirecting
-        $(document).ready(function() {
         $('#saveForm').on('submit', function(event) {
-            event.preventDefault();  // Prevent default form submission
-
-
-            // Fetch the JSON data safely from <script> tags
-            const wrappedData = {
-                top_artists: JSON.parse(document.getElementById('top_artists').textContent),
-                top_tracks: JSON.parse(document.getElementById('top_tracks').textContent),
-                top_genre: "{{ top_genre }}",
-                favorite_mood: "{{ favorite_mood }}",
-                top_playlist: "{{ top_playlist }}",
-                favorite_decade: "{{ favorite_decade }}",
-                peak_hour: {{ peak_hour }},
-                time_range: $('#time_range').val(),  // Get the value of the selected time range
-            };
+            event.preventDefault();  // Prevent form submission
+            // Temporarily disable carousel movement
+            $(".arrow").prop("disabled", true);
 
             $.ajax({
                 type: 'POST',
-                url: $(this).attr('action'),  // Ensure this is the correct URL for saving data
+                url: $(this).attr('action'),
                 data: {
-                    'top_artists': JSON.stringify(wrappedData.top_artists),
-                    'top_tracks': JSON.stringify(wrappedData.top_tracks),
-                    'top_genre': wrappedData.top_genre,
-                    'favorite_mood': wrappedData.favorite_mood,
-                    'top_playlist': wrappedData.top_playlist,
-                    'favorite_decade': wrappedData.favorite_decade,
-                    'peak_hour': wrappedData.peak_hour,
-                    'time_range': wrappedData.time_range,  // Include the selected time range
+                    // form data
                     'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val(),
                 },
                 success: function(response) {
-                    // Display success message
                     alert('Your wrapped data has been saved!');
-                    console.log(response); // Optional debugging
+                    $(".arrow").prop("disabled", false); // Enable carousel buttons again
                 },
                 error: function(xhr, errmsg, err) {
-                    // Handle error
                     alert('Error saving your wrapped data. Please try again.');
-                    console.log(xhr.responseText); // Debugging
+                    $(".arrow").prop("disabled", false); // Ensure carousel is still interactive on error
                 }
             });
-        });
         });
 
 
