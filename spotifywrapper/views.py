@@ -1,6 +1,6 @@
 from collections import Counter
 import json
-
+from urllib.parse import quote_plus
 from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -23,6 +23,11 @@ from django.utils.translation import activate, get_language_from_request
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .models import SavedWrap
+from django.shortcuts import render
+
+
+
+
 
 def login_view(request):
     """Handles user login."""
@@ -1274,33 +1279,63 @@ def end_wrapped(request):
     })
 
 
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+import urllib.parse
+
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+import urllib.parse
+
+
 @login_required
 def share_wrap(request):
-    # Sample data that you want to share. This can be dynamic based on user data
     user = request.user
-    favorite_artist = "Artist Name"
-    top_song = "Top Song Name"
-    favorite_mood = "Mood"
-    top_genre = "Top Genre"
 
-    # Prepare the summary text to share
-    summary_text = f"Check out my Spotify Wrapped! 🎶\n\n" \
-                   f"My favorite artist: {favorite_artist}\n" \
-                   f"My top song: {top_song}\n" \
-                   f"My favorite mood: {favorite_mood}\n" \
-                   f"My top genre: {top_genre}\n\n" \
-                   f"#SpotifyWrapped #MyWrapped #Music"
+    # Retrieve the SavedWrap object associated with the logged-in user
+    try:
+        saved_wrap = SavedWrap.objects.get(username=user.username)
+    except SavedWrap.DoesNotExist:
+        return render(request, 'share_wrap.html', {
+            'error_message': 'No Spotify Wrapped data available. Please complete your wrapped data first.'
+        })
 
-    # Prepare URLs for sharing on Twitter and LinkedIn
-    twitter_url = f"https://twitter.com/intent/tweet?text={summary_text}"
-    linkedin_url = f"https://www.linkedin.com/shareArticle?mini=true&url=https://www.yourwebsite.com&title=Spotify Wrapped&summary={summary_text}"
+    # Prefill form data with the current wrap
+    prefilled_data = {
+        'top_genre': saved_wrap.top_genre,
+        'top_album': saved_wrap.top_album,
+        'top_artists': ", ".join(saved_wrap.top_artists),
+        'top_tracks': ", ".join(saved_wrap.top_tracks),
+        'favorite_mood': saved_wrap.favorite_mood,
+        'top_playlist': saved_wrap.top_playlist,
+        'favorite_decade': saved_wrap.favorite_decade,
+        'peak_hour': saved_wrap.peak_hour
+    }
 
-    # Render a template with the generated URLs and summary
-    return render(request, 'spotifywrapped/share_wrap.html', {
+    # Create a shareable text for social media based on the current wrap
+    share_text = f"Check out my Spotify Wrapped! My top genre is {saved_wrap.top_genre}, top album: {saved_wrap.top_album}, and favorite artists: {', '.join(saved_wrap.top_artists)}."
+
+    # URL encode the share text
+    encoded_share_text = urllib.parse.quote(share_text)
+
+    # Build URLs for Twitter and LinkedIn
+    twitter_url = f"https://twitter.com/intent/tweet?text={encoded_share_text}"
+
+    # Create the URL to share for LinkedIn. We'll use the current page as the shareable link.
+    # Make sure you replace this URL with the actual URL where the wrap content is hosted
+    linkedin_url = f"https://www.linkedin.com/shareArticle?mini=true&url={urllib.parse.quote(request.build_absolute_uri())}&title=Spotify Wrapped&summary={encoded_share_text}"
+
+    # Debugging: Print URLs to check if they are correctly formatted
+    print(f"Twitter URL: {twitter_url}")
+    print(f"LinkedIn URL: {linkedin_url}")
+
+    return render(request, 'share_wrap.html', {
+        'prefilled_data': prefilled_data,
         'twitter_url': twitter_url,
         'linkedin_url': linkedin_url,
-        'summary_text': summary_text,
+        'error_message': None  # No error, so set it to None
     })
+
 
 def choice(request):
     if request.method == "POST":
