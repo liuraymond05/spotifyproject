@@ -5,32 +5,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Spotify Wrapped</title>
+    <title>{% trans "My Spotify Wrapped" %}</title>
     <link rel="stylesheet" href="{% static 'spotifywrapped/wrapped.css' %}">
     <script src="{% static 'spotifywrapped/confetti.js' %}"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
     <div class="wrapper">
-        <h1>My Spotify Wrapped</h1>
+        <h1>{% trans "My Spotify Wrapped" %}</h1>
         <!-- % include 'spotifywrapper/banner.html' %} -->
 
         <!-- Form for selecting time range -->
         <form method="get" action="{% url 'top_spotify_data' %}">
-            <label for="time_range">Select Time Range:</label>
+            <label for="time_range">{% trans "Selected Time Range" %}:</label>
             <select name="time_range" id="time_range">
-                <option value="short_term" {% if selected_time_range == 'short_term' %}selected{% endif %}>Last 4 Weeks</option>
-                <option value="medium_term" {% if selected_time_range == 'medium_term' %}selected{% endif %}>Last 6 Months</option>
-                <option value="long_term" {% if selected_time_range == 'long_term' %}selected{% endif %}>Last Year</option>
+                <option value="short_term" {% if selected_time_range == 'short_term' %}selected{% endif %}>
+                    {% trans "Last 4 Weeks" %}</option>
+                <option value="medium_term" {% if selected_time_range == 'medium_term' %}selected{% endif %}>
+                    {% trans "Last 6 Months" %}</option>
+                <option value="long_term" {% if selected_time_range == 'long_term' %}selected{% endif %}>
+                    {% trans "Last Year" %}</option>
             </select>
-            <button type="submit">Apply</button>
+            <button type="submit">{% trans "Apply" %}</button>
         </form>
 
         <!-- Dynamic header based on selected time range -->
-        <h1>Spotify Wrapped for the last
-            {% if selected_time_range == 'short_term' %}4 weeks
-            {% elif selected_time_range == 'medium_term' %}6 months
-            {% elif selected_time_range == 'long_term' %}year
+        <h1>{% trans "Spotify Wrapped for the last" %}
+            {% if selected_time_range == 'short_term' %}{% trans "4 weeks" %}
+            {% elif selected_time_range == 'medium_term' %}{% trans "6 months" %}
+            {% elif selected_time_range == 'long_term' %}{% trans "year" %}
             {% endif %}
         </h1>
 
@@ -52,12 +55,12 @@
             <button class="arrow left" onclick="moveCarousel('left')">&#10094;</button>
             <div class="cards-container">
                 <div class="card">
-                    <h2>Welcome to Your Spotify Wrapped!</h2>
-                    <p>Here's to your music taste {{ username }}!</p>
+                    <h2>{% trans "Welcome to Your Spotify Wrapped!" %}!</h2>
+                    <p>{% trans "Here's to your music taste" %} {{ username }}!</p>
                 </div>
 
                 <div class="card">
-                    <h2>Top Genre</h2>
+                    <h2>{% trans "Top Genre" %}</h2>
                     <div id="cd-container">
                         <div id="cd"></div>
                         <div id="genre-name">{{ top_genre }}</div>
@@ -67,7 +70,7 @@
                 <canvas id="confetti"></canvas>
 
                 <div class="card">
-                    <h2>Top 3 Artists</h2>
+                    <h2>{% trans "Top 3 Artists" %}</h2>
                     <div class="artist-container">
                         {% for artist in top_artists %}
                             <div class="artist-card">
@@ -79,18 +82,18 @@
                 </div>
 
                 <div class="card">
-                    <h2>Top Album</h2>
+                    <h2>{% trans "Top Album" %}</h2>
                     <div class="album-card-container">
                         <div class="album-card" id="album-card">
                             <div class="album-front">
                                 <img src="{{ album_details.image }}" alt="Top Album" class="album-image">
-                                <p><strong>Album:</strong> {{ album_details.name }}</p>
+                                <p><strong>{% trans "Album" %}:</strong> {{ album_details.name }}</p>
                             </div>
                             <div class="album-back">
                                 <div class="album-details">
-                                    <p><strong>Album:</strong> {{ album_details.name }}</p>
-                                    <p><strong>Release Date:</strong> {{ album_details.release_date }}</p>
-                                    <p><strong>Label:</strong> {{ album_details.details }}</p>
+                                    <p><strong>{% trans "Album" %}:</strong> {{ album_details.name }}</p>
+                                    <p><strong>{% trans "Release Date" %}:</strong> {{ album_details.release_date }}</p>
+                                    <p><strong>{% trans "Label" %}:</strong> {{ album_details.details }}</p>
                                 </div>
                             </div>
                         </div>
@@ -98,7 +101,7 @@
                 </div>
 
                 <div class="card">
-                    <h2>Top Song</h2>
+                    <h2>{% trans "Top Song" %}</h2>
                     <p>{{ top_song }}</p>
                     <div id="song-container">
                         <canvas id="waveform-canvas" width="600" height="200"></canvas>
@@ -106,7 +109,7 @@
                 </div>
 
                 <div class="card">
-                    <h2>Top Playlist</h2>
+                    <h2>{% trans "Top Playlist" %}</h2>
                     <div id="playlist-pulse-container">
                         <div id="pulse-circle">
                             <span id="playlist-name">{{ top_playlist }}</span>
@@ -115,7 +118,7 @@
                 </div>
 
                 <div class="card">
-                    <h2>Favorite Decade</h2>
+                    <h2>{% trans "Favorite Decade" %}</h2>
                     <div id="vinyl-container">
                         <div id="vinyl"></div>
                         <div id="decade-number">{{ favorite_decade }}</div>
@@ -123,35 +126,53 @@
                 </div>
 
                 <div class="card" id="favorite-mood">
-                    <h2>Favorite Mood</h2>
+                    <h2>{% trans "Favorite Mood" %}</h2>
                     <p>{{ favorite_mood }}</p>
                 </div>
 
                 <div class="card">
-                    <h2>Top 3 Tracks</h2>
+                    <h2>{% trans "Top 3 Tracks" %}</h2>
                     <div class="tracks-list">
                         {% for track in top_tracks %}
                         <div class="track-card">
                             <div class="track-info">
                                 <h4>{{ track.name }}</h4>
-                                <p class="artist-name">by {{ track.artist }}</p>
                             </div>
-                            {% if track.preview_url %}
-                            <audio controls>
-                                <source src="{{ track.preview_url }}" type="audio/mpeg">
-                                Your browser does not support the audio element.
-                            </audio>
-                            {% else %}
-                            <p class="no-preview">No preview available</p>
-                            {% endif %}
-                        </div>
+                            <!-- Audio Player -->
+                            <div class="track-audio">
+                                <audio controls>
+                                    <source
+                                        {% if track.preview_url %}
+                                        src="{{ track.preview_url }}"
+                                        {% elif forloop.counter == 1 %}
+                                        src="{% static 'spotifywrapped/indie.mp3' %}"
+                                        {% elif forloop.counter == 2 %}
+                                        src="{% static 'spotifywrapped/jazz.mp3' %}"
+                                        {% elif forloop.counter == 3 %}
+                                        src="{% static 'spotifywrapped/orchestra.mp3' %}"
+                                        {% endif %}
+                                        type="audio/mpeg">
+                                </audio>
+                            </div>
+                            <!-- Original code to see the song clip preview -->
+                            {% comment %}
+                                {% if track.preview_url %}
+                                <audio controls>
+                                    <source src="{{ track.preview_url }}" type="audio/mpeg">
+                                    Your browser does not support the audio element.
+                                </audio>
+                                {% else %}
+                                <p class="no-preview">No preview available</p>
+                                {% endif %}
+                             {% endcomment %}
+                            </div>
                         {% endfor %}
                     </div>
                 </div>
 
                 <div class="card" id="listening-habits">
-                    <h2>Listening Habits</h2>
-                    <p>You listen to music most at <strong>{{ peak_hour }}:00</strong>!</p>
+                    <h2>{% trans "Listening Habits" %}</h2>
+                    <p>{% trans "You listen to music most at" %} <strong>{{ peak_hour }}:00</strong>!</p>
                 </div>
 
             </div>

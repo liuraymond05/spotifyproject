@@ -368,7 +368,7 @@ def top_spotify_data(request):
     for track in top_tracks:
         top_tracks_data.append({
             'name': track['name'],
-            'artist': track['artists'][0]['name'],
+            'artist': ', '.join([artist['name'] for artist in track['artists']]),
             'album': track['album']['name'],
             'image': track['album']['images'][0]['url'] if track['album']['images'] else None,
             'preview_url': track['preview_url']
