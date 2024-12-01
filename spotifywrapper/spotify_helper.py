@@ -2,6 +2,7 @@ import requests
 from django.conf import settings
 from django.utils import timezone
 import datetime
+import random
 
 def refresh_access_token(user_profile):
     """Refreshes and updates the Spotify access token."""
@@ -49,3 +50,45 @@ def get_spotify_api_client(user):
             return response.json().get('items', [])
 
     return SpotifyClient(access_token)
+
+def get_user_top_tracks(access_token, limit=10):
+    """
+       Fetch the user's top tracks from Spotify.
+       Returns a list of top tracks with relevant details (track name, artist, album, etc.).
+       """
+    url = "https://api.spotify.com/v1/me/top/tracks"
+    headers = {
+        "Authorization": f"Bearer {access_token}"
+    }
+    params = {
+        "limit": limit,
+        "time_range": "medium_term"  # Options: short_term, medium_term, long_term
+    }
+
+    response = requests.get(url, headers=headers, params=params)
+
+    if response.status_code == 200:
+        tracks = response.json().get('items', [])
+        return [
+            {
+                "name": track["name"],
+                "artist": track["artists"][0]["name"],
+                "album": track["album"]["name"],
+                "id": track["id"],
+                "preview_url": track.get("preview_url"),
+            }
+            for track in tracks
+        ]
+    else:
+        print(f"Error fetching top tracks: {response.status_code} - {response.json()}")
+        return []
+
+def select_random_tracks(tracks, count=3):
+    """
+    Select a random subset of tracks.
+    Returns a list of randomly selected tracks.
+    """
+    if len(tracks) < count:
+        print("Not enough tracks to select from.")
+        return tracks
+    return random.sample(tracks, count)

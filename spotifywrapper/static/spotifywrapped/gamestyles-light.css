@@ -1,0 +1,291 @@
+/* Ensure the banner stays at the top */
+#banner-container {
+    position: fixed; /* Keeps the banner fixed at the top */
+    top: 0; /* Aligns it to the very top of the viewport */
+    left: 0; /* Ensures it starts at the left edge */
+    width: 100%; /* Makes it span the entire width of the viewport */
+    z-index: 1000; /* Ensures it stays above other elements */
+    background-color: #fff; /* Optional: Set a background color */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: Add a shadow for separation */
+}
+
+
+
+/* Light Mode Stylings */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding-top: 60px;
+  padding: 0;
+  background-color: #F4F4F4; /*white*/
+  color: #1F1F1F; /*black*/
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  overflow: hidden;
+}
+/* Title Screen */
+#title-screen {
+  text-align: center;
+}
+
+.start-gif {
+    max-width: 55%; /* Adjust size */
+    height: auto; /* Maintain aspect ratio */
+    margin: 20px auto; /* Center the GIF */
+    display: block; /* Ensure it's a block-level element */
+}
+
+.end-gif {
+    max-width: 80%; /* Adjust size */
+    height: auto; /* Maintain aspect ratio */
+    margin: 20px auto; /* Center the GIF */
+    display: block; /* Ensure it's a block-level element */
+}
+
+#game-title {
+  font-size: 4rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+#start-prompt {
+  font-size: 1.5rem;
+  color: #bdc3c7;
+  margin-top: 20px;
+  animation: blink 1.5s steps(2, start) infinite; /* Blink effect */
+}
+
+/* Blink animation for the start prompt */
+@keyframes blink {
+  to {
+    visibility: hidden;
+  }
+}
+
+/* Title Screen Button */
+.start-button {
+  font-size: 1.2rem;
+  padding: 10px 20px;
+  margin-top: 20px;
+  border: 2px solid #1F1F1F;
+  border-radius: 5px;
+  background-color: #F4F4F4;
+  color: #1F1F1F;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.start-button:hover {
+  background-color: #1CD760;
+  transform: scale(1.05);
+}
+
+.close-button {
+  font-size: 1.2rem;
+  padding: 10px 20px;
+  margin-top: 20px;
+  border: 2px solid #1F1F1F;
+  border-radius: 5px;
+  background-color: #1CD760;
+  color: #1F1F1F;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.close-button:hover {
+  background-color: #F4F4F4;
+  transform: scale(1.05);
+}
+
+/* Game Page */
+#game-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+#score {
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+}
+
+#timer {
+  margin-top: 20px;
+  font-size: 1.2rem;
+  color: #1CD760;
+}
+
+#lyric {
+  font-size: 1.5rem;
+  margin: 20px 0;
+  padding: 10px;
+  border: 2px solid #1F1F1F;
+  border-radius: 10px;
+  width: 70%;
+}
+
+/* Album display */
+#album-display {
+  margin-bottom: 5px;
+}
+
+#album-display img {
+  width: 300px; /* Adjust size */
+  height: auto;
+  border-radius: 5px;
+}
+
+/* Options */
+.options {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-top: 20px;
+  width: 100%;
+}
+
+.option {
+  background-color: #F4F4F4;
+  margin: 10px 0;
+  padding: 15px 20px; /* Adjust padding for better layout */
+  font-size: 16px; /* Adjust font size */
+  border: 2px solid #1F1F1F;
+  border-radius: 8px;
+  text-align: center;
+  width: 200px; /* Set width of the options */
+  transition: transform 0.2s ease, background-color 0.3s ease;
+  cursor: pointer;
+  box-sizing: border-box; /* Ensure padding doesn't affect overall size */
+}
+
+.option:hover {
+  background-color: #1CD760;
+  transform: scale(1.1);
+}
+
+/* Buttons for Play Again and Return to Start */
+button {
+  font-size: 1.2rem;
+  padding: 10px 20px;
+  margin: 10px;
+  border: 2px solid #1F1F1F;
+  border-radius: 5px;
+  background-color: #F4F4F4;
+  color: #1F1F1F;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+button:hover {
+  background-color: #1CD760;
+  transform: scale(1.05);
+}
+
+.error-message {
+  color: red;
+  font-size: 1.2rem;
+  margin: 10px 0;
+  padding: 10px;
+  border: 2px solid red;
+  background-color: rgba(255, 0, 0, 0.1);
+  border-radius: 5px;
+}
+
+/* Modal Background */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+/* Modal Content */
+.modal-content {
+  background-color: #1CD760;
+  padding: 20px;
+  border-radius: 10px;
+  width: 80%;
+  max-width: 500px;
+  color: #F4F4F4;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  animation: fadeIn 0.3s ease-in-out; /* Optional fade-in effect */
+}
+
+.modal-content h2 {
+    margin-top: 0;
+  /* font-size: 2rem;
+  margin-bottom: 20px; */
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.modal-content ul {
+  list-style: none;
+  padding: 0;
+}
+
+.modal-content li {
+  margin: 10px 0;
+}
+
+.end-container {
+    display: flex;
+    flex-direction: column; /* Stack elements vertically */
+    justify-content: center; /* Center vertically */
+    align-items: center; /* Center horizontally */
+    height: 40vh; /* Full viewport height */
+    text-align: center; /* Center text inside elements */
+    background-color: #F4F4F4; /* Optional: add a background color */
+    padding: 20px; /* Optional: add padding for spacing */
+}
+
+.end-container p {
+    font-size: 1.5rem; /* Larger font size for score and high score text */
+    margin: 10px 0; /* Add spacing between paragraphs */
+    color: #1F1F1F; /* Optional: change text color for better readability */
+}
+
+.hint-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 10px 20px;
+    background-color: #1F1F1F;
+    color: #F4F4F4;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    z-index: 1000;
+}
+
+.hint-button:disabled {
+    background-color: gray;
+    cursor: not-allowed;
+}
+
+.option.disabled {
+    background-color: red;
+    color: white;
+    pointer-events: none;
+    opacity: 0.6;
+}

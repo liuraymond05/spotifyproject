@@ -1,3 +1,5 @@
+import random
+
 from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
@@ -17,9 +19,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.utils.translation import activate
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from .models import SavedWrap
+from django.shortcuts import render
+from .spotify_helper import get_user_top_tracks, select_random_tracks
 
 def login_view(request):
     """Handles user login."""
@@ -36,6 +37,16 @@ def login_view(request):
                 user_profile.save()
 
             if not user_profile.spotify_access_token:
+                # SPOTIFY_AUTH_URL = "https://accounts.spotify.com/authorize"
+                # CLIENT_ID = "0981ffa5b46448b4bda7f25862742556"
+                # REDIRECT_URI = "http://127.0.0.1:8000/spotify/callback/"
+                # SCOPES = "user-top-read"
+                # auth_url = (
+                #     f"{SPOTIFY_AUTH_URL}?response_type=code&client_id={CLIENT_ID}"
+                #     f"&redirect_uri={REDIRECT_URI}&scope={SCOPES}"
+                # )
+                # return redirect(auth_url)
+
                 return redirect('spotify_login')
 
             return redirect('home')
@@ -152,8 +163,6 @@ def spotify_callback(request):
                 "Content-Type": "application/x-www-form-urlencoded"
             },
         )
-
-
         token_data = token_response.json()
         access_token = token_data.get('access_token')
         refresh_token = token_data.get('refresh_token')
@@ -167,6 +176,7 @@ def spotify_callback(request):
             user_profile.save()
             return redirect('home')
 
+    print(f"Access token stored in session: {request.session.get('spotify_access_token')}")
     messages.error(request, "Spotify authentication failed. No code provided.")
     return redirect('login')
 
@@ -388,37 +398,72 @@ def top_spotify_data(request):
         'username': username  # Pass the username to the template
     })
 
+
 def gamepage(request):
-    return render(request, 'games.html')
+    """
+    Game view that fetches the user's top tracks and selects three random tracks for the game.
+    """
+    # Retrieve the access token from the user profile
+    user_profile = UserProfile.objects.filter(user=request.user).first()
+    if not user_profile or not user_profile.spotify_access_token:
+        messages.error(request, "No Spotify access token found. Please log in to play the game.")
+        return redirect('login')  # Redirect to login page
+
+    access_token = user_profile.spotify_access_token
+
+    # Check if the token has expired
+    if user_profile.token_expires and timezone.now() >= user_profile.token_expires:
+        messages.error(request, "Your Spotify session has expired. Please log in again.")
+        return redirect('login')  # Redirect to login page
+
+    # Call Spotify API to get user's top tracks
+    headers = {"Authorization": f"Bearer {access_token}"}
+    top_tracks_url = "https://api.spotify.com/v1/me/top/tracks?limit=50"
+    response = requests.get(top_tracks_url, headers=headers)
+
+    # Handle API response
+    if response.status_code == 401:  # 401 Unauthorized - token invalid
+        messages.error(request, "Your session has expired or is invalid. Please log in again.")
+        return redirect('login')  # Redirect to login page
+    elif response.status_code != 200:  # Other API errors
+        messages.error(request, "Failed to load tracks from Spotify. Please try again later.")
+        return redirect('home')  # Redirect to home page
+
+    # Parse and format the tracks data
+    tracks_data = response.json().get("items", [])
+    tracks = [
+        {
+            "title": track["name"],
+            "artist": track["artists"][0]["name"],
+            "album_cover": track["album"]["images"][0]["url"] if track["album"]["images"] else "/static/spotifywrapped/placeholderimage.jpg",
+            "id": track["id"],
+            "album_id": track["album"]["id"],  # Include album ID for grouping
+        }
+        for track in tracks_data
+    ]
+
+    if not tracks:
+        messages.error(request, "No top tracks found on Spotify. Please listen to more music and try again!")
+        return redirect('home')
+
+    # Prepare game data
+    game_data = []
+    for track in tracks:
+        correct_song = track["title"]
+        album_cover = track["album_cover"]
+
+        # Generate distractors (other tracks not from the same album)
+        other_tracks = [t["title"] for t in tracks if t["album_id"] != track["album_id"]]
+        distractors = random.sample(other_tracks, 2) if len(other_tracks) >= 2 else []
+
+        # Add round data
+        game_data.append({
+            "album_cover": album_cover,
+            "correct_song": correct_song,
+            "options": random.sample([correct_song] + distractors, len(distractors) + 1),
+        })
+
+    # Pass tracks and game data to the template
+    return render(request, "spotifywrapper/games.html", {"game_data": game_data, "tracks": tracks})
 def wraps(request):
     return render(request, 'savedwraps.html')
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from .models import SavedWrap  # Assuming you have a SavedWrap model to store wrapped data
-
-@csrf_exempt
-def save_wrap(request):
-    if request.method == 'POST':
-        data = json.loads(request.body)
-        user = request.user
-
-        # Save the wrapped data
-        saved_wrap = SavedWrap(
-            user=user,
-            top_artists=data['top_artists'],
-            top_tracks=data['top_tracks'],
-            top_albums=data['top_albums'],
-            minutes_listened=data['minutes_listened'],
-            time_range=data['time_range'],
-        )
-        saved_wrap.save()
-
-        return JsonResponse({'success': True})
-
-    return JsonResponse({'success': False})
-from django.shortcuts import render
-from .models import SavedWrap
-
-def saved_wraps(request):
-    saved_wraps = SavedWrap.objects.filter(user=request.user)
-    return render(request, 'spotifywrapper/savedwraps.html', {'saved_wraps': saved_wraps})
