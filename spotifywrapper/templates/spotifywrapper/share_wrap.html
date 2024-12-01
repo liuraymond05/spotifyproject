@@ -187,11 +187,14 @@
         </section>
 
         <div class="buttons-container">
-            <!-- Share on Twitter -->
-            <a href="{{ twitter_url }}" target="_blank" class="btn twitter-btn">{% trans "Share on Twitter" %}</a>
-<a href="{{ linkedin_url }}" target="_blank" class="btn linkedin-btn">{% trans "Share on LinkedIn" %}</a>
+            <!-- Download Button -->
+            <a href="{{ image_url }}" download="Spotify_Wrapped.png" class="btn download-btn">Download Image</a>
 
-            <p><strong>{% trans "Note:" %}</strong> {% trans "Instagram does not support direct URL sharing. Please share your wrap on the Instagram app." %}</p>
+            <!-- Share on Twitter -->
+            <a href="{{ twitter_share_url }}" target="_blank" class="btn twitter-btn">Share on Twitter</a>
+
+            <!-- Share on LinkedIn -->
+            <a href="{{ linkedin_share_url }}" target="_blank" class="btn linkedin-btn">Share on LinkedIn</a>
         </div>
     </div>
 
