@@ -756,7 +756,6 @@ def delete_wrap(request, wrap_id):
         messages.success(request, "Your saved wrap was successfully deleted!")
         return redirect('savedwraps')  # Redirect to the saved wraps page after deletion
 
-@login_required
 def top_genre(request):
     """
     View to get the user's top genre from their top artists on Spotify and display it in the template.
@@ -769,12 +768,20 @@ def top_genre(request):
     # Get the access token
     access_token = get_spotify_access_token(user_profile)
 
-    # Get the time range selected by the user (default to 'long_term' if not provided)
-    time_range = request.GET.get('time_range', 'long_term')
+    # Get the time range selected by the user from the session (default to 'long_term' if not set)
+    time_range = request.session.get('term', 'long')  # 'long' is the default value if not set in session
 
-    # Fetch the user's top artists for the selected time range
+    # Map the session value to the appropriate Spotify time range
+    time_range_mapping = {
+        'long': 'long_term',
+        'medium': 'medium_term',
+        'short': 'short_term',
+    }
+    time_range = time_range_mapping.get(time_range, 'long_term')  # Ensure we have a valid time range
+
+    # Fetch the user's top artists
     top_artists_response = requests.get(
-        f'https://api.spotify.com/v1/me/top/artists?time_range={time_range}&limit=50',  # Fetch top 50 artists for better analysis
+        f'https://api.spotify.com/v1/me/top/artists?time_range={time_range}&limit=10',
         headers={'Authorization': f'Bearer {access_token}'}
     )
 
@@ -790,19 +797,12 @@ def top_genre(request):
     # Additional genre data for visualization or debugging
     genre_counts = Counter(genres)
 
-    # Prepare genre data for the template
-    genre_data = [{'genre': genre, 'count': count} for genre, count in genre_counts.items()]
-    genre_data.sort(key=lambda x: x['count'], reverse=True)  # Sort genres by frequency
-
     return render(request, 'spotifywrapper/top-genre.html', {
         'top_genre': top_genre,
         'genre_counts': genre_counts,  # Pass genre counts for additional context or visualizations
         'genres': genres,  # Pass all genres if needed for the template
-        'genre_data': genre_data,  # Pass genre data sorted by frequency
-        'repeat_times': range(10),
-        'time_range': time_range  # Pass the time range to the template for possible use
+        'repeat_times': range(10)
     })
-
 
 @login_required
 def top_artists(request):
