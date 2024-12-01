@@ -480,7 +480,7 @@ def top_spotify_data(request):
         'favorite_decade': favorite_decade,
         'popularity_level': popularity_level,
         'top_album': top_album,
-        'top_tracks': top_tracks,
+        'top_tracks': top_tracks_data,
         'album_details': album_details,
 
     })

@@ -162,7 +162,8 @@
                         {% for track in top_tracks|slice:":3" %}
                         <div class="track-card">
                             <div class="track-info">
-                                <h4>{{ track.name }}</h4>
+                                <h4><strong>Track:</strong> {{ track.name }}</h4>
+                                <h4><strong>Artist:</strong> {{ track.artist }}</h4>
                             </div>
                             <!-- Audio Player -->
                             <div class="track-audio">

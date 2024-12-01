@@ -513,6 +513,11 @@ button[type="submit"]:hover {
     margin: 0 0 5px;
 }
 
+.track-info p{
+    font-size: 10px;
+}
+
+
 .artist-name {
     font-size: 14px;
     color: #555;
