@@ -14,7 +14,7 @@ from django.utils import translation
 from django.http import HttpResponseRedirect
 from spotifyproject.settings import SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, SPOTIFY_REDIRECT_URI
 from .forms import PasswordResetCustomForm, CustomUserForm
-from .models import UserProfile
+from .models import SavedWrap, UserProfile
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm
@@ -467,3 +467,58 @@ def gamepage(request):
     return render(request, "spotifywrapper/games.html", {"game_data": game_data, "tracks": tracks})
 def wraps(request):
     return render(request, 'savedwraps.html')
+
+
+def save_wrap(request):
+    """
+    View that saves the user's spotify data into the SavedWrap model. 
+    """
+    user_profile = UserProfile.objects.filter(user=request.user).first()
+    if not user_profile or not user_profile.spotify_access_token:
+        return redirect(spotify_login)
+    access_token = get_spotify_access_token(user_profile)
+    time_range = request.POST.get('time_range', 'long_term')
+    # Fetch the user's top artists
+    top_artists_response = requests.get(
+        f'https://api.spotify.com/v1/me/top/artists?time_range={time_range}&limit=10',
+        headers={'Authorization': f'Bearer {access_token}'}
+    )
+
+    top_artists_data = []
+    if top_artists_response.status_code == 200:
+        top_artists = top_artists_response.json()['items']
+        for artist in top_artists:
+            top_artists_data.append({
+                'name': artist['name'],
+                'image': artist['images'][0]['url'] if 'images' in artist and artist['images'] else None,
+                'genres': artist.get('genres', []),
+                'popularity': artist.get('popularity', 'Unknown'),
+            })
+
+    # Fetch other data (e.g., top tracks, playlists, mood)
+    top_genre_data = get_top_genre(access_token)
+    favorite_decade_data = get_favorite_decade(access_token)
+    top_tracks_data = get_top_tracks_data(access_token)
+    top_playlist_data = get_top_playlist_data(access_token)
+    favorite_mood = get_favorite_mood_data(access_token)
+    peak_hour = get_peak_hour_data(access_token)
+    favorite_decade = get_favorite_decade(access_token)
+    top_album_data = get_top_album(access_token, time_range)
+
+
+    # Save the data to the SavedWrap model
+    saved_wrap = SavedWrap(
+        username=request.user.username,
+        top_genre = top_genre_data,
+        time_range=time_range,
+        top_artists=top_artists_data,
+        top_tracks=top_tracks_data,
+        top_playlist=top_playlist_data['name'] if top_playlist_data else None,
+        favorite_mood=get_favorite_mood_data(access_token),
+        top_album = top_album_data,
+        favorite_decade = favorite_decade_data,
+        # Save other fields as necessary, e.g., top_genre, favorite_decade, etc.
+    )
+    saved_wrap.save()
+
+    return redirect('savedwraps')   
