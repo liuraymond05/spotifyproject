@@ -604,30 +604,19 @@ def get_peak_hour_data(access_token):
     """
     Helper function to determine the user's peak listening hour based on recently played tracks.
     """
-    # Fetch the user's recently played tracks (limit to 50 for simplicity)
-    tracks_response = requests.get(
+    recently_played_response = requests.get(
         'https://api.spotify.com/v1/me/player/recently-played?limit=50',
         headers={'Authorization': f'Bearer {access_token}'}
     )
-
-    if tracks_response.status_code != 200:
-        return None  # Return None if there's an error fetching tracks
-
-    tracks_data = tracks_response.json().get('items', [])
-    
-    # Extract the timestamps of when the tracks were played
-    played_hours = []
-    for track in tracks_data:
-        timestamp = track['played_at']
-        played_time = datetime.strptime(timestamp, '%Y-%m-%dT%H:%M:%S.%fZ')
-        played_hours.append(played_time.hour)
-
-    # Count the occurrences of each hour (0-23)
-    hour_count = Counter(played_hours)
-
-    # Determine the peak hour (the hour with the most plays)
-    peak_hour = max(hour_count, key=hour_count.get) if hour_count else None
-
+    recently_played_data = []
+    recently_played_items = recently_played_response.json().get('items', [])
+    listening_hours = Counter()
+    for item in recently_played_items:
+        played_at = item['played_at']
+        played_hour = datetime.fromisoformat(played_at[:-1]).hour
+        listening_hours[played_hour] += 1
+    peak_hour = max(listening_hours, key=listening_hours.get)
+    peak_hour_count = listening_hours[peak_hour]
     return peak_hour
 
 
@@ -1294,18 +1283,21 @@ def share_wrap(request):
 
     # Retrieve the SavedWrap object associated with the logged-in user
     try:
-        saved_wrap = SavedWrap.objects.get(username=user.username)
+        saved_wrap = SavedWrap.objects.filter(username=user.username).first()
     except SavedWrap.DoesNotExist:
         return render(request, 'share_wrap.html', {
             'error_message': 'No Spotify Wrapped data available. Please complete your wrapped data first.'
         })
+    top_artists = ", ".join(artist['name'] for artist in saved_wrap.top_artists if 'name' in artist)
+    top_tracks = ", ".join(track['title'] for track in saved_wrap.top_tracks if 'title' in track)
+
 
     # Prefill form data with the current wrap
     prefilled_data = {
         'top_genre': saved_wrap.top_genre,
         'top_album': saved_wrap.top_album,
-        'top_artists': ", ".join(saved_wrap.top_artists),
-        'top_tracks': ", ".join(saved_wrap.top_tracks),
+        'top_artists': top_artists,
+        'top_tracks':top_tracks,
         'favorite_mood': saved_wrap.favorite_mood,
         'top_playlist': saved_wrap.top_playlist,
         'favorite_decade': saved_wrap.favorite_decade,
@@ -1313,7 +1305,7 @@ def share_wrap(request):
     }
 
     # Create a shareable text for social media based on the current wrap
-    share_text = f"Check out my Spotify Wrapped! My top genre is {saved_wrap.top_genre}, top album: {saved_wrap.top_album}, and favorite artists: {', '.join(saved_wrap.top_artists)}."
+    share_text = f"Check out my Spotify Wrapped! My top genre is {saved_wrap.top_genre}, top album: {saved_wrap.top_album}, and favorite artists: {top_artists}."
 
     # URL encode the share text
     encoded_share_text = urllib.parse.quote(share_text)
