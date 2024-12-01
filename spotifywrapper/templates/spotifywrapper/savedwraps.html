@@ -10,16 +10,47 @@
 
     {% for wrap in wraps %}
         <div>
-            <p>Time Range: {{ wrap.time_range }}</p>
-            <p>Top Genre: {{ wrap.top_genre }}</p>
-            <p>Top Artists: {{ wrap.top_artists }}</p>
-            <p>Top Tracks: {{ wrap.top_tracks }}</p>
-            <p>Favorite Mood: {{ wrap.favorite_mood }}</p>
-            <p>Favorite Decade: {{ wrap.favorite_decade }}</p>
-            <p>Peak Hour: {{ wrap.peak_hour }}</p>
-            <p>Favorite Album: {{ wrap.top_album }}</p>
-            <img src="{{ wrap.top_album.image }}" alt="Album Image">
-            <p>Top Playlist: {{ wrap.top_playlist }}</p>
+            <p><strong>Time Range:</strong> {{ wrap.time_range }}</p>
+            <p><strong>Top Genre:</strong> {{ wrap.top_genre }}</p>
+
+            <!-- Top Artists: Display a list of artist names and images -->
+            <p><strong>Top Artists:</strong>
+                <ul>
+                    {% for artist in wrap.top_artists %}
+                        <li>
+                            <strong>{{ artist.name }}</strong>
+                            {% if artist.image %}
+                                <img src="{{ artist.image }}" alt="{{ artist.name }}" style="max-width: 50px; height: auto;">
+                            {% else %}
+                                <p>No image available</p>
+                            {% endif %}
+                        </li>
+                    {% empty %}
+                        <li>No top artists found.</li>
+                    {% endfor %}
+                </ul>
+            </p>
+
+            <!-- Top Tracks: Display a list of track names -->
+            <p><strong>Top Tracks:</strong>
+                <ul>
+                    {% for track in wrap.top_tracks %}
+                        <li>{{ track.name }}</li>
+                    {% empty %}
+                        <li>No top tracks found.</li>
+                    {% endfor %}
+                </ul>
+            </p>
+
+            <p><strong>Favorite Mood (Element):</strong> {{ wrap.user_element }}</p>
+            <p><strong>Favorite Decade:</strong> {{ wrap.favorite_decade }}</p>
+
+            <!-- Top Album: Display album details -->
+            <p><strong>Favorite Album:</strong> {{ wrap.top_album.name }}</p>
+            <img src="{{ wrap.top_album.image }}" alt="Album Image" style="max-width: 150px;">
+
+            <!-- Popularity Level for Top Song: Display the popularity level -->
+            <p><strong>Top Song Popularity Level:</strong> {{ wrap.top_song_popularity.0 }} (Popularity: {{ wrap.top_song_popularity.1 }})</p>
 
             <!-- Add a delete button for each saved wrap -->
             <form method="post" action="{% url 'delete_wrap' wrap.id %}">
@@ -30,6 +61,5 @@
     {% empty %}
         <p>No wraps found.</p>
     {% endfor %}
-
 </body>
 </html>
