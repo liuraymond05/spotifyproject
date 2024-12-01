@@ -1209,50 +1209,56 @@ def share_wrap(request):
     user = request.user
 
     # Retrieve the SavedWrap object associated with the logged-in user
-    try:
-        saved_wrap = SavedWrap.objects.filter(username=user.username).first()
-    except SavedWrap.DoesNotExist:
+    saved_wrap = SavedWrap.objects.filter(username=user.username).first()
+
+    # Check if saved_wrap exists
+    if not saved_wrap:
         return render(request, 'share_wrap.html', {
             'error_message': 'No Spotify Wrapped data available. Please complete your wrapped data first.'
         })
-    top_artists = ", ".join(artist['name'] for artist in saved_wrap.top_artists if 'name' in artist)
-    top_tracks = ", ".join(track['title'] for track in saved_wrap.top_tracks if 'title' in track)
 
+    try:
+        # Handle top_artists as a list of dictionaries with 'name' keys
+        top_artists = ", ".join(artist.get('name', '') for artist in saved_wrap.top_artists if isinstance(artist, dict))
+
+        # Handle top_album as a string directly
+        top_album = saved_wrap.top_album if isinstance(saved_wrap.top_album, str) else 'Unknown'
+
+        # Handle top_tracks as a list of dictionaries with 'title' keys
+        top_tracks = ", ".join(track.get('title', '') for track in saved_wrap.top_tracks if isinstance(track, dict))
+
+    except AttributeError as e:
+        return render(request, 'share_wrap.html', {
+            'error_message': f"An error occurred while processing your wrapped data: {str(e)}"
+        })
 
     # Prefill form data with the current wrap
     prefilled_data = {
         'top_genre': saved_wrap.top_genre,
-        'top_album': saved_wrap.top_album,
+        'top_album': top_album,  # Make sure to use the simplified album name
         'top_artists': top_artists,
-        'top_tracks':top_tracks,
-        'favorite_mood': saved_wrap.favorite_mood,
-        'top_playlist': saved_wrap.top_playlist,
+        'top_tracks': top_tracks,
+        'top_song': saved_wrap.top_song,
+        'user_element': saved_wrap.user_element,
         'favorite_decade': saved_wrap.favorite_decade,
-        'peak_hour': saved_wrap.peak_hour
+        'top_song_popularity': saved_wrap.top_song_popularity
     }
 
     # Create a shareable text for social media based on the current wrap
-    share_text = f"Check out my Spotify Wrapped! My top genre is {saved_wrap.top_genre}, top album: {saved_wrap.top_album}, and favorite artists: {top_artists}."
+    share_text = f"Here is my Spotify Wrapped! My top genre was {saved_wrap.top_genre}, my top artists were {top_artists}, and my listening element was {saved_wrap.user_element}."
 
     # URL encode the share text
     encoded_share_text = urllib.parse.quote(share_text)
 
     # Build URLs for Twitter and LinkedIn
     twitter_url = f"https://twitter.com/intent/tweet?text={encoded_share_text}"
-
-    # Create the URL to share for LinkedIn. We'll use the current page as the shareable link.
-    # Make sure you replace this URL with the actual URL where the wrap content is hosted
     linkedin_url = f"https://www.linkedin.com/shareArticle?mini=true&url={urllib.parse.quote(request.build_absolute_uri())}&title=Spotify Wrapped&summary={encoded_share_text}"
-
-    # Debugging: Print URLs to check if they are correctly formatted
-    print(f"Twitter URL: {twitter_url}")
-    print(f"LinkedIn URL: {linkedin_url}")
 
     return render(request, 'share_wrap.html', {
         'prefilled_data': prefilled_data,
         'twitter_url': twitter_url,
         'linkedin_url': linkedin_url,
-        'error_message': None  # No error, so set it to None
+        'error_message': None
     })
 
 
