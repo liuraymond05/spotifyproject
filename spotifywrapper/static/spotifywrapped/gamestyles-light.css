@@ -9,21 +9,22 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: Add a shadow for separation */
 }
 
-/* General Styling */
+
+
+/* Light Mode Stylings */
 body {
   font-family: Arial, sans-serif;
   margin: 0;
   padding-top: 60px;
   padding: 0;
-  background-color: #1F1F1F;
-  color: #ecf0f1;
+  background-color: #F4F4F4; /*white*/
+  color: #1F1F1F; /*black*/
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
   overflow: hidden;
 }
-
 /* Title Screen */
 #title-screen {
   text-align: center;
@@ -68,10 +69,10 @@ body {
   font-size: 1.2rem;
   padding: 10px 20px;
   margin-top: 20px;
-  border: 2px solid #ecf0f1;
+  border: 2px solid #1F1F1F;
   border-radius: 5px;
-  background-color: #1F1F1F;
-  color: #ecf0f1;
+  background-color: #F4F4F4;
+  color: #1F1F1F;
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.2s ease;
 }
@@ -85,16 +86,16 @@ body {
   font-size: 1.2rem;
   padding: 10px 20px;
   margin-top: 20px;
-  border: 2px solid #ecf0f1;
+  border: 2px solid #1F1F1F;
   border-radius: 5px;
   background-color: #1CD760;
-  color: #ecf0f1;
+  color: #1F1F1F;
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .close-button:hover {
-  background-color: #1F1F1F;
+  background-color: #F4F4F4;
   transform: scale(1.05);
 }
 
@@ -121,7 +122,7 @@ body {
   font-size: 1.5rem;
   margin: 20px 0;
   padding: 10px;
-  border: 2px solid #ecf0f1;
+  border: 2px solid #1F1F1F;
   border-radius: 10px;
   width: 70%;
 }
@@ -147,11 +148,11 @@ body {
 }
 
 .option {
-  background-color: #1F1F1F;
+  background-color: #F4F4F4;
   margin: 10px 0;
   padding: 15px 20px; /* Adjust padding for better layout */
   font-size: 16px; /* Adjust font size */
-  border: 2px solid #ecf0f1;
+  border: 2px solid #1F1F1F;
   border-radius: 8px;
   text-align: center;
   width: 200px; /* Set width of the options */
@@ -170,10 +171,10 @@ button {
   font-size: 1.2rem;
   padding: 10px 20px;
   margin: 10px;
-  border: 2px solid #ecf0f1;
+  border: 2px solid #1F1F1F;
   border-radius: 5px;
-  background-color: #1F1F1F;
-  color: #ecf0f1;
+  background-color: #F4F4F4;
+  color: #1F1F1F;
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.2s ease;
 }
@@ -214,7 +215,7 @@ button:hover {
   border-radius: 10px;
   width: 80%;
   max-width: 500px;
-  color: #1F1F1F;
+  color: #F4F4F4;
   text-align: center;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
   animation: fadeIn 0.3s ease-in-out; /* Optional fade-in effect */
@@ -253,14 +254,14 @@ button:hover {
     align-items: center; /* Center horizontally */
     height: 40vh; /* Full viewport height */
     text-align: center; /* Center text inside elements */
-    background-color: #1F1F1F; /* Optional: add a background color */
+    background-color: #F4F4F4; /* Optional: add a background color */
     padding: 20px; /* Optional: add padding for spacing */
 }
 
 .end-container p {
     font-size: 1.5rem; /* Larger font size for score and high score text */
     margin: 10px 0; /* Add spacing between paragraphs */
-    color: white; /* Optional: change text color for better readability */
+    color: #1F1F1F; /* Optional: change text color for better readability */
 }
 
 .hint-button {
@@ -268,8 +269,8 @@ button:hover {
     bottom: 20px;
     right: 20px;
     padding: 10px 20px;
-    background-color: #ECF0F1;
-    color: #1F1F1F;
+    background-color: #1F1F1F;
+    color: #F4F4F4;
     border: none;
     border-radius: 5px;
     cursor: pointer;
