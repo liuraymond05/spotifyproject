@@ -333,24 +333,23 @@ header {
     width: 80%; /* Ensure this takes up the full container */
 }
 
-/* Styling for each individual card */
+/* Default card styling */
 .card {
-    background-color: #fff;
+    background-color: whitesmoke; /* Light yellow for light mode */
     border-radius: 15px; /* Rounded corners */
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
     width: 260px; /* Width of each card */
-    height: 280px; /* Height of each card to make it square */
+    height: 280px; /* Height of each card */
     padding: 20px;
     text-align: center;
     margin-right: 20px;
     flex-shrink: 0; /* Prevent the card from shrinking */
-    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Add smooth transition */
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease; /* Smooth transition */
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column; /* Stack content vertically */
     overflow: hidden; /* Prevent overflow */
-    background-color: whitesmoke; /* Light yellow background for warmth */
 }
 
 /* Hover effect for cards */
@@ -358,6 +357,32 @@ header {
     transform: translateY(-8px); /* Slight lift on hover */
     box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2); /* Darker shadow for a 3D effect */
 }
+
+/* Dark mode card styling */
+body.dark-mode .card {
+    background-color: #001f3f; /* Navy blue for dark mode */
+    color: white; /* Ensure text is visible */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Adjust shadow for dark mode */
+}
+
+/* Neon mode card styling */
+body.neon-mode .card {
+    background-color: #001f3f; /* Navy blue for neon mode */
+    color: #0ff; /* Neon text color */
+    box-shadow: 0 6px 12px rgba(0, 255, 255, 0.3); /* Neon glow shadow effect */
+}
+
+/* Adjust text colors in cards for readability */
+body.dark-mode .card h2,
+body.neon-mode .card h2 {
+    color: white; /* Ensure headings are visible */
+}
+
+body.dark-mode .card p,
+body.neon-mode .card p {
+    color: #ddd; /* Slightly lighter text color for paragraphs */
+}
+
 
 /* Styling for the artist cards (inside top artists) */
 /* Artist container */
