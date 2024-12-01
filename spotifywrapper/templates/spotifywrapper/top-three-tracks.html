@@ -141,33 +141,46 @@
             justify-content: center;
         }
 
-        .podium-step {
-            background: linear-gradient(135deg, #ffcc00, #ff007b);
-            border-radius: 15px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-end;
-            color: white;
-            margin: 0 20px;
-            box-shadow: 0 8px 20px rgba(255, 0, 123, 0.5);
-            position: relative;
-            height: 300px; /* Default height */
-            width: 180px; /* Default width */
-        }
+        /* Adjusted podium step size */
+.podium-step {
+    background: linear-gradient(135deg, #ffcc00, #ff007b);
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    color: white;
+    margin: 0 20px;
+    box-shadow: 0 8px 20px rgba(255, 0, 123, 0.5);
+    position: relative;
+    height: 400px; /* Increased height for audio player */
+    width: 200px; /* Adjusted width */
+    padding-bottom: 15px; /* Space for audio player */
+}
 
-        .podium-step:nth-child(1) {
-            height: 350px;
-        }
+/* Adjust sizes of specific podium steps */
+.podium-step:nth-child(1) {
+    height: 450px;
+    width: 240px;
+}
 
-        .podium-step:nth-child(2) {
-            height: 420px; /* Highest pedestal */
-            width: 220px;
-        }
+.podium-step:nth-child(2) {
+    height: 500px; /* Highest pedestal */
+    width: 240px;
+}
 
-        .podium-step:nth-child(3) {
-            height: 300px;
-        }
+.podium-step:nth-child(3) {
+    height: 400px;
+    width: 240px;
+}
+
+/* Style the audio player to fit the podium */
+.track-audio audio {
+    width: 170px;
+    max-width: 200px; /* Maximum width */
+    height: 40px; /* Consistent height */
+    margin-top: 15px; /* Add spacing above the player */
+}
 
         .podium-step img {
             width: 150px;
@@ -261,21 +274,43 @@
 
     <!-- Podium Section -->
     <div class="podium-container">
-        <div class="podium">
-            {% if tracks %}
-                {% for track in tracks %}
-                    <div class="podium-step">
-                        <img src="{{ track.album.images.0.url }}" alt="{{ track.name }}">
-                        <div class="track-info">
-                            <p class="track-name">{{ track.name }}</p>
-                            <p>by {{ track.artists.0.name }}</p>
-                            <button class="play-button" onclick="playAudio('{{ track.preview_url }}')">{% trans "Play Me" %}</button>
+    <div class="podium">
+        {% if tracks %}
+            {% for track in tracks %}
+                <div class="podium-step">
+                    <img src="{{ track.album.images.0.url }}" alt="{{ track.name }}">
+                    <div class="track-info">
+                        <p class="track-name">{{ track.name }}</p>
+                        <p>by {{ track.artists.0.name }}</p>
+
+                        <!-- Audio Player -->
+                        <div class="track-audio">
+                            <audio controls>
+                                <source
+                                    {% if track.preview_url %}
+                                    src="{{ track.preview_url }}"
+                                    {% else %}
+                                    {% if forloop.counter == 1 %}
+                                    src="{% static 'spotifywrapped/indie.mp3' %}"
+                                    {% elif forloop.counter == 2 %}
+                                    src="{% static 'spotifywrapped/jazz.mp3' %}"
+                                    {% elif forloop.counter == 3 %}
+                                    src="{% static 'spotifywrapped/orchestra.mp3' %}"
+                                    {% endif %}
+                                    {% endif %}
+                                    type="audio/mpeg">
+                                Your browser does not support the audio element.
+                            </audio>
                         </div>
                     </div>
-                {% endfor %}
-            {% endif %}
-        </div>
+                </div>
+            {% endfor %}
+        {% endif %}
     </div>
+</div>
+
+
+
 
     <!-- Buttons Section -->
     <div class="buttons-container">
@@ -307,7 +342,7 @@
             const dropdown = document.getElementById("dropdownMenu");
             dropdown.classList.toggle("show-menu");
         }
-        
+
         function playAudio(url) {
             const audioPlayer = document.getElementById("audioPlayer");
             audioPlayer.src = url;
