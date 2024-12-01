@@ -7,6 +7,8 @@
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
    <title>{% trans "Top Albums" %}</title>
     <link rel="stylesheet" href="{% static 'spotifywrapped/breakdown.css' %}">
+        <script src="{% static 'spotifywrapped/theme.js' %}" defer></script>
+
 
    <style>
        /* Base Styles */
@@ -23,7 +25,7 @@
             font-family: Arial, sans-serif;
            margin: 0;
            padding: 0;
-            background: linear-gradient(135deg, #941c0f, #c4651b, #ffd500);
+            background: linear-gradient(135deg, #093485, #214d1c, #552d57);
             background-size: 300% 300%;
             animation: gradientAnimation 10s ease infinite;
        }
@@ -221,8 +223,6 @@
 
    <div class="dropdown-menu" id="dropdownMenu">
         <ul>
-            <li><button onclick="toggleTheme()">{% trans "Toggle Dark Mode" %}</button></li>
-            <li><button onclick="toggleNeon()">{% trans "Toggle Neon Mode" %}</button></li>
             <li><a href="{% url 'gamepage' %}" id="games">{% trans "Games" %}</a></li>
             <li><a href="{% url 'wraps' %}" id="wraps">{% trans "My Wraps" %}</a></li>
             <li><a href="{% url 'settings' %}" id="settingsLink">{% trans "Settings" %}</a></li>
@@ -256,13 +256,6 @@
            dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
        }
 
-       function toggleTheme() {
-           document.body.classList.toggle('dark-mode');
-       }
-
-       function toggleNeon() {
-           document.body.classList.toggle('neon-mode');
-       }
 
        document.addEventListener("DOMContentLoaded", function () {
            const albumContainer = document.querySelector(".album-card-container");

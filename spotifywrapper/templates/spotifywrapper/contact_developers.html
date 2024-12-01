@@ -7,6 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% trans "Contact Developers" %}</title>
     <link rel="stylesheet" href="{% static 'spotifywrapped/homestyle.css' %}">
+        <script src="{% static 'spotifywrapped/theme.js' %}" defer></script>
+
 
     <style>
         /* General Styles for Developers Page */
@@ -231,8 +233,7 @@
 
     <div class="dropdown-menu" id="dropdownMenu">
         <ul>
-            <li><button onclick="toggleTheme()">{% trans "My Favorite Mood" %}</button></li>
-            <li><button onclick="toggleNeon()">{% trans "Toggle Neon Mode" %}</button></li>
+
             <li><a href="{% url 'gamepage' %}" id="games">{% trans "Games" %}</a></li>
             <li><a href="{% url 'wraps' %}" id="wraps">{% trans "My Wraps" %}</a></li>
             <li><a href="{% url 'settings' %}" id="settingsLink">{% trans "Settings" %}</a></li>
@@ -288,15 +289,7 @@
             dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
         }
 
-        function toggleTheme() {
-            document.body.classList.toggle('dark-mode');
-            document.body.classList.remove('neon-mode');
-        }
 
-        function toggleNeon() {
-            document.body.classList.toggle('neon-mode');
-            document.body.classList.remove('dark-mode');
-        }
     </script>
 </body>
 </html>

@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% trans "Settings" %}</title>
     <link rel="stylesheet" href="{% static 'spotifywrapped/breakdown.css' %}">
-
+    <script src="{% static 'spotifywrapped/theme.js' %}" defer></script>
     <style>
         /* Base Styles */
         body {
@@ -19,19 +19,19 @@
         }
 
         /* Light Mode */
-        body.light {
+        body.light-mode {
             background-color: #adf097;
             color: #333;
         }
 
         /* Dark Mode */
-        body.dark {
+        body.dark-mode {
             background-color: #181818;
             color: #ffffff;
         }
 
         /* Neon Mode */
-        body.neon {
+        body.neon-mode {
             background-color: #000;
             color: #00ff00;
         }
@@ -127,12 +127,12 @@
         }
 
         /* Dark Mode Styling for Settings Container */
-        body.dark .settings-container {
+        body.dark-mode .settings-container {
             background-color: #242424;
         }
 
         /* Neon Mode Styling for Settings Container */
-        body.neon .settings-container {
+        body.neon-mode .settings-container {
             background-color: #111;
             border: 2px solid #00ff00;
         }
@@ -167,12 +167,12 @@
             color: #333;
         }
 
-        body.dark select {
+        body.dark-mode select {
             background-color: #333;
             color: #fff;
         }
 
-        body.neon select {
+        body.neon-mode select {
             background-color: #000;
             color: #00ff00;
         }
@@ -209,16 +209,16 @@
             color: #0056b3;
         }
 
-        body.neon a {
+        body.neon-mode a {
             color: #00ff00;
         }
 
-        body.neon a:hover {
+        body.neon-mode a:hover {
             text-shadow: 0 0 5px #00ff00, 0 0 10px #00ff00;
         }
     </style>
 </head>
-<body class="light">
+<body class="light-mode">
 
     <header>
         <div class="logo">
@@ -236,8 +236,6 @@
 
     <div class="dropdown-menu" id="dropdownMenu">
         <ul>
-            <li><button onclick="toggleTheme()">{% trans "Toggle Dark Mode" %}</button></li>
-            <li><button onclick="toggleNeon()">{% trans "Toggle Neon Mode" %}</button></li>
             <li><a href="{% url 'gamepage' %}">{% trans "Games" %}</a></li>
             <li><a href="{% url 'wraps' %}">{% trans "My Wraps" %}</a></li>
             <li><a href="{% url 'settings' %}">{% trans "Settings" %}</a></li>
@@ -265,10 +263,10 @@
             <!-- Change Color Mode -->
             <div class="setting-item">
                 <h3>{% trans "Change Color Mode" %}</h3>
-                <select id="color-mode" onchange="changeColorMode()">
-                    <option value="light">{% trans "Light" %}</option>
-                    <option value="dark">{% trans "Dark" %}</option>
-                    <option value="neon">{% trans "Neon" %}</option>
+                <select id="color-mode" onchange="setTheme(this.value)">
+                    <option value="light-mode">{% trans "Light Mode" %}</option>
+                    <option value="dark-mode">{% trans "Dark Mode" %}</option>
+                    <option value="neon-mode">{% trans "Neon Mode" %}</option>
                 </select>
             </div>
 
@@ -289,35 +287,33 @@
     </div>
 
     <script>
-        function changeColorMode() {
-            const mode = document.getElementById('color-mode').value;
-            document.body.className = mode; // Apply the selected mode
-            localStorage.setItem('colorMode', mode); // Save to localStorage
+        function setTheme(theme) {
+            document.cookie = `theme=${theme}; path=/; max-age=31536000`; // Save for 1 year
+            applyTheme(theme);
         }
 
-        // Apply the saved color mode on page load
-        window.onload = function () {
-            const savedMode = localStorage.getItem('colorMode') || 'light'; // Default to 'light'
-            document.body.className = savedMode;
-            document.getElementById('color-mode').value = savedMode;
-        };
+        function applyTheme(theme) {
+            document.body.className = theme; // Apply the selected theme
+        }
 
         function toggleMenu() {
             const dropdown = document.getElementById("dropdownMenu");
             dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
         }
 
-        function toggleTheme() {
-            const body = document.body;
-            body.classList.toggle('dark');
-            body.classList.remove('neon');
-        }
+        window.onload = function () {
+            const theme = document.cookie
+                .split('; ')
+                .find(row => row.startsWith('theme='))
+                ?.split('=')[1] || 'light-mode'; // Default to light mode
+            applyTheme(theme);
 
-        function toggleNeon() {
-            const body = document.body;
-            body.classList.toggle('neon');
-            body.classList.remove('dark');
-        }
+            // Update the dropdown value
+            const colorModeSelect = document.getElementById('color-mode');
+            if (colorModeSelect) {
+                colorModeSelect.value = theme;
+            }
+        };
     </script>
 </body>
 </html>
