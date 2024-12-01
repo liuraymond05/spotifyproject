@@ -465,7 +465,7 @@ def top_spotify_data(request):
     }
 
     # Default to 'Unknown' if the genre doesn't match any known category
-    user_element = genre_to_element.get(top_genre, 'Air')
+    user_element = genre_to_element.get(top_genre, 'air')
 
 
     return render(request, 'spotifywrapper/wrapped.html', {

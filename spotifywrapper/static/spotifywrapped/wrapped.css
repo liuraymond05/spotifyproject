@@ -425,6 +425,7 @@ audio {
     }
 }
 
+
 /*Top Song*/
 #song-container {
     position: relative;
@@ -444,7 +445,8 @@ audio {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
-/*Top Playlist*/
+
+/*Your Classical Element*/
 /* Container for the pulsating circle */
 #playlist-pulse-container {
     position: relative;
@@ -457,11 +459,49 @@ audio {
 }
 
 /* Pulsating circle */
-#pulse-circle {
+#pulse-circle.water {
     width: 100%;
     height: 100%;
     border-radius: 50%;
-    background: #a7d4b5; /* Light pink */
+    background: #254a7d;
+    position: relative;
+    animation: pulse 2s infinite; /* Repeats the pulsation effect */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+#pulse-circle.fire {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: #dc3545;
+    position: relative;
+    animation: pulse 2s infinite; /* Repeats the pulsation effect */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+#pulse-circle.earth {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: #324d3c;
+    position: relative;
+    animation: pulse 2s infinite; /* Repeats the pulsation effect */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+#pulse-circle.air {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: slategrey;
     position: relative;
     animation: pulse 2s infinite; /* Repeats the pulsation effect */
     display: flex;
@@ -537,154 +577,106 @@ audio {
 
 
 
-/* Euphoric Mood */
+/* Top Song Popularity */
+/* Define the dramatic sparkle animation */
+@keyframes dramaticGradientSparkle {
+    0% {
+        background-position: 0% 0%, 0 0;
+    }
+    50% {
+        background-position: 100% 100%, 50px 50px; /* Sparkle shifts more dramatically */
+    }
+    100% {
+        background-position: 0 0, 0 0;
+    }
+}
+
 #favorite-mood.euphoric {
     background-image: linear-gradient(to bottom, #FFD700, #FF6347); /* Gradient from bright yellow to coral */
+    background-size: 200% 200%, 50px 50px;
+    background-position: 0 0, 0 0;
     transform: scale(1.1);
-    animation: gradientSparkle 2s ease-in-out infinite; /* Apply the sparkling animation */
+    animation: dramaticGradientSparkle 1.5s ease-in-out infinite; /* Faster, more dramatic sparkle */
 }
-
-/* Chill Mood */
 #favorite-mood.chill {
     background-image: linear-gradient(to bottom, #A8DADC, #457B9D); /* Gradient from soft blue to deeper blue */
+    background-size: 200% 200%, 50px 50px;
+    background-position: 0 0, 0 0;
     transform: scale(1.05);
-    animation: gradientSparkle 2s ease-in-out infinite; /* Apply the sparkling animation */
+    animation: dramaticGradientSparkle 1.5s ease-in-out infinite; /* Faster, more dramatic sparkle */
 }
 
-
-/* Melancholic Mood */
 #favorite-mood.melancholic {
     background-image: linear-gradient(to bottom, #6C757D, #495057); /* Gradient from dark gray to charcoal gray */
+    background-size: 200% 200%, 50px 50px;
+    background-position: 0 0, 0 0;
     transform: scale(1.05);
-    animation: gradientSparkle 2s ease-in-out infinite; /* Apply the sparkling animation */
+    animation: dramaticGradientSparkle 1.5s ease-in-out infinite; /* Faster, more dramatic sparkle */
 }
 
+/* Top Three Tracks */
 
+/* Track list styling */
+.tracks-list {
+    display: flex;
+    justify-content: center;
+    overflow-x: scroll;
+    gap: 5px;
+    padding: 15px;
+    max-height: 350px;
+    overflow-y: auto;  /* Enable vertical scrolling */
+    margin-top: -20px;   /* Adjust top margin to ensure space between the header and track list */
+}
 
-
-/*Animations for Listening Habits*/
-/* Early Morning (Sunrise) */
-#listening-habits.early-morning {
-    background-image: url("morning.png");
+.track-card {
+    background-color: lavender;
+    border-radius: 10px;
+    padding: 20px;
+    height: 40px;
+    width: 250px;
     position: relative;
-    animation: sunrise 5s ease-in-out forwards;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    transform: scale(1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Midday */
-#listening-habits.midday {
-    background-image: url("midday.jpg");
-    position: relative;
-    animation: cloud 5s ease-in-out forwards;
+/* Hover effect to scale and pop the track card */
+.track-card:hover {
+    transform: scale(1.1);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
 }
 
-/* Late Night (Moonrise) */
-#listening-habits.late-night {
-    background-image: url("night.jpg");
-    position: relative;
-    animation: moonrise 5s ease-in-out forwards;
+/* Audio Player Styling */
+.track-audio {
+    margin-top: 2px;
+    display: flex;
+    justify-content: center;
 }
 
-/* Sunrise Animation (Sun moves across) */
-@keyframes sunrise {
-    0% {
-        background-position: center center;
-    }
-    100% {
-        background-position: center center;
-    }
-}
 
-/* Cloud Animation (Cloud moves across) */
-@keyframes cloud {
-    0% {
-        background-position: center center;
-    }
-    100% {
-        background-position: center center;
-    }
-}
-
-/* Moonrise Animation (Moon moves across) */
-@keyframes moonrise {
-    0% {
-        background-position: center center;
-    }
-    100% {
-        background-position: center center;
-    }
-}
-
-/* Sun Image Animation */
-#listening-habits.early-morning::before {
-    content: "";
+/* Add sparkle effect on hover for track card */
+.track-card:hover::after {
+    content: '✨';
     position: absolute;
-    top: 20%;
-    left: -100px; /* Start position off-screen */
-    width: 100px;
-    height: 100px;
-    background-image: url("sun.png"); /* Replace with your sun image */
-    background-size: contain;
-    background-repeat: no-repeat;
-    animation: sunMove 5s ease-in-out forwards; /* Animate across */
+    top: 10px;
+    right: 10px;
+    font-size: 24px;
+    animation: sparkle 1.5s ease-in-out infinite;
 }
 
-/* Moon Image Animation */
-#listening-habits.late-night::before {
-    content: "";
-    position: absolute;
-    top: 20%;
-    right: -100px; /* Start position off-screen */
-    width: 80px;
-    height: 80px;
-    background-image: url("moon.png"); /* Replace with your moon image */
-    background-size: contain;
-    background-repeat: no-repeat;
-    animation: moonMove 5s ease-in-out forwards; /* Animate across */
-}
-
-/* Sun Image Animation */
-#listening-habits.midday::before {
-    content: "";
-    position: absolute;
-    top: 20%;
-    left: -100px; /* Start position off-screen */
-    width: 100px;
-    height: 100px;
-    background-image: url("cloud.png"); /* Replace with your sun image */
-    background-size: contain;
-    background-repeat: no-repeat;
-    animation: cloudMove 5s ease-in-out forwards; /* Animate across */
-}
-
-/* Sun Animation (Moves from left to right) */
-@keyframes sunMove {
+/* Keyframes for sparkle animation */
+@keyframes sparkle {
     0% {
-        left: -100px; /* Start off-screen */
+        transform: scale(1);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.5);
+        opacity: 1;
     }
     100% {
-        left: 50%; /* End at the center of the card */
-        transform: translateX(-50%); /* Center it */
+        transform: scale(1);
+        opacity: 0;
     }
 }
 
-/* Cloud Animation (Cloud from left to right) */
-@keyframes cloudMove {
-    0% {
-        left: -100px; /* Start off-screen */
-    }
-    100% {
-        left: 50%; /* End at the center of the card */
-        transform: translateX(-50%); /* Center it */
-    }
-}
-
-/* Moon Animation (Moves from right to left) */
-@keyframes moonMove {
-    0% {
-        right: -100px; /* Start off-screen */
-    }
-    100% {
-        right: 50%; /* End at the center of the card */
-        transform: translateX(50%); /* Center it */
-    }
-}

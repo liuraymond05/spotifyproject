@@ -131,8 +131,8 @@
                 </div>
 
                 <div class="card">
-                    <h2>{% trans "Top 3 Tracks" %}</h2>
                     <div class="tracks-list">
+                    <h2>{% trans "Top 3 Tracks" %}</h2>
                         {% for track in top_tracks %}
                         <div class="track-card">
                             <div class="track-info">
@@ -392,6 +392,21 @@
         }
 
         function animateTopPlaylistCard(currentIndex) {
+            const elementCard = document.querySelector('#pulse-circle');
+            const element = "{{ user_element }}";
+
+            // Add the appropriate class based on the mood
+            if (element === 'water') {
+                elementCard.classList.add('water');
+            } else if (element === 'fire') {
+                elementCard.classList.add('fire');
+            } else if (element === 'earth') {
+                elementCard.classList.add('earth');
+            } else if (element === 'air') {
+                elementCard.classList.add('air');
+            }
+
+
             if (currentIndex === 5) { // Assuming the "Top Playlist" card is at index 5
                 togglePlaylistPulse(true); // Start the pulse animation
             } else {
