@@ -1236,6 +1236,71 @@ def listening_habits(request):
         'tracks': tracks_data,
         'artists': artists_data
     })
+@login_required
+def end_wrapped(request):
+    """
+    View to display the end-of-year summary page (Spotify Wrapped or similar).
+    """
+    # Retrieve the user profile
+    user_profile = UserProfile.objects.filter(user=request.user).first()
+    if not user_profile or not user_profile.spotify_access_token:
+        return redirect('spotify_login')  # Redirect to login if Spotify is not authenticated
+
+    # Get the access token
+    access_token = get_spotify_access_token(user_profile)
+
+    # Fetch the user's top tracks, top artists, or other data to display
+    top_tracks_response = requests.get(
+        'https://api.spotify.com/v1/me/top/tracks?time_range=long_term&limit=10',
+        headers={'Authorization': f'Bearer {access_token}'}
+    )
+    top_artists_response = requests.get(
+        'https://api.spotify.com/v1/me/top/artists?time_range=long_term&limit=10',
+        headers={'Authorization': f'Bearer {access_token}'}
+    )
+
+    # Check if the requests were successful
+    if top_tracks_response.status_code == 200 and top_artists_response.status_code == 200:
+        top_tracks = top_tracks_response.json()['items']
+        top_artists = top_artists_response.json()['items']
+    else:
+        top_tracks = []
+        top_artists = []
+
+    # Render the 'wrapped' page with the gathered data
+    return render(request, 'spotifywrapper/end_wrapped.html', {
+        'top_tracks': top_tracks,
+        'top_artists': top_artists,
+    })
+
+
+@login_required
+def share_wrap(request):
+    # Sample data that you want to share. This can be dynamic based on user data
+    user = request.user
+    favorite_artist = "Artist Name"
+    top_song = "Top Song Name"
+    favorite_mood = "Mood"
+    top_genre = "Top Genre"
+
+    # Prepare the summary text to share
+    summary_text = f"Check out my Spotify Wrapped! 🎶\n\n" \
+                   f"My favorite artist: {favorite_artist}\n" \
+                   f"My top song: {top_song}\n" \
+                   f"My favorite mood: {favorite_mood}\n" \
+                   f"My top genre: {top_genre}\n\n" \
+                   f"#SpotifyWrapped #MyWrapped #Music"
+
+    # Prepare URLs for sharing on Twitter and LinkedIn
+    twitter_url = f"https://twitter.com/intent/tweet?text={summary_text}"
+    linkedin_url = f"https://www.linkedin.com/shareArticle?mini=true&url=https://www.yourwebsite.com&title=Spotify Wrapped&summary={summary_text}"
+
+    # Render a template with the generated URLs and summary
+    return render(request, 'spotifywrapped/share_wrap.html', {
+        'twitter_url': twitter_url,
+        'linkedin_url': linkedin_url,
+        'summary_text': summary_text,
+    })
 
 def choice(request):
     if request.method == "POST":
