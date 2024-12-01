@@ -1,3 +1,4 @@
+/* Base Styles (Light Mode) */
 body {
     min-height: 100vh;
     display: flex;
@@ -208,14 +209,76 @@ body.dark-mode .dropdown-menu {
     background-color: hotpink;
 }
 
-
-body {
-    font-family: Arial, sans-serif; /* A more homey font */
-    background-color: #d529f0; /* A soft, warm beige background */
-    color: black; /* Darker grey text for readability */
-    margin: 0;
-    padding: 0;
+/* Add space below the fixed header */
+.wrapper {
+    margin-top: 100px; /* Add space equal to the height of the header */
+    padding: 0 20px; /* Optional padding for better alignment */
+    width: 100%; /* Adjust the wrapper width */
+    box-sizing: border-box; /* Include padding in total width */
 }
+
+/* Fix positioning of dropdown menu */
+.dropdown-menu {
+    margin-top: 60px; /* Adjust this value to fit just below the header */
+}
+
+/* Adjust the carousel for better alignment */
+.carousel-wrapper {
+    margin: 20px auto; /* Center the carousel wrapper with some margin */
+    width: 100%; /* Ensure it spans the available width */
+}
+
+/* Center the saved wraps title */
+.wrapper h1 {
+    margin-top: 0; /* Remove excess margin at the top */
+    padding-top: 20px; /* Optional padding for spacing */
+    font-size: 2em;
+    text-align: center;
+}
+
+/* Fix header positioning */
+header {
+    position: fixed; /* Fix header at the top */
+    top: 0;
+    left: 0;
+    width: 100%; /* Full width */
+    height: 80px; /* Adjust to match your header's actual height */
+    z-index: 1000; /* Ensure it stays on top */
+    background-color: black; /* Ensure background color */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+}
+
+/* Add margin to the wrapper to account for the header */
+.wrapper {
+    margin-top: 100px; /* Adjust based on the header height */
+    padding: 20px; /* Optional: Add padding for spacing */
+    text-align: center;
+}
+
+/* Ensure dropdown menu doesn't overlap header */
+.dropdown-menu {
+    margin-top: 80px; /* Matches the height of the header */
+}
+
+/* Fix carousel-wrapper alignment */
+.carousel-wrapper {
+    margin: 20px auto; /* Add spacing above and below */
+    padding: 0; /* Remove any padding that might cause extra spacing */
+    max-width: 1200px; /* Limit the maximum width */
+}
+
+/* Ensure h1 in the wrapper aligns properly */
+.wrapper h1 {
+    margin: 0;
+    padding: 20px 0;
+    font-size: 2em;
+    text-align: center;
+    color: #fff; /* Ensure visibility on darker backgrounds */
+}
+
+
+
+
 #blue-squiggle {
     position: absolute;
     z-index: 1;
@@ -309,20 +372,18 @@ body {
 }
 
 .artist-card {
-    width: 100px;  /* Make each artist card smaller */
-    height: 100px;  /* Set a fixed height */
-    display: flex;
-    flex-direction: column; /* Stack image and text vertically */
-    align-items: center;
-    justify-content: center;
-    padding: 10px;
-    box-sizing: border-box;
-    opacity: 0;            /* Initially hide the cards */
-    transform: translateY(20px); /* Slight downward position for effect */
-    visibility: hidden;    /* Make the cards invisible initially */
-    transition: opacity 0.5s ease, transform 0.5s ease, visibility 0s 0.5s; /* Smooth transition */
+    opacity: 0;
+    transform: translateY(20px);
+    visibility: hidden;
+    transition: opacity 0.5s ease, transform 0.5s ease, visibility 0s 0.5s;
 }
 
+.artist-card.visible {
+    opacity: 1;
+    transform: translateY(0);
+    visibility: visible;
+    transition-delay: 0s;
+}
 .artist-card img {
     width: 55px;  /* Make the image smaller */
     height: 55px;  /* Make the image smaller */
@@ -638,16 +699,27 @@ audio {
 
 
 /*Top Song*/
+/* Top Song Styling */
 #song-container {
     position: relative;
-    width: 150px; /* Adjust size of the pulsating circle */
+    width: 300px; /* Adjust as needed */
     height: 150px;
     margin: 20px auto; /* Center the container on the page */
     display: flex;
     align-items: center;
     justify-content: center;
+    background-color: #f8f9fa; /* Light background for contrast */
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
 }
 
+#waveform-canvas {
+    display: block;
+    margin: 0 auto;
+    background-color: #e9ecef; /* Subtle background */
+    border-radius: 10px;
+}
 #waveform-canvas {
     display: block;
     margin: 0 auto;
@@ -659,22 +731,21 @@ audio {
 
 /*Your Classical Element*/
 /* Container for the pulsating circle */
+/* Pulsating Circle */
 #playlist-pulse-container {
     position: relative;
-    width: 150px; /* Adjust size of the pulsating circle */
+    width: 150px;
     height: 150px;
-    margin: 20px auto; /* Center the container on the page */
+    margin: 20px auto; /* Center on the card */
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-/* Pulsating circle */
-#pulse-circle.water {
+#pulse-circle {
     width: 100%;
     height: 100%;
     border-radius: 50%;
-    background: #254a7d;
     position: relative;
     animation: pulse 2s infinite; /* Repeats the pulsation effect */
     display: flex;
@@ -682,44 +753,52 @@ audio {
     justify-content: center;
     overflow: hidden;
 }
+
+/* Text inside the circle */
+#playlist-name {
+    font-size: 1.5rem; /* Adjust text size */
+    font-weight: bold;
+    color: white; /* Contrast against background */
+    text-align: center;
+    margin: 0;
+    position: absolute;
+    z-index: 1; /* Ensure it's above the pulsating effect */
+}
+
+/* Colors for elements */
+#pulse-circle.water {
+    background: linear-gradient(135deg, #a8e6ff, #62d0f1);
+}
+
 #pulse-circle.fire {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    background: #dc3545;
-    position: relative;
-    animation: pulse 2s infinite; /* Repeats the pulsation effect */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
+    background: linear-gradient(135deg, #ff6e6e, #ff3b3b);
 }
 
 #pulse-circle.earth {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    background: #324d3c;
-    position: relative;
-    animation: pulse 2s infinite; /* Repeats the pulsation effect */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
+    background: linear-gradient(135deg, #c2e59c, #64c373);
 }
 
 #pulse-circle.air {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    background: slategrey;
-    position: relative;
-    animation: pulse 2s infinite; /* Repeats the pulsation effect */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
+    background: linear-gradient(135deg, #d1c4e9, #9575cd);
 }
+
+
+/* Pulsation Animation */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.2);
+        opacity: 0.7;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
 
 /* Playlist name text */
 #playlist-name {
@@ -890,4 +969,66 @@ audio {
         opacity: 0;
     }
 }
+
+
+/* Song Popularity Card */
+.popularity-card {
+    background-color: #fdfdfd; /* Subtle white background */
+    border-radius: 15px;
+    padding: 20px;
+    width: 90%; /* Flexible width for responsiveness */
+    margin: 15px auto;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+    text-align: center;
+    position: relative;
+    transform: scale(1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Scale effect on hover */
+.popularity-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
+}
+
+/* Popularity Level Badge */
+.popularity-level {
+    display: inline-block;
+    background-color: #ff6f61; /* Default red for high popularity */
+    color: white;
+    font-weight: bold;
+    padding: 5px 15px;
+    border-radius: 50px;
+    font-size: 14px;
+    margin-top: 10px;
+    text-transform: uppercase;
+}
+
+/* Colors based on popularity */
+.popularity-level.high {
+    background-color: #ff6f61; /* Vibrant red for high */
+}
+
+.popularity-level.medium {
+    background-color: #ffc107; /* Yellow for medium */
+}
+
+.popularity-level.low {
+    background-color: #8bc34a; /* Green for low */
+}
+
+/* Pop effect on hover */
+.popularity-card:hover .popularity-level {
+    animation: popEffect 0.5s ease-in-out;
+}
+
+@keyframes popEffect {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.2);
+    }
+}
+
 

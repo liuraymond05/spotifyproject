@@ -11,6 +11,32 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
+    <header>
+       <div class="logo">
+           <a href="{% url 'home' %}">
+        <img src="{% static 'spotifywrapped/spotify.png' %}" alt="Spotify Logo">
+    </a>
+           <h1>{% trans "My Spotify Wrapped" %}</h1>
+       </div>
+       <div class="menu-icon" onclick="toggleMenu()">
+           <div class="line"></div>
+           <div class="line"></div>
+           <div class="line"></div>
+       </div>
+   </header>
+
+
+   <div class="dropdown-menu" id="dropdownMenu">
+       <ul>
+           <li><a href="{% url 'gamepage' %}" id="games">{% trans "Games" %}</a></li>
+           <li><a href="{% url 'wraps' %}" id="wraps">{% trans "My Wraps" %}</a></li>
+           <li><a href="{% url 'settings' %}" id="settingsLink">{% trans "Settings" %}</a></li>
+           <li><a href="{% url 'logout' %}">{% trans "Log Out" %}</a></li>
+       </ul>
+   </div>
+
+
+
     <div class="wrapper">
         <h1>{% trans "My Spotify Wrapped" %}</h1>
         <!-- % include 'spotifywrapper/banner.html' %} -->
@@ -194,6 +220,10 @@
         <button type="submit" id="saveButton">Save Wrapped</button>
     </form>
     <script>
+        function toggleMenu() {
+       const dropdown = document.getElementById("dropdownMenu");
+       dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+   }
         // Carousel Logic
         let currentIndex = 0;
         

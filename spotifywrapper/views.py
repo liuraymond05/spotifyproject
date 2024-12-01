@@ -550,28 +550,42 @@ def get_top_tracks(access_token, time_range='long_term', limit=3):
     return []
 
 def get_top_artists(access_token, time_range='long_term', limit=3):
-    # Fetch the top artists based on the time range and limit
-    top_artists_response = requests.get(
-        f'https://api.spotify.com/v1/me/top/artists?time_range={time_range}&limit={limit}',
-        headers={'Authorization': f'Bearer {access_token}'}
-    )
-    
-    top_artists_data = []
-    if top_artists_response.status_code == 200:
-        # Get the top artists from the response
-        top_artists = top_artists_response.json()['items']
-        
-        # Format the data to match the desired structure
-        for artist in top_artists:
-            top_artists_data.append({
-                'name': artist['name'],
-                'image': artist['images'][0]['url'] if 'images' in artist else None
-            })
-    else:
-        # If the request fails, you can redirect or handle the error accordingly
-        return redirect('home')  # Redirect back to home if there's an error
-    
-    return top_artists_data
+    """
+    Fetch the top 3 artists from Spotify based on the provided time range.
+
+    :param access_token: Spotify API access token
+    :param time_range: The time range ('long_term', 'medium_term', 'short_term')
+    :param limit: Number of top artists to fetch (default is 3)
+    :return: A list of dictionaries containing artist names and images
+    """
+    try:
+        # Fetch top artists from Spotify API
+        top_artists_response = requests.get(
+            f'https://api.spotify.com/v1/me/top/artists?time_range={time_range}&limit={limit}',
+            headers={'Authorization': f'Bearer {access_token}'}
+        )
+
+        # Handle API response
+        if top_artists_response.status_code == 200:
+            # Parse the response and extract relevant data
+            top_artists = top_artists_response.json().get('items', [])
+            top_artists_data = [
+                {
+                    'name': artist['name'],
+                    'image': artist['images'][0]['url'] if artist.get('images') else None
+                }
+                for artist in top_artists
+            ]
+            return top_artists_data
+        else:
+            # Log the error and return an empty list on failure
+            print(f"Error fetching top artists: {top_artists_response.status_code}")
+            return [{'name': 'Unknown Artist', 'image': None} for _ in range(3)]
+
+    except Exception as e:
+        # Handle unexpected errors
+        print(f"An error occurred: {e}")
+        return [{'name': 'Unknown Artist', 'image': None} for _ in range(3)]
 
 
 def get_top_genre(access_token, time_range='long_term'):
