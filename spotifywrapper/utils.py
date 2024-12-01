@@ -1,8 +1,9 @@
 # utils.py
 import requests
 from io import BytesIO
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageFilter
 import os
+import io
 from collections import Counter
 from datetime import datetime
 from django.conf import settings
@@ -14,34 +15,73 @@ def get_spotify_access_token(user_profile):
 
 
 def generate_wrap_summary_image(user_data):
-    """Generate an image from the wrap summary text."""
-    # Image size and background color
-    width, height = 800, 400
-    img = Image.new('RGB', (width, height), color='white')
+    """Generate a visually styled Spotify Wrapped summary image."""
+    # Define canvas size and colors
+    image_width, image_height = 1080, 1080
+    gradient_start = (30, 30, 50)  # Dark purple
+    gradient_end = (100, 50, 200)  # Vibrant purple
+    accent_color = (255, 215, 0)  # Gold
 
-    # Initialize drawing context
-    draw = ImageDraw.Draw(img)
+    # Create a blank image and a drawing object
+    image = Image.new('RGB', (image_width, image_height))
+    draw = ImageDraw.Draw(image)
 
-    # Load a font (or use default if not available)
-    try:
-        font = ImageFont.truetype("arial.ttf", 24)
-    except IOError:
-        font = ImageFont.load_default()
+    # Create a gradient background
+    for y in range(image_height):
+        r = gradient_start[0] + (gradient_end[0] - gradient_start[0]) * y // image_height
+        g = gradient_start[1] + (gradient_end[1] - gradient_start[1]) * y // image_height
+        b = gradient_start[2] + (gradient_end[2] - gradient_start[2]) * y // image_height
+        draw.line([(0, y), (image_width, y)], fill=(r, g, b))
 
-    # Draw the user data on the image
-    text = f"Top Artists: {', '.join(user_data['artist_names'])}\n"
-    text += f"Top Albums: {', '.join(user_data['album_names'])}\n"
-    text += f"Top Genre: {user_data['top_genre'] if user_data['top_genre'] else 'N/A'}"
+    # Load fonts (adjust font paths as needed)
+    font_path_large = os.path.join(settings.BASE_DIR, 'spotifywrapper/static/af.ttf')
+    font_path_small = os.path.join(settings.BASE_DIR, 'spotifywrapper/static/af.ttf')
+    font_large = ImageFont.truetype(font_path_large, 60)
+    font_small = ImageFont.truetype(font_path_small, 40)
 
-    text_position = (50, 50)
-    draw.text(text_position, text, font=font, fill="black")
+    # Add title text
+    title_text = f"My Spotify Wrapped!"
+    draw.text((50, 50), title_text, font=font_large, fill=accent_color)
 
-    # Save the image to a BytesIO object
-    img_io = BytesIO()
-    img.save(img_io, 'PNG')
-    img_io.seek(0)
+    # Add user data sections
+    sections = [
+        ("Top Genre", user_data.get("top_genre", "N/A")),
+        ("Top Album", user_data.get("top_album", "N/A")),
+        ("Listening Element", user_data.get("listening_element", "N/A")),
+    ]
 
-    return img_io
+    y_offset = 150
+    for title, value in sections:
+        draw.text((50, y_offset), f"{title}: {value}", font=font_small, fill=(255, 255, 255))
+        y_offset += 100
+
+    # Add images of top 3 artists
+    top_artists = user_data.get("top_artists", [])
+    artist_images = user_data.get("artist_images", [])  # Ensure API provides images for artists
+
+    # Define size and positions for artist images
+    artist_image_size = 150
+    artist_image_positions = [(50, 550), (250, 550), (450, 550)]
+
+    for i, image_url in enumerate(artist_images[:3]):
+        try:
+            # Fetch and process artist image
+            response = requests.get(image_url)
+            artist_image = Image.open(io.BytesIO(response.content))
+            artist_image = artist_image.resize((artist_image_size, artist_image_size), Image.ANTIALIAS)
+
+            # Paste artist image onto the canvas
+            image.paste(artist_image, artist_image_positions[i])
+        except Exception as e:
+            print(f"Error fetching artist image: {e}")
+
+    # Save the image to an in-memory file
+    image_io = io.BytesIO()
+    image.save(image_io, format='PNG')
+    image_io.seek(0)
+
+    return image_io
+
 
 
 def save_wrap_summary_image(image_io):
