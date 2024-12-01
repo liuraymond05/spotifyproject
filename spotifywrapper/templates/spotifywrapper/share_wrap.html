@@ -3,6 +3,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
+    <meta property="og:title" content="My Spotify Wrapped!" />
+    <meta property="og:description" content="Check out my Spotify Wrapped summary!" />
+    <meta property="og:image" content="URL_TO_YOUR_IMAGE" />
+    <meta property="og:url" content="URL_OF_THE_PAGE" />
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% trans "Share Your Wrap" %}</title>
@@ -10,7 +16,6 @@
     <script src="{% static 'spotifywrapped/theme.js' %}" defer></script>
 
     <style>
-        /* Base Styles */
         body {
             margin: 0;
             font-family: Arial, sans-serif;
@@ -18,10 +23,10 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start; /* Start at the top */
             min-height: 100vh;
             overflow: hidden;
-            transition: all 0.5s ease;
+            padding-top: 80px; /* Added padding to prevent header overlap */
         }
 
         /* Light Mode */
@@ -146,6 +151,7 @@
             display: flex;
             justify-content: center;
             gap: 20px;
+            flex-wrap: wrap;
         }
 
         .btn {
@@ -163,6 +169,29 @@
             transform: translateY(-5px);
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
         }
+
+        /* Message Container (Centered on Left) */
+        .message-container {
+            position: fixed;
+            left: 20px; /* Positioned on the left side */
+            top: 50%; /* Centered vertically */
+            transform: translateY(-50%); /* Adjust to truly center */
+            max-width: 600px;
+            width: 100%;
+            text-align: left;
+        }
+
+        /* Styled Message */
+        .message {
+            font-size: 1.1rem;
+            color: #fff;
+            background-color: rgba(0, 0, 0, 0.6); /* Background color with some transparency */
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            line-height: 1.5;
+        }
+
     </style>
 </head>
 <body class="light-mode">
@@ -182,7 +211,7 @@
 
         <section id="share-wrap">
             <div id="wrap-circle">
-                <div id="wrap-text">{{ summary_text }}</div>
+                <div id="wrap-text">{% trans "You have unique listening patterns!" %}</div>
             </div>
         </section>
 
@@ -195,16 +224,21 @@
 
             <!-- Share on LinkedIn -->
             <a href="{{ linkedin_share_url }}" target="_blank" class="btn linkedin-btn">Share on LinkedIn</a>
+
+            <!-- Share on Instagram -->
+            <a href="{{ instagram_share_url }}" target="_blank" class="btn instagram-btn">Share on Instagram</a>
         </div>
     </div>
 
-    <footer>
-        <a href="{% url 'home' %}" class="btn">{% trans "Back to Home" %}</a>
-    </footer>
+    <!-- Message in the middle left of the page -->
+    <div class="message-container">
+        <div class="message">
+            {% trans "Note: Instagram and LinkedIn do not allow prepopulation of links. You need to click to download the image to share it. On Twitter, you can directly share the link to your image!" %}
+        </div>
+    </div>
 
     <script>
-        // Optional: You can add custom JavaScript for extra functionality if needed
+        // Optional: You can add custom JavaScript
     </script>
-
 </body>
 </html>

@@ -1292,12 +1292,14 @@ def share_wrap(request):
 
     # Generate Twitter and LinkedIn shareable URLs
     twitter_share_url = f"https://twitter.com/intent/tweet?text=Check%20out%20my%20wrap%20summary&url={image_url}"
-    linkedin_share_url = f"https://www.linkedin.com/sharing/share-offsite/?url={image_url}"
+    linkedin_share_url = f"https://www.linkedin.com/sharing/share-offsite/?url={image_url}&title=My%20Spotify%20Wrapped&summary=Check%20out%20my%20Spotify%20Wrapped%20summary!"
+    instagram_share_url = 'https://www.instagram.com/'
 
     context = {
         'image_url': image_url,
         'twitter_share_url': twitter_share_url,
         'linkedin_share_url': linkedin_share_url,
+        'instagram_share_url': instagram_share_url,
     }
 
     return render(request, 'share_wrap.html', context)
