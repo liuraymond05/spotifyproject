@@ -181,36 +181,41 @@
 
         /* Buttons */
         .buttons-container {
-            margin-top: 20px;
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-        }
+        position: fixed; /* Fix the buttons relative to the viewport */
+        bottom: 0; /* Attach the buttons to the very bottom of the screen */
+        left: 0;
+        right: 0;
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        padding: 20px; /* Add padding for spacing */
+        z-index: 1000; /* Ensure it stays on top of all other elements */
+        background-color: transparent; /* Remove background */
+        box-shadow: none; /* Remove any box-shadow */
+    }
 
-        .btn {
-            display: inline-block;
-            padding: 15px 30px;
-            font-size: 1rem;
-            font-weight: bold;
-            text-decoration: none;
-            border-radius: 25px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
+    .btn {
+        display: inline-block;
+        padding: 15px 30px;
+        font-size: 1rem;
+        font-weight: bold;
+        text-decoration: none;
+        border-radius: 25px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
 
-        .btn:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
-        }
+    .btn:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    }
     </style>
 </head>
 <body class="light-mode">
-
     <header>
         <div class="logo">
             <a href="{% url 'home' %}">
-            <img src="{% static 'spotifywrapped/spotify.png' %}" alt="Spotify Logo">
-        </a>
+                <img src="{% static 'spotifywrapped/spotify.png' %}" alt="Spotify Logo">
+            </a>
             <h1>{% trans "My Top Genre" %}</h1>
         </div>
         <div class="menu-icon" onclick="toggleMenu()">
@@ -245,8 +250,7 @@
             const dropdown = document.getElementById("dropdownMenu");
             dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
         }
-
     </script>
-
 </body>
+
 </html>

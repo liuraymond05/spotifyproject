@@ -7,8 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% trans "Top Artists" %}</title>
     <link rel="stylesheet" href="{% static 'spotifywrapped/breakdown.css' %}">
-        <script src="{% static 'spotifywrapped/theme.js' %}" defer></script>
-
+    <script src="{% static 'spotifywrapped/theme.js' %}" defer></script>
 
     <style>
         /* Gradient Background for Artist Page */
@@ -29,14 +28,14 @@
             background-size: 300% 300%;
             animation: gradientAnimation 10s ease infinite;
         }
-
+        
         @keyframes gradientAnimation {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
 
-        /* Updated Header Styling to Match Genre Page */
+        /* Header */
         header {
             position: fixed;
             top: 0;
@@ -112,7 +111,7 @@
             flex-direction: column;
             align-items: center;
             gap: 20px;
-            padding: 120px 20px 20px; /* Added padding for fixed header */
+            padding: 150px 20px 20px; /* Added padding for fixed header */
         }
 
         .artist-row {
@@ -120,7 +119,7 @@
             justify-content: center;
             gap: 20px;
             width: 100%;
-            max-width: 1200px;
+            flex-wrap: wrap;
         }
 
         .artist-card {
@@ -174,36 +173,73 @@
             text-align: center;
         }
 
+        /* Responsive Design for Stacking */
+        @media (max-width: 1024px) {
+            .artist-row {
+                gap: 15px;
+            }
+
+            .artist-card {
+                width: 120px;
+                height: 120px;
+            }
+
+            .artist-container {
+                padding: 120px 10px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .artist-container {
+                padding: 100px 10px;
+                gap: 15px;
+            }
+
+            .artist-card {
+                width: 100px;
+                height: 100px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .artist-container {
+                padding: 80px 10px;
+                gap: 10px;
+            }
+
+            .artist-card {
+                width: 80px;
+                height: 80px;
+            }
+        }
+
         /* Buttons Styling */
-       .buttons-container {
-           position: fixed;
-           bottom: 20px;
-           left: 0;
-           right: 0;
-           display: flex;
-           justify-content: center;
-           gap: 20px;
-           z-index: 1000;
-       }
+        .buttons-container {
+            position: fixed;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            z-index: 1000;
+        }
 
+        .btn {
+            display: inline-block;
+            padding: 15px 25px;
+            font-size: 1em;
+            font-weight: bold;
+            text-decoration: none;
+            border-radius: 25px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
 
-
-       .btn {
-           display: inline-block;
-           padding: 15px 25px;
-
-           font-size: 1em;
-           font-weight: bold;
-           text-decoration: none;
-           border-radius: 25px;
-           box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-           transition: background-color 0.3s ease, transform 0.3s ease;
-       }
-
-       .btn:hover {
-           transform: translateY(-5px);
-           box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-       }
+        .btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
     </style>
 </head>
 
@@ -212,15 +248,14 @@
         const dropdown = document.getElementById("dropdownMenu");
         dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
     }
-
 </script>
 
 <body id="artist">
     <header>
         <div class="logo">
             <a href="{% url 'home' %}">
-            <img src="{% static 'spotifywrapped/spotify.png' %}" alt="Spotify Logo">
-        </a>
+                <img src="{% static 'spotifywrapped/spotify.png' %}" alt="Spotify Logo">
+            </a>
             <h1>{% trans "My Top Artists" %}</h1>
         </div>
         <div class="menu-icon" onclick="toggleMenu()">
@@ -232,9 +267,9 @@
 
     <div class="dropdown-menu" id="dropdownMenu">
         <ul>
-            <li><a href="{% url 'gamepage' %}" id="games">{% trans "Games" %}</a></li>
-            <li><a href="{% url 'wraps' %}" id="wraps">{% trans "My Wraps" %}</a></li>
-            <li><a href="{% url 'settings' %}" id="settingsLink">{% trans "Settings" %}</a></li>
+            <li><a href="{% url 'gamepage' %}">{% trans "Games" %}</a></li>
+            <li><a href="{% url 'wraps' %}">{% trans "My Wraps" %}</a></li>
+            <li><a href="{% url 'settings' %}">{% trans "Settings" %}</a></li>
             <li><a href="{% url 'logout' %}">{% trans "Log Out" %}</a></li>
         </ul>
     </div>
@@ -243,7 +278,7 @@
         <div class="artist-container">
             <!-- First Row: 1 Artist -->
             {% if top_artists|length > 0 %}
-                <div class="artist-row artist-row-1">
+                <div class="artist-row">
                     <div class="artist-card">
                         <div class="card-inner">
                             <div class="card-front">
@@ -259,7 +294,7 @@
 
             <!-- Second Row: 2 Artists -->
             {% if top_artists|length > 1 %}
-                <div class="artist-row artist-row-2">
+                <div class="artist-row">
                     {% for artist in top_artists|slice:"1:3" %}
                         <div class="artist-card">
                             <div class="card-inner">
@@ -277,7 +312,7 @@
 
             <!-- Third Row: 3 Artists -->
             {% if top_artists|length > 3 %}
-                <div class="artist-row artist-row-3">
+                <div class="artist-row">
                     {% for artist in top_artists|slice:"3:6" %}
                         <div class="artist-card">
                             <div class="card-inner">
@@ -295,7 +330,7 @@
 
             <!-- Fourth Row: 4 Artists -->
             {% if top_artists|length > 6 %}
-                <div class="artist-row artist-row-4">
+                <div class="artist-row">
                     {% for artist in top_artists|slice:"6:10" %}
                         <div class="artist-card">
                             <div class="card-inner">
@@ -315,7 +350,6 @@
 
     <div class="buttons-container">
         <a href="{% url 'top_genre' %}" class="btn">{% trans "Back" %}</a>
-
         <a href="{% url 'home' %}" class="btn">{% trans "Home" %}</a>
         <a href="{% url 'top_albums' %}" class="btn">{% trans "Next" %}</a>
     </div>
