@@ -5,7 +5,7 @@
 <head>
    <meta charset="UTF-8">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>{% trans "Favorite Mood" %}</title>
+   <title>{% trans "Song Popularity" %}</title>
    <link rel="stylesheet" href="{% static 'spotifywrapped/breakdown.css' %}">
         <script src="{% static 'spotifywrapped/theme.js' %}" defer></script>
 
@@ -197,7 +197,7 @@
             <a href="{% url 'home' %}">
             <img src="{% static 'spotifywrapped/spotify.png' %}" alt="Spotify Logo">
         </a>
-            <h1>{% trans "My Favorite Mood" %}</h1>
+            <h1>{% trans "My Top Song's Popularity" %}</h1>
         </div>
         <div class="menu-icon" onclick="toggleMenu()">
             <div class="line"></div>
@@ -218,23 +218,23 @@
     <div class="repeated-mood">
         <div class="column">
             {% for i in "12345678901234567890" %}
-                <span>{{ favorite_mood }}</span>
+                <span>{{ popularity_level }}</span>
             {% endfor %}
         </div>
         <div class="column">
             {% for i in "12345678901234567890" %}
-                <span>{{ favorite_mood }}</span>
+                <span>{{ popularity_level }}</span>
             {% endfor %}
         </div>
         <div class="column">
             {% for i in "12345678901234567890" %}
-                <span>{{ favorite_mood }}</span>
+                <span>{{ popularity_level }}</span>
             {% endfor %}
         </div>
     </div>
 
     <div class="content-box">
-        <p>{% trans "Your Favorite Mood" %}: {{ favorite_mood }}</p>
+        <p>{% trans "My Top Song's Popularity" %}: {{ popularity_level }}</p>
     </div>
 
     <div class="buttons-container">

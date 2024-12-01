@@ -5,7 +5,7 @@
 <head>
    <meta charset="UTF-8">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>{% trans "Top Playlist" %}t</title>
+   <title>{% trans "Your Classical Element" %}t</title>
    <link rel="stylesheet" href="{% static 'spotifywrapped/breakdown.css' %}">
         <script src="{% static 'spotifywrapped/theme.js' %}" defer></script>
 
@@ -233,7 +233,7 @@
             <a href="{% url 'home' %}">
             <img src="{% static 'spotifywrapped/spotify.png' %}" alt="Spotify Logo">
         </a>
-            <h1>{% trans "My Top Playlist" %}</h1>
+            <h1>{% trans "My Classical Element" %}</h1>
         </div>
         <div class="menu-icon" onclick="toggleMenu()">
             <div class="line"></div>
@@ -253,18 +253,16 @@
 
     <section>
         <div class="playlist-card">
-            {% if top_playlist %}
-                <img src="{{ top_playlist.image }}" alt="{{ top_playlist.name }}" class="playlist-image">
+            {% if user_element %}
+                <img
+            src="{% static 'spotifywrapped/'|add:user_element|add:'.png' %}"
+            alt="{{ user_element }} element"
+            class="playlist-image">
                 <p class="playlist-name">
-                    {% for char in top_playlist.name %}
-                        <span>{{ char }}</span>
-                    {% endfor %}
+                    {{ user_element }}
                 </p>
-                <p class="playlist-description">{{ top_playlist.description }}</p>
-
-                <a href="{{ top_playlist.url }}" target="_blank" class="playlist-link">{% trans "Listen on Spotify" %}</a>
             {% else %}
-                <p>No playlists found.</p>
+                <p>No element found.</p>
             {% endif %}
         </div>
 

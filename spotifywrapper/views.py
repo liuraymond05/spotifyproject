@@ -362,7 +362,7 @@ def top_spotify_data(request):
     time_range = request.GET.get('time_range', 'long_term')
 
     top_tracks_response = requests.get(
-        f'https://api.spotify.com/v1/me/top/tracks?time_range={time_range}&limit=3',
+        f'https://api.spotify.com/v1/me/top/tracks?time_range={time_range}&limit=5',
         headers={'Authorization': f'Bearer {access_token}'}
     )
     top_tracks = []
@@ -382,9 +382,9 @@ def top_spotify_data(request):
         })
 
 
-    # Fetch the top artists (limit to 3) based on the selected time range
+    # Fetch the top artists (limit to 10) based on the selected time range
     top_artists_response = requests.get(
-        f'https://api.spotify.com/v1/me/top/artists?time_range={time_range}&limit=3',
+        f'https://api.spotify.com/v1/me/top/artists?time_range={time_range}&limit=10',
         headers={'Authorization': f'Bearer {access_token}'}
     )
     top_artists_data = []
@@ -401,10 +401,13 @@ def top_spotify_data(request):
 
     # Get the top genre (most frequent genre from top artists)
     genres = []
-    for artist in top_artists:
-        genres.extend(artist['genres'])
+    if top_artists_response.status_code == 200:
+        top_artists = top_artists_response.json()['items']
+        for artist in top_artists:
+            genres.extend(artist.get('genres', []))  # Add all genres associated with each artist
 
-    top_genre = max(set(genres), key=genres.count) if genres else None
+    # Determine the top genre (most frequent genre in the list)
+    top_genre = max(Counter(genres), key=Counter(genres).get) if genres else None
 
     # Get the top album
     album_count = {}
@@ -677,7 +680,7 @@ def get_user_element(top_genre):
         'funk': 'air', 'disco': 'air', 'afrobeats': 'air', 'experimental': 'air', 'ambient': 'air', 'classical': 'air',
         'jazz fusion': 'air', 'progressive rock': 'air', 'synthwave': 'air'
     }
-    return genre_to_element.get(top_genre, 'Air')
+    return genre_to_element.get(top_genre, 'air')
 
 
 
@@ -908,9 +911,9 @@ def top_songs(request):
     })
 
 @login_required
-def top_playlist(request):
+def user_element(request):
     """
-    View to display the user's top Spotify playlist based on the top Spotify data view.
+    View to display the user's classical element based on their music taste.
     """
     user_profile = UserProfile.objects.filter(user=request.user).first()
     if not user_profile or not user_profile.spotify_access_token:
@@ -930,27 +933,56 @@ def top_playlist(request):
     }
     time_range = time_range_mapping.get(time_range, 'long_term')  # Ensure we have a valid time range
 
-    # Fetch the user's playlists
-    playlists_response = requests.get(
-        f'https://api.spotify.com/v1/me/playlists?time_range={time_range}&limit=10',  # Fetch more playlists for context
+    # Fetch the top artists (limit to 3) based on the selected time range
+    top_artists_response = requests.get(
+        f'https://api.spotify.com/v1/me/top/artists?time_range={time_range}&limit=10',
         headers={'Authorization': f'Bearer {access_token}'}
     )
+    top_artists_data = []
+    if top_artists_response.status_code == 200:
+        top_artists = top_artists_response.json()['items']
+        for artist in top_artists:
+            top_artists_data.append({
+                'name': artist['name'],
+                'image': artist['images'][0]['url'] if 'images' in artist else None,
+            })
+    else:
+        return redirect('home')  # Redirect back if there was an error fetching top artists
 
-    top_playlist_data = None
-    if playlists_response.status_code == 200:
-        playlists = playlists_response.json().get('items', [])
-        if playlists:
-            top_playlist = playlists[0]  # Assume the first playlist is the "top" one
-            top_playlist_data = {
-                'name': top_playlist['name'],
-                'description': top_playlist.get('description', ''),
-                'image': top_playlist['images'][0]['url'] if top_playlist['images'] else None,
-                'url': top_playlist['external_urls']['spotify'],
-                'track_count': top_playlist['tracks']['total'],
-            }
+    genres = []
+    if top_artists_response.status_code == 200:
+        top_artists = top_artists_response.json()['items']
+        for artist in top_artists:
+            genres.extend(artist.get('genres', []))  # Add all genres associated with each artist
+
+    # Determine the top genre (most frequent genre in the list)
+    top_genre = max(Counter(genres), key=Counter(genres).get) if genres else None
+
+    # Define the genre-to-element mapping
+    genre_to_element = {
+        'country': 'earth', 'folk': 'earth', 'bluegrass': 'earth', 'americana': 'earth', 'indie folk': 'earth',
+        'acoustic': 'earth', 'blues': 'earth', 'soul': 'earth', 'reggae': 'earth',
+        'alternative rock': 'earth', 'indie': 'earth',
+
+        'hard rock': 'fire', 'metal': 'fire', 'punk rock': 'fire', 'trap': 'fire', 'salsa': 'fire',
+        'hip-hop': 'fire', 'punk': 'fire', 'emo': 'fire', 'edm': 'fire', 'dancehall': 'fire',
+        'pop': 'fire', 'rap': 'fire',
+
+        'r&b': 'water', 'lo-fi hip-hop': 'water', 'chillout': 'water', 'chillwave': 'water',
+        'smooth jazz': 'water', 'bossa nova': 'water', 'reggaeton': 'water', 'tango': 'water',
+        'lofi': 'water', 'jazz': 'water',
+
+        'indie pop': 'air', 'synthpop': 'air', 'electropop': 'air', 'k-pop': 'air', 'alternative indie': 'air',
+        'funk': 'air', 'disco': 'air', 'afrobeats': 'air', 'experimental': 'air', 'ambient': 'air', 'classical': 'air',
+        'jazz fusion': 'air', 'progressive rock': 'air', 'synthwave': 'air'
+    }
+
+    # Default to 'Unknown' if the genre doesn't match any known category
+    user_element = genre_to_element.get(top_genre, 'air')
 
     return render(request, 'spotifywrapper/top-playlist.html', {
-        'top_playlist': top_playlist_data,
+        'top_genre': top_genre,
+        'user_element': user_element,
     })
 
 
@@ -1009,9 +1041,9 @@ def favorite_decade(request):
 
 
 @login_required
-def favorite_mood(request):
+def popularity_level(request):
     """
-    View to determine the user's favorite mood based on Spotify data.
+    View to determine the user's top song's popularity level on Spotify platforms.
     Dynamically fetches data based on time range: short_term, medium_term, or long_term.
     """
     # Retrieve the user profile
@@ -1033,58 +1065,44 @@ def favorite_mood(request):
     }
     time_range = time_range_mapping.get(time_range, 'long_term')  # Ensure we have a valid time range
 
-    # Fetch the user's top tracks based on the selected time range
-    tracks_response = requests.get(
-        f'https://api.spotify.com/v1/me/top/tracks?limit=50&time_range={time_range}',
+    top_tracks_response = requests.get(
+        f'https://api.spotify.com/v1/me/top/tracks?time_range={time_range}&limit=5',
         headers={'Authorization': f'Bearer {access_token}'}
     )
+    top_tracks = []
+    if top_tracks_response.status_code == 200:
+        top_tracks = top_tracks_response.json()['items']
 
-    mood_count = {
-        "Happy": 0,
-        "Sad": 0,
-        "Energetic": 0,
-        "Relaxed": 0
-    }
-    favorite_mood = None
+    top_tracks_data = []
+    for track in top_tracks:
+        top_tracks_data.append({
+            'name': track['name'],
+            'artist': ', '.join([artist['name'] for artist in track['artists']]),
+            'album': track['album']['name'],
+            'image': track['album']['images'][0]['url'] if track['album']['images'] else None,
+            'preview_url': track['preview_url'],
+            'popularity': track['popularity'],
 
-    if tracks_response.status_code == 200:
-        tracks_data = tracks_response.json().get('items', [])
-        track_ids = [track['id'] for track in tracks_data]
+        })
 
-        # Fetch audio features for the top tracks
-        if track_ids:
-            audio_features_response = requests.get(
-                f'https://api.spotify.com/v1/audio-features?ids={",".join(track_ids)}',
-                headers={'Authorization': f'Bearer {access_token}'}
-            )
+    top_song = None
+    top_popularity = None
+    popularity_level = None
+    if top_tracks:
+        top_song = top_tracks[0]['name']
+        top_popularity = top_tracks[0]['popularity']
 
-            if audio_features_response.status_code == 200:
-                audio_features_data = audio_features_response.json().get('audio_features', [])
-                for feature in audio_features_data:
-                    if not feature:
-                        continue
-
-                    # Analyze track mood based on valence and energy
-                    valence = feature.get('valence', 0)
-                    energy = feature.get('energy', 0)
-
-                    if valence >= 0.5 and energy >= 0.5:
-                        mood_count["Happy"] += 1
-                    elif valence < 0.5 and energy < 0.5:
-                        mood_count["Sad"] += 1
-                    elif valence < 0.5 and energy >= 0.5:
-                        mood_count["Energetic"] += 1
-                    elif valence >= 0.5 and energy < 0.5:
-                        mood_count["Relaxed"] += 1
-
-        favorite_mood = max(mood_count, key=mood_count.get)
-
-    mood_data = [{'mood': mood, 'count': count} for mood, count in mood_count.items()]
-    mood_data.sort(key=lambda x: x['mood'])
+        # Define popularity thresholds
+        if top_popularity >= 80:
+            popularity_level = 'High'
+        elif top_popularity >= 50:
+            popularity_level = 'Medium'
+        else:
+            popularity_level = 'Low'
 
     return render(request, 'spotifywrapper/favorite-mood.html', {
-        'mood_data': mood_data,
-        'favorite_mood': favorite_mood,
+        'top_song': top_song,
+        'popularity_level': popularity_level,
     })
 
 

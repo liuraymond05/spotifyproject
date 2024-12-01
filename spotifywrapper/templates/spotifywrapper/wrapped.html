@@ -98,7 +98,7 @@
                 <div class="card">
                     <h2>{% trans "Top 3 Artists" %}</h2>
                     <div class="artist-container">
-                        {% for artist in top_artists %}
+                        {% for artist in top_artists|slice:":3" %}
                             <div class="artist-card">
                                 <img src="{{ artist.image }}" alt="{{ artist.name }}" class="artist-image">
                                 <p class="artist-name">{{ artist.name }}</p>
@@ -135,7 +135,7 @@
                 </div>
 
                 <div class="card">
-                    <h2>{% trans "Your Classical Element!" %}</h2>
+                    <h2>{% trans "My Classical Element!" %}</h2>
                     <div id="playlist-pulse-container">
                         <div id="pulse-circle">
                             <span id="playlist-name">{{ user_element }}</span>
@@ -159,7 +159,7 @@
                 <div class="card">
                     <div class="tracks-list">
                     <h2>{% trans "Top 3 Tracks" %}</h2>
-                        {% for track in top_tracks %}
+                        {% for track in top_tracks|slice:":3" %}
                         <div class="track-card">
                             <div class="track-info">
                                 <h4>{{ track.name }}</h4>
