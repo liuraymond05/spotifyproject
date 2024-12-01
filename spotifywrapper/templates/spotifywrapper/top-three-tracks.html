@@ -323,7 +323,7 @@
     <script>
          function toggleMenu() {
             const dropdown = document.getElementById("dropdownMenu");
-            dropdown.classList.toggle("show-menu");
+            dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
         }
 
         function playAudio(url) {
