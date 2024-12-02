@@ -554,8 +554,7 @@ def top_spotify_data(request):
 
     })
 
-def gamepage(request):
-    return render(request, 'games.html')
+
 def wraps(request):
     return render(request, 'savedwraps.html')
 from django.http import JsonResponse
