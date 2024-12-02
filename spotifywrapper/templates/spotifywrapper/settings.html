@@ -1,81 +1,322 @@
 {% load static %}
+{% load i18n %}
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Settings</title>
-    <link rel="stylesheet" href="{% static 'spotifywrapped/settingstyle.css' %}">
+    <title>{% trans "Settings" %}</title>
+    <link rel="stylesheet" href="{% static 'spotifywrapped/breakdown.css' %}">
+    <script src="{% static 'spotifywrapped/theme.js' %}" defer></script>
+    <style>
+        /* Base Styles */
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #adf097;
+            color: #333;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* Light Mode */
+        body.light-mode {
+            background-color: #adf097;
+            color: #333;
+        }
+
+        /* Dark Mode */
+        body.dark-mode {
+            background-color: #181818;
+            color: #ffffff;
+        }
+
+        /* Neon Mode */
+        body.neon-mode {
+            background-color: #000;
+            color: #00ff00;
+        }
+
+        /* Updated Header Styling */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: black;
+            padding: 25px 20px;
+            box-sizing: border-box;
+            color: white;
+            z-index: 1000;
+        }
+
+        header .logo {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        header .logo img {
+            width: 40px;
+            height: auto;
+        }
+
+        header .logo h1 {
+            margin: 0;
+            font-size: 1.6em;
+        }
+
+        /* Dropdown Menu */
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 20px;
+            top: 90px;
+            background-color: black;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1001;
+            width: 200px;
+            text-align: center;
+        }
+
+        .dropdown-menu ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .dropdown-menu li {
+            padding: 10px 0;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .dropdown-menu li:hover {
+            background-color: hotpink;
+        }
+
+        .dropdown-menu a {
+            color: white;
+            text-decoration: none;
+            font-size: 1em;
+            display: block;
+            text-align: center;
+        }
+
+        /* Settings Container */
+        .settings-wrapper {
+            margin-top: 50px; /* Push content below the fixed header */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: calc(100vh - 120px); /* Account for header height */
+        }
+
+        .settings-container {
+            width: 90%; /* Ensure responsiveness */
+            max-width: 500px; /* Restrict the width */
+            padding: 30px;
+            background-color: #f4f4f4;
+            border-radius: 10px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s;
+            text-align: center;
+        }
+
+        /* Dark Mode Styling for Settings Container */
+        body.dark-mode .settings-container {
+            background-color: #242424;
+        }
+
+        /* Neon Mode Styling for Settings Container */
+        body.neon-mode .settings-container {
+            background-color: #111;
+            border: 2px solid #00ff00;
+        }
+
+        /* Settings Title */
+        .settings-title {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+        }
+
+        /* Setting Item */
+        .setting-item {
+            margin-bottom: 20px;
+        }
+
+        .setting-item h3 {
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        /* Form Inputs and Buttons */
+        select, button {
+            width: 100%;
+            padding: 10px;
+            font-size: 1rem;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        select {
+            background-color: #fff;
+            color: #333;
+        }
+
+        body.dark-mode select {
+            background-color: #333;
+            color: #fff;
+        }
+
+        body.neon-mode select {
+            background-color: #000;
+            color: #00ff00;
+        }
+
+        button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        /* Link Styling */
+        a {
+            color: #007bff;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: #0056b3;
+        }
+
+        body.neon-mode a {
+            color: #00ff00;
+        }
+
+        body.neon-mode a:hover {
+            text-shadow: 0 0 5px #00ff00, 0 0 10px #00ff00;
+        }
+    </style>
 </head>
-<body>
-{% include 'spotifywrapper/banner.html' %}
-    <div class="settings-container">
-        <h2 class="settings-title">Settings</h2>
+<body class="light-mode">
 
-        <!-- Change Language -->
-        <div class="setting-item">
-            <h3>Change Language</h3>
-            <form method="POST" action="{% url 'set_language' language_code='en' %}">
-                {% csrf_token %}
-                <label for="language-select">Language:</label>
-                <select id="language-select" name="language" onchange="this.form.submit()">
-                    <option value="en" {% if LANGUAGE_CODE == 'en' %}selected{% endif %}>English</option>
-                    <option value="es" {% if LANGUAGE_CODE == 'es' %}selected{% endif %}>Spanish</option>
-                    <!-- Add other languages here -->
+    <header>
+        <div class="logo">
+            <a href="{% url 'home' %}">
+                <img src="{% static 'spotifywrapped/spotify.png' %}" alt="Spotify Logo">
+            </a>
+            <h1>{% trans "Settings" %}</h1>
+        </div>
+        <div class="menu-icon" onclick="toggleMenu()">
+            <div class="line"></div>
+            <div class="line"></div>
+            <div class="line"></div>
+        </div>
+    </header>
+
+    <div class="dropdown-menu" id="dropdownMenu">
+        <ul>
+            <li><a href="{% url 'gamepage' %}">{% trans "Games" %}</a></li>
+            <li><a href="{% url 'wraps' %}">{% trans "My Wraps" %}</a></li>
+            <li><a href="{% url 'settings' %}">{% trans "Settings" %}</a></li>
+            <li><a href="{% url 'logout' %}">{% trans "Log Out" %}</a></li>
+        </ul>
+    </div>
+
+    <div class="settings-wrapper">
+        <div class="settings-container">
+            <h2 class="settings-title">{% trans "Settings" %}</h2>
+
+            <!-- Change Language -->
+            <div class="setting-item">
+                <h3>{% trans "Change Language" %}</h3>
+                <form method="POST" action="{% url 'set_language' %}">
+                    {% csrf_token %}
+                    <select id="language-select" name="language" onchange="this.form.submit()">
+                        <option value="en" {% if LANGUAGE_CODE == 'en' %}selected{% endif %}>
+                            {% trans "English" %}</option>
+                        <option value="es" {% if LANGUAGE_CODE == 'es' %}selected{% endif %}>
+                            {% trans "Spanish" %}</option>
+                        <option value="fr" {% if LANGUAGE_CODE == 'fr' %}selected{% endif %}>
+                            {% trans "French" %}</option>
+                    </select>
+                </form>
+            </div>
+
+            <!-- Change Color Mode -->
+            <div class="setting-item">
+                <h3>{% trans "Change Color Mode" %}</h3>
+                <select id="color-mode" onchange="setTheme(this.value)">
+                    <option value="light-mode">{% trans "Light Mode" %}</option>
+                    <option value="dark-mode">{% trans "Dark Mode" %}</option>
+                    <option value="neon-mode">{% trans "Neon Mode" %}</option>
                 </select>
-            </form>
-        </div>
+            </div>
 
-        <!-- Change Color Mode -->
-        <div class="setting-item">
-            <h3>Change Color Mode</h3>
-            <label for="color-mode">Select Mode:</label>
-            <select id="color-mode" onchange="changeColorMode()">
-                <option value="light">Light</option>
-                <option value="dark">Dark</option>
-                <option value="neon">Neon</option>
-            </select>
-        </div>
+            <!-- Delete Account -->
+            <div class="setting-item">
+                <h3>{% trans "Delete Account" %}</h3>
+                <form method="POST" action="{% url 'delete_account' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">{% trans "Delete Account" %}</button>
+                </form>
+            </div>
 
-        <!-- Delete Account -->
-        <div class="setting-item">
-            <h3>Delete Account</h3>
-            <form method="POST" action="{% url 'delete_account' %}">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-danger">Delete Account</button>
-            </form>
-        </div>
-
-        <!-- Contact Developers -->
-        <div class="setting-item">
-            <a href="{% url 'contact_developers' %}">Contact Developers</a>
-
-
+            <!-- Contact Developers -->
+            <div class="setting-item">
+                <a href="{% url 'contact_developers' %}">{% trans "Contact Developers" %}</a>
+            </div>
         </div>
     </div>
 
     <script>
-        // Handle changing color mode
-        function changeColorMode() {
-            const mode = document.getElementById('color-mode').value;
-            document.body.className = mode; // Apply the mode to the body
-            localStorage.setItem('colorMode', mode); // Store mode in localStorage
+        function setTheme(theme) {
+            document.cookie = `theme=${theme}; path=/; max-age=31536000`; // Save for 1 year
+            applyTheme(theme);
         }
 
-        // Apply the saved color mode on page load
+        function applyTheme(theme) {
+            document.body.className = theme; // Apply the selected theme
+        }
+
+        function toggleMenu() {
+            const dropdown = document.getElementById("dropdownMenu");
+            dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+        }
+
         window.onload = function () {
-            const savedMode = localStorage.getItem('colorMode');
-            const validModes = ['light', 'dark', 'neon'];
+            const theme = document.cookie
+                .split('; ')
+                .find(row => row.startsWith('theme='))
+                ?.split('=')[1] || 'light-mode'; // Default to light mode
+            applyTheme(theme);
 
-            if (savedMode && validModes.includes(savedMode)) {
-                document.body.className = savedMode; // Load the saved mode
-                document.getElementById('color-mode').value = savedMode; // Set the dropdown value
-            } else {
-                // Default to 'light' mode if no valid saved mode
-                document.body.className = 'light';
-                document.getElementById('color-mode').value = 'light';
+            // Update the dropdown value
+            const colorModeSelect = document.getElementById('color-mode');
+            if (colorModeSelect) {
+                colorModeSelect.value = theme;
             }
-        }
+        };
     </script>
 </body>
 </html>

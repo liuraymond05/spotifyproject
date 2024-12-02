@@ -1,0 +1,277 @@
+{% load static %}
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>{% trans "Top Album" %}</title>
+    <link rel="stylesheet" href="{% static 'spotifywrapped/breakdown.css' %}">
+        <script src="{% static 'spotifywrapped/theme.js' %}" defer></script>
+
+
+   <style>
+       /* Base Styles */
+       body {
+           font-family: Arial, sans-serif;
+           margin: 0;
+           padding: 0;
+           background: linear-gradient(135deg, #ff5f6d, #ffc371, #43cea2);
+           background-size: 300% 300%;
+           animation: gradientAnimation 10s ease infinite;
+       }
+
+       body.dark-mode {
+            font-family: Arial, sans-serif;
+           margin: 0;
+           padding: 0;
+            background: linear-gradient(135deg, #093485, #214d1c, #552d57);
+            background-size: 300% 300%;
+            animation: gradientAnimation 10s ease infinite;
+       }
+
+       body.neon-mode {
+       font-family: Arial, sans-serif;
+           margin: 0;
+           padding: 0;
+            background: linear-gradient(135deg, #d9ff00, #ff00d9, #00e5ff);
+             background-size: 300% 300%;
+            animation: gradientAnimation 10s ease infinite;
+       }
+
+       @keyframes gradientAnimation {
+           0% { background-position: 0% 50%; }
+           50% { background-position: 100% 50%; }
+           100% { background-position: 0% 50%; }
+       }
+
+       /* Updated Header Styling (Bigger Banner) */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: black;
+            padding: 25px 20px; /* Increased padding for a bigger banner */
+            box-sizing: border-box;
+            color: white;
+            z-index: 1000; /* Make sure the header stays on top of other elements */
+        }
+
+        header .logo {
+            display: flex;
+            align-items: center;
+            gap: 20px; /* Added gap between logo and text */
+        }
+
+        header .logo img {
+            width: 40px;
+            height: auto;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+
+        header .logo h1 {
+            margin: 0;
+            font-size: 1.6em;
+        }
+
+        /* Dropdown Menu */
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 20px;
+            top: 90px; /* Adjusted to align with the larger header */
+            background-color: black;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1001; /* Ensures dropdown is above everything else */
+            width: 200px; /* Ensures enough width for centering */
+            text-align: center; /* Center-aligns content */
+        }
+
+        .dropdown-menu ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .dropdown-menu li {
+            padding: 10px 0; /* Centered padding for items */
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .dropdown-menu li:hover {
+            background-color: hotpink;
+        }
+
+        .dropdown-menu a {
+            color: white;
+            text-decoration: none;
+            font-size: 1em;
+            display: block; /* Ensures full-width clickable area */
+            text-align: center; /* Centers the text inside the links */
+        }
+
+       /* Album Card Container */
+       .album-card-container {
+           display: flex;
+           justify-content: center;
+           align-items: center;
+           flex-direction: column;
+           margin-top: 120px;
+           padding: 20px;
+           position: relative;
+       }
+
+       /* Album Photo Only */
+       .album-photo {
+           width: 500px; /* Increased width */
+           height: auto;
+           border-radius: 15px;
+           box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+           margin-bottom: 20px;
+           opacity: 0;
+           transform: translateY(-50%);
+           transition: transform 1s ease-in-out, opacity 1s ease-in-out;
+       }
+
+       /* Information Card Styling */
+       .album-info-card {
+           position: relative;
+           width: 250px;
+           height: auto;
+           background: linear-gradient(135deg, black, white);
+           border-radius: 20px;
+           padding: 20px;
+           box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+           color: #ffffff;
+           text-align: center;
+           opacity: 0;
+           transform: translateY(50%);
+           transition: transform 1s ease-in-out, opacity 1s ease-in-out;
+       }
+
+
+
+       .album-info-card p {
+           font-size: 1em;
+           line-height: 1.5;
+           margin-bottom: 10px;
+       }
+
+       /* Trigger Slide-In Animation */
+       .show-cards .album-photo {
+           transform: translateY(0);
+           opacity: 1;
+       }
+
+       .show-cards .album-info-card {
+           transform: translateY(0);
+           opacity: 1;
+       }
+
+       /* Buttons Styling */
+       .buttons-container {
+           position: fixed;
+           bottom: 20px;
+           left: 0;
+           right: 0;
+           display: flex;
+           justify-content: center;
+           gap: 20px;
+           z-index: 1000;
+       }
+
+       .btn {
+           display: inline-block;
+           padding: 15px 25px;
+
+           font-size: 1em;
+           font-weight: bold;
+           text-decoration: none;
+           border-radius: 25px;
+           box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+           transition: background-color 0.3s ease, transform 0.3s ease;
+       }
+
+       .btn:hover {
+           transform: translateY(-5px);
+           box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+       }
+   </style>
+</head>
+
+<body id="album">
+   <header>
+        <div class="logo">
+            <a href="{% url 'home' %}">
+            <img src="{% static 'spotifywrapped/spotify.png' %}" alt="Spotify Logo">
+        </a>
+            <h1>{% trans "My Top Album" %}</h1>
+        </div>
+        <div class="menu-icon" onclick="toggleMenu()">
+            <div class="line"></div>
+            <div class="line"></div>
+            <div class="line"></div>
+        </div>
+   </header>
+
+   <div class="dropdown-menu" id="dropdownMenu">
+        <ul>
+            <li><a href="{% url 'gamepage' %}" id="games">{% trans "Games" %}</a></li>
+            <li><a href="{% url 'wraps' %}" id="wraps">{% trans "My Wraps" %}</a></li>
+            <li><a href="{% url 'settings' %}" id="settingsLink">{% trans "Settings" %}</a></li>
+            <li><a href="{% url 'logout' %}">{% trans "Log Out" %}</a></li>
+        </ul>
+   </div>
+
+   <section>
+        <div class="album-card-container">
+            <!-- Album Photo Only -->
+            <img src="{{ album_details.image }}" alt="Top Album" class="album-photo">
+
+            <!-- Information Card -->
+            <div class="album-info-card">
+                <p><strong>{% trans "Album" %}:</strong> {{ album_details.name }}</p>
+                <p><strong>{% trans "Release Date" %}:</strong> {{ album_details.release_date }}</p>
+            </div>
+        </div>
+
+        <div class="buttons-container">
+            <a href="{% url 'top_artists' %}" class="btn">{% trans "Back" %}</a>
+            <a href="{% url 'home' %}" class="btn">{% trans "Home" %}</a>
+            <a href="{% url 'top_songs' %}" class="btn">{% trans "Next" %}</a>
+        </div>
+   </section>
+
+   <script>
+       function toggleMenu() {
+           const dropdown = document.getElementById("dropdownMenu");
+           dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+       }
+
+
+       document.addEventListener("DOMContentLoaded", function () {
+           const albumContainer = document.querySelector(".album-card-container");
+
+           function handleScroll() {
+               const containerTop = albumContainer.getBoundingClientRect().top;
+               const windowHeight = window.innerHeight;
+
+               if (containerTop < windowHeight - 100) {
+                   albumContainer.classList.add("show-cards");
+                   window.removeEventListener("scroll", handleScroll);
+               }
+           }
+
+           window.addEventListener("scroll", handleScroll);
+           handleScroll();
+       });
+   </script>
+</body>
+</html>

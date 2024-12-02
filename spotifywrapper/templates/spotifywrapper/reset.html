@@ -1,11 +1,12 @@
 {% load static %}
+{% load i18n %}
 <!DOCTYPE html>
 
 <html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reset Your Password!</title>
+    <title>{% trans "Reset Your Password" %}</title>
     <link rel="stylesheet" href="{% static 'spotifywrapped/style.css' %}">
     <script>
         function showHints() {
@@ -42,7 +43,7 @@
 <body>
 <div class="container">
     <div class="wrapper">
-        <div class="title"><span>Reset Your Password!</span></div>
+        <div class="title"><span>{% trans "Reset Your Password!" %}</span></div>
         <form name="ResetPasswordForm" action="{% url 'reset' %}" method="post">
             {% csrf_token %}
             {{ form.as_p }}
@@ -51,19 +52,20 @@
             </div>
             <div id="password-hints" class="hint">
                 <ul>
-                    <li>Must be at least 8 characters long</li>
-                    <li>Must include letters and numbers</li>
-                    <li>Must be different from username</li>
+                    <li>{% trans "Must be at least 8 characters long" %}</li>
+                    <li>{% trans "Must include letters and numbers" %}</li>
+                    <li>{% trans "Must be different from username" %}</li>
                 </ul>
             </div>
-            <div class="signup-link">Know your password? <a href="{% url 'login' %}">Login here!!</a></div>
+            <div class="signup-link">{% trans "Know your password?" %} <a href="{% url 'login' %}">
+                {% trans "Login here!!" %}!</a></div>
         </form>
         <div class="mode-switcher">
-            <label for="modeSwitch">ChooseMode:</label>
+            <label for="modeSwitch">{% trans "Choose Mode" %}:</label>
             <select id="modeSwitch">
-                <option value="light">Light Mode</option>
-                <option value="dark">Dark Mode</option>
-                <option value="neon">Neon Mode</option>
+                <option value="light">{% trans "Light Mode" %}</option>
+                <option value="dark">{% trans "Dark Mode" %}</option>
+                <option value="neon">{% trans "Neon Mode" %}</option>
             </select>
         </div>
     </div>
