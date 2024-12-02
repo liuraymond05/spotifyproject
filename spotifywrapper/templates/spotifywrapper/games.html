@@ -1,3 +1,4 @@
+{% load i18n %}
 <!DOCTYPE html>
 
 <div id="banner-container">
@@ -8,7 +9,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Match That Song!</title>
+  <title>{% trans "Match That Game!" %}!</title>
   {% load static %}
   <link id="theme-stylesheet" rel="stylesheet" href="{% static 'spotifywrapped/gamestyles-dark.css' %}">
 </head>
@@ -20,28 +21,26 @@
     {% if message %}
       <div class="error-message">{{ message }}</div>
     {% endif %}
-    <button id="start-button" class="start-button">Click to Begin</button>
-    <button id="how-to-play-button" class="start-button">How To Play</button>
+    <button id="start-button" class="start-button">{% trans "Click To Begin!" %}</button>
+    <button id="how-to-play-button" class="start-button">{% trans "How To Play!" %}</button>
 <!--    <button id="toggle-theme" class="hint-button">Toggle Light/Dark Mode</button>-->
   </div>
-
 
   <!-- Instructions Modal -->
   <div id="instructions-modal" class="modal" style="display: none;">
     <div class="modal-content">
-      <h2>How to Play</h2>
-      <p><b>Welcome to Match That Song! Here's how to play:</b></p>
+      <h2>{% trans "How To Play" %}</h2>
+      <p><b>{% trans "Welcome to Match That Song! Here's how to play" %}:</b></p>
       <ul>
-        <li>You will be shown an album cover and three song options.</li>
-        <li>Pick the song that belongs to that album cover shown.</li>
-        <li>Rack up as many points as you can before that clock hits 0!</li>
-        <li><b>Correct Answers: +3 points</b></li>
-        <li><b>Incorrect Answers: -1 point</b></li>
+        <li>{% trans "You will be shown an album cover and three song options." %}</li>
+        <li>{% trans "Pick the song that belongs to that album cover shown." %}</li>
+        <li>{% trans "Rack up as many points as you can before that clock hits 0!" %}</li>
+        <li><b>{% trans "Correct Answers: +3 points" %}</b></li>
+        <li><b>{% trans "Incorrect Answers: -1 point" %}</b></li>
       </ul>
       <button id="close-instructions" class="close-button">Close</button>
     </div>
   </div>
-
 
   <!-- Game Page -->
   <div id="game-page" class="game-container" style="display: none;">
@@ -52,8 +51,8 @@
         {% endfor %}
       </div>
     {% endif %}
-    <h1 id="game-title">Match That Song!</h1>
-    <div id="score">Score: 0</div>
+    <h1 id="game-title">{% trans "Match That Song!" %}</h1>
+    <div id="score">{% trans "Score: 0!" %}</div>
 
     <!-- Album Cover Display -->
     <div id="album-display" class="album-container">
@@ -67,10 +66,10 @@
       <button class="option" id="option-c"></button>
     </div>
 
-    <div id="timer">Time Left: 7s</div>
+    <div id="timer">{% trans "Time Left: 7s" %}</div>
 
     <!--  hint button-->
-    <button id="hint-button" class="hint-button">Hint (3 left)</button>
+    <button id="hint-button" class="hint-button">{% trans "Hint (3 left)" %}</button>
 
   </div>
 
@@ -78,10 +77,10 @@
   <div id="end-page" class="end-container" style="display: none;">
 <!--    <h1>Game Over!</h1>-->
     <img src="{% static 'spotifywrapped/game-over.png' %}" alt="Game Over GIF" class="end-gif">
-    <p id="final-score">Your Score: 0</p>
-    <p id="high-score">High Score: 0</p>
-    <button id="play-again">Play Again</button>
-    <button id="return-to-start">Return to Start</button>
+    <p id="final-score">{% trans "Your Score: 0" %}</p>
+    <p id="high-score">{% trans "High Score: 0" %}</p>
+    <button id="play-again">{% trans "Play Again" %}</button>
+    <button id="return-to-start">{% trans "Return to Start" %}</button>
   </div>
 
   <!-- Tracks Data -->

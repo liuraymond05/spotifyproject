@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-02 00:34+0000\n"
+"POT-Creation-Date: 2024-12-02 04:50+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,8 +23,8 @@ msgstr ""
 #: spotifywrapper/templates/spotifywrapper/home.html:8
 #: spotifywrapper/templates/spotifywrapper/home.html:394
 #: spotifywrapper/templates/spotifywrapper/wrapped.html:8
-#: spotifywrapper/templates/spotifywrapper/wrapped.html:19
-#: spotifywrapper/templates/spotifywrapper/wrapped.html:41
+#: spotifywrapper/templates/spotifywrapper/wrapped.html:26
+#: spotifywrapper/templates/spotifywrapper/wrapped.html:50
 msgid "My Spotify Wrapped"
 msgstr "Mon Spotify enveloppé"
 
@@ -44,7 +44,7 @@ msgstr "Basculer le mode néon"
 #: spotifywrapper/templates/spotifywrapper/favorite-decade.html:247
 #: spotifywrapper/templates/spotifywrapper/favorite-mood.html:211
 #: spotifywrapper/templates/spotifywrapper/home.html:406
-#: spotifywrapper/templates/spotifywrapper/savedwraps.html:33
+#: spotifywrapper/templates/spotifywrapper/savedwraps.html:34
 #: spotifywrapper/templates/spotifywrapper/settings.html:239
 #: spotifywrapper/templates/spotifywrapper/top-albums.html:226
 #: spotifywrapper/templates/spotifywrapper/top-artists.html:270
@@ -52,7 +52,7 @@ msgstr "Basculer le mode néon"
 #: spotifywrapper/templates/spotifywrapper/top-playlist.html:247
 #: spotifywrapper/templates/spotifywrapper/top-songs.html:256
 #: spotifywrapper/templates/spotifywrapper/top-three-tracks.html:257
-#: spotifywrapper/templates/spotifywrapper/wrapped.html:31
+#: spotifywrapper/templates/spotifywrapper/wrapped.html:38
 msgid "Games"
 msgstr "Jeux"
 
@@ -62,7 +62,7 @@ msgstr "Jeux"
 #: spotifywrapper/templates/spotifywrapper/favorite-decade.html:248
 #: spotifywrapper/templates/spotifywrapper/favorite-mood.html:212
 #: spotifywrapper/templates/spotifywrapper/home.html:407
-#: spotifywrapper/templates/spotifywrapper/savedwraps.html:34
+#: spotifywrapper/templates/spotifywrapper/savedwraps.html:35
 #: spotifywrapper/templates/spotifywrapper/settings.html:240
 #: spotifywrapper/templates/spotifywrapper/top-albums.html:227
 #: spotifywrapper/templates/spotifywrapper/top-artists.html:271
@@ -70,7 +70,7 @@ msgstr "Jeux"
 #: spotifywrapper/templates/spotifywrapper/top-playlist.html:248
 #: spotifywrapper/templates/spotifywrapper/top-songs.html:257
 #: spotifywrapper/templates/spotifywrapper/top-three-tracks.html:258
-#: spotifywrapper/templates/spotifywrapper/wrapped.html:32
+#: spotifywrapper/templates/spotifywrapper/wrapped.html:39
 msgid "My Wraps"
 msgstr "Mes Wraps"
 
@@ -82,7 +82,7 @@ msgstr "Mes Wraps"
 #: spotifywrapper/templates/spotifywrapper/home.html:408
 #: spotifywrapper/templates/spotifywrapper/listening-habits.html:63
 #: spotifywrapper/templates/spotifywrapper/listening-habits.html:68
-#: spotifywrapper/templates/spotifywrapper/savedwraps.html:35
+#: spotifywrapper/templates/spotifywrapper/savedwraps.html:36
 #: spotifywrapper/templates/spotifywrapper/settings.html:8
 #: spotifywrapper/templates/spotifywrapper/settings.html:228
 #: spotifywrapper/templates/spotifywrapper/settings.html:241
@@ -93,7 +93,7 @@ msgstr "Mes Wraps"
 #: spotifywrapper/templates/spotifywrapper/top-playlist.html:249
 #: spotifywrapper/templates/spotifywrapper/top-songs.html:258
 #: spotifywrapper/templates/spotifywrapper/top-three-tracks.html:259
-#: spotifywrapper/templates/spotifywrapper/wrapped.html:33
+#: spotifywrapper/templates/spotifywrapper/wrapped.html:40
 msgid "Settings"
 msgstr "Paramètres"
 
@@ -105,7 +105,7 @@ msgstr "Paramètres"
 #: spotifywrapper/templates/spotifywrapper/home.html:409
 #: spotifywrapper/templates/spotifywrapper/listening-habits.html:64
 #: spotifywrapper/templates/spotifywrapper/listening-habits.html:69
-#: spotifywrapper/templates/spotifywrapper/savedwraps.html:36
+#: spotifywrapper/templates/spotifywrapper/savedwraps.html:37
 #: spotifywrapper/templates/spotifywrapper/settings.html:242
 #: spotifywrapper/templates/spotifywrapper/top-albums.html:229
 #: spotifywrapper/templates/spotifywrapper/top-artists.html:273
@@ -113,7 +113,7 @@ msgstr "Paramètres"
 #: spotifywrapper/templates/spotifywrapper/top-playlist.html:250
 #: spotifywrapper/templates/spotifywrapper/top-songs.html:259
 #: spotifywrapper/templates/spotifywrapper/top-three-tracks.html:260
-#: spotifywrapper/templates/spotifywrapper/wrapped.html:34
+#: spotifywrapper/templates/spotifywrapper/wrapped.html:41
 msgid "Log Out"
 msgstr "Se déconnecter"
 
@@ -127,17 +127,17 @@ msgid "Select a Time Range"
 msgstr "Sélectionnez une plage horaire"
 
 #: spotifywrapper/templates/spotifywrapper/choice.html:214
-#: spotifywrapper/templates/spotifywrapper/savedwraps.html:49
+#: spotifywrapper/templates/spotifywrapper/savedwraps.html:50
 msgid "Long-Term"
 msgstr "À long terme"
 
 #: spotifywrapper/templates/spotifywrapper/choice.html:215
-#: spotifywrapper/templates/spotifywrapper/savedwraps.html:53
+#: spotifywrapper/templates/spotifywrapper/savedwraps.html:54
 msgid "Medium-Term"
 msgstr "Moyenne Durée"
 
 #: spotifywrapper/templates/spotifywrapper/choice.html:216
-#: spotifywrapper/templates/spotifywrapper/savedwraps.html:51
+#: spotifywrapper/templates/spotifywrapper/savedwraps.html:52
 msgid "Short-Term"
 msgstr "Courte Durée"
 
@@ -226,7 +226,7 @@ msgstr "Accueil"
 
 #: spotifywrapper/templates/spotifywrapper/favorite-decade.html:8
 #: spotifywrapper/templates/spotifywrapper/savedwraps.html:138
-#: spotifywrapper/templates/spotifywrapper/wrapped.html:146
+#: spotifywrapper/templates/spotifywrapper/wrapped.html:161
 msgid "Favorite Decade"
 msgstr "Décennie Préférée"
 
@@ -271,9 +271,81 @@ msgstr "Popularité de la Chanson"
 #: spotifywrapper/templates/spotifywrapper/favorite-mood.html:200
 #: spotifywrapper/templates/spotifywrapper/favorite-mood.html:237
 #: spotifywrapper/templates/spotifywrapper/savedwraps.html:149
-#: spotifywrapper/templates/spotifywrapper/wrapped.html:154
+#: spotifywrapper/templates/spotifywrapper/wrapped.html:169
 msgid "My Top Song's Popularity"
 msgstr "Popularité de ma chanson préférée"
+
+#: spotifywrapper/templates/spotifywrapper/games.html:12
+msgid "Match That Game!"
+msgstr "Match cette chanson !"
+
+#: spotifywrapper/templates/spotifywrapper/games.html:24
+msgid "Click To Begin!"
+msgstr "Cliquez pour commencer !"
+
+#: spotifywrapper/templates/spotifywrapper/games.html:25
+msgid "How To Play!"
+msgstr "Comment jouer !"
+
+#: spotifywrapper/templates/spotifywrapper/games.html:33
+msgid "How To Play"
+msgstr "Comment jouer"
+
+#: spotifywrapper/templates/spotifywrapper/games.html:34
+msgid "Welcome to Match That Song! Here's how to play"
+msgstr "Bienvenue dans Match cette chanson ! Voici comment jouer"
+
+#: spotifywrapper/templates/spotifywrapper/games.html:36
+msgid "You will be shown an album cover and three song options."
+msgstr "Vous verrez une pochette d'album et trois options de chanson."
+
+#: spotifywrapper/templates/spotifywrapper/games.html:37
+msgid "Pick the song that belongs to that album cover shown."
+msgstr "Choisissez la chanson qui correspond à la pochette d'album affichée."
+
+#: spotifywrapper/templates/spotifywrapper/games.html:38
+msgid "Rack up as many points as you can before that clock hits 0!"
+msgstr "Accumulez autant de points que possible avant que l'horloge n'atteigne 0 !"
+
+#: spotifywrapper/templates/spotifywrapper/games.html:39
+msgid "Correct Answers: +3 points"
+msgstr "Réponses correctes : +3 points"
+
+#: spotifywrapper/templates/spotifywrapper/games.html:40
+msgid "Incorrect Answers: -1 point"
+msgstr "Réponses incorrectes : -1 point"
+
+#: spotifywrapper/templates/spotifywrapper/games.html:55
+msgid "Match That Song!"
+msgstr "Match cette chanson !"
+
+#: spotifywrapper/templates/spotifywrapper/games.html:56
+msgid "Score: 0!"
+msgstr "Score : 0 !"
+
+#: spotifywrapper/templates/spotifywrapper/games.html:70
+msgid "Time Left: 7s"
+msgstr "Temps restant : 7s"
+
+#: spotifywrapper/templates/spotifywrapper/games.html:73
+msgid "Hint (3 left)"
+msgstr "Indice (3 restants)"
+
+#: spotifywrapper/templates/spotifywrapper/games.html:81
+msgid "Your Score: 0"
+msgstr "Votre score : 0"
+
+#: spotifywrapper/templates/spotifywrapper/games.html:82
+msgid "High Score: 0"
+msgstr "Meilleur score : 0"
+
+#: spotifywrapper/templates/spotifywrapper/games.html:83
+msgid "Play Again"
+msgstr "Rejouer"
+
+#: spotifywrapper/templates/spotifywrapper/games.html:84
+msgid "Return to Start"
+msgstr "Retour au début"
 
 #: spotifywrapper/templates/spotifywrapper/home.html:415
 msgid "Your 2024 Wrapped is Here!"
@@ -442,46 +514,47 @@ msgid "Know your password?"
 msgstr "Vous connaissez votre mot de passe ?"
 
 #: spotifywrapper/templates/spotifywrapper/savedwraps.html:8
-#: spotifywrapper/templates/spotifywrapper/savedwraps.html:21
-#: spotifywrapper/templates/spotifywrapper/savedwraps.html:43
+#: spotifywrapper/templates/spotifywrapper/savedwraps.html:22
+#: spotifywrapper/templates/spotifywrapper/savedwraps.html:44
 msgid "Saved Spotify Wrapped"
 msgstr "Spotify Wrapped Sauvegardé"
 
-#: spotifywrapper/templates/spotifywrapper/savedwraps.html:47
+#: spotifywrapper/templates/spotifywrapper/savedwraps.html:48
 msgid "Your Spotify Wrapped"
 msgstr "Votre Spotify Wrapped"
 
-#: spotifywrapper/templates/spotifywrapper/savedwraps.html:65
-#: spotifywrapper/templates/spotifywrapper/wrapped.html:84
+#: spotifywrapper/templates/spotifywrapper/savedwraps.html:66
+#: spotifywrapper/templates/spotifywrapper/wrapped.html:99
 msgid "Welcome to Your Spotify Wrapped!"
 msgstr "Bienvenue dans votre Spotify Wrapped !"
 
-#: spotifywrapper/templates/spotifywrapper/savedwraps.html:66
-#: spotifywrapper/templates/spotifywrapper/wrapped.html:85
+#: spotifywrapper/templates/spotifywrapper/savedwraps.html:67
+#: spotifywrapper/templates/spotifywrapper/wrapped.html:100
 msgid "Here's to your music taste"
 msgstr "Voici votre goût musical"
 
-#: spotifywrapper/templates/spotifywrapper/savedwraps.html:71
+#: spotifywrapper/templates/spotifywrapper/savedwraps.html:72
 #: spotifywrapper/templates/spotifywrapper/top-genre.html:8
-#: spotifywrapper/templates/spotifywrapper/wrapped.html:89
+#: spotifywrapper/templates/spotifywrapper/wrapped.html:104
 msgid "Top Genre"
 msgstr "Genre Principal"
 
-#: spotifywrapper/templates/spotifywrapper/savedwraps.html:81
-#: spotifywrapper/templates/spotifywrapper/wrapped.html:99
+#: spotifywrapper/templates/spotifywrapper/savedwraps.html:82
+#: spotifywrapper/templates/spotifywrapper/wrapped.html:114
 msgid "Top 3 Artists"
 msgstr "Top 3 des Artistes"
 
-#: spotifywrapper/templates/spotifywrapper/savedwraps.html:89
+#: spotifywrapper/templates/spotifywrapper/savedwraps.html:90
 msgid "No top artists found."
 msgstr "Aucun artiste principal trouvé."
 
-#: spotifywrapper/templates/spotifywrapper/savedwraps.html:97
-#: spotifywrapper/templates/spotifywrapper/wrapped.html:111
+#: spotifywrapper/templates/spotifywrapper/savedwraps.html:98
+#: spotifywrapper/templates/spotifywrapper/top-albums.html:8
+#: spotifywrapper/templates/spotifywrapper/wrapped.html:126
 msgid "Top Album"
 msgstr "Album Principal"
 
-#: spotifywrapper/templates/spotifywrapper/savedwraps.html:110
+#: spotifywrapper/templates/spotifywrapper/savedwraps.html:111
 msgid "Top Song"
 msgstr "Chanson Principale"
 
@@ -494,17 +567,17 @@ msgid "Your Classical Element!"
 msgstr "Votre Élément Classique !"
 
 #: spotifywrapper/templates/spotifywrapper/savedwraps.html:155
-#: spotifywrapper/templates/spotifywrapper/wrapped.html:160
+#: spotifywrapper/templates/spotifywrapper/wrapped.html:175
 msgid "Top 3 Tracks"
 msgstr "Top 3 des Titres"
 
 #: spotifywrapper/templates/spotifywrapper/savedwraps.html:160
-#: spotifywrapper/templates/spotifywrapper/wrapped.html:164
+#: spotifywrapper/templates/spotifywrapper/wrapped.html:179
 msgid "Track"
 msgstr "Titre"
 
 #: spotifywrapper/templates/spotifywrapper/savedwraps.html:161
-#: spotifywrapper/templates/spotifywrapper/wrapped.html:165
+#: spotifywrapper/templates/spotifywrapper/wrapped.html:180
 msgid "Artist"
 msgstr "Artiste"
 
@@ -561,23 +634,19 @@ msgstr "Voici le Résumé de Votre Wrap"
 msgid "You have unique listening patterns!"
 msgstr "Vous avez des habitudes d'écoute uniques !"
 
-#: spotifywrapper/templates/spotifywrapper/top-albums.html:8
-msgid "Top Albums"
-msgstr "Top Albums"
-
 #: spotifywrapper/templates/spotifywrapper/top-albums.html:215
 msgid "My Top Album"
 msgstr "Mon meilleur album"
 
 #: spotifywrapper/templates/spotifywrapper/top-albums.html:240
 #: spotifywrapper/templates/spotifywrapper/top-songs.html:272
-#: spotifywrapper/templates/spotifywrapper/wrapped.html:116
-#: spotifywrapper/templates/spotifywrapper/wrapped.html:120
+#: spotifywrapper/templates/spotifywrapper/wrapped.html:131
+#: spotifywrapper/templates/spotifywrapper/wrapped.html:135
 msgid "Album"
 msgstr "Album"
 
 #: spotifywrapper/templates/spotifywrapper/top-albums.html:241
-#: spotifywrapper/templates/spotifywrapper/wrapped.html:121
+#: spotifywrapper/templates/spotifywrapper/wrapped.html:136
 msgid "Release Date"
 msgstr "Date de Sortie"
 
@@ -598,7 +667,7 @@ msgid "Your Classical Element"
 msgstr "Votre Élément Classique"
 
 #: spotifywrapper/templates/spotifywrapper/top-playlist.html:236
-#: spotifywrapper/templates/spotifywrapper/wrapped.html:137
+#: spotifywrapper/templates/spotifywrapper/wrapped.html:152
 msgid "My Classical Element"
 msgstr "Mon Élément Classique"
 
@@ -640,49 +709,54 @@ msgstr "Jouez-moi"
 msgid "Stop"
 msgstr "Arrêter"
 
-#: spotifywrapper/templates/spotifywrapper/wrapped.html:46
+#: spotifywrapper/templates/spotifywrapper/wrapped.html:54
 msgid "Selected Time Range"
 msgstr "Plage de Temps Sélectionnée"
 
-#: spotifywrapper/templates/spotifywrapper/wrapped.html:49
+#: spotifywrapper/templates/spotifywrapper/wrapped.html:57
 msgid "Last 4 Weeks"
 msgstr "Les 4 Dernières Semaines"
 
-#: spotifywrapper/templates/spotifywrapper/wrapped.html:51
+#: spotifywrapper/templates/spotifywrapper/wrapped.html:59
 msgid "Last 6 Months"
 msgstr "Les 6 Derniers Mois"
 
-#: spotifywrapper/templates/spotifywrapper/wrapped.html:53
+#: spotifywrapper/templates/spotifywrapper/wrapped.html:61
 msgid "Last Year"
 msgstr "L'Année Dernière"
 
-#: spotifywrapper/templates/spotifywrapper/wrapped.html:55
+#: spotifywrapper/templates/spotifywrapper/wrapped.html:63
 msgid "Apply"
 msgstr "Appliquer"
 
-#: spotifywrapper/templates/spotifywrapper/wrapped.html:59
+#: spotifywrapper/templates/spotifywrapper/wrapped.html:71
+#, fuzzy
+#| msgid "Save Wrapped"
+msgid "Save Wrapped Data"
+msgstr "Enregistrer emballé"
+
+#: spotifywrapper/templates/spotifywrapper/wrapped.html:74
 msgid "Spotify Wrapped for the last"
 msgstr "Spotify Wrapped pour les derniers"
 
-#: spotifywrapper/templates/spotifywrapper/wrapped.html:60
+#: spotifywrapper/templates/spotifywrapper/wrapped.html:75
 msgid "4 weeks"
 msgstr "4 semaines"
 
-#: spotifywrapper/templates/spotifywrapper/wrapped.html:61
+#: spotifywrapper/templates/spotifywrapper/wrapped.html:76
 msgid "6 months"
 msgstr "6 mois"
 
-#: spotifywrapper/templates/spotifywrapper/wrapped.html:62
+#: spotifywrapper/templates/spotifywrapper/wrapped.html:77
 msgid "year"
 msgstr "an"
 
-#: spotifywrapper/templates/spotifywrapper/wrapped.html:129
+#: spotifywrapper/templates/spotifywrapper/wrapped.html:144
 msgid "My Top Song"
 msgstr "Ma Chanson Principale"
 
-#: spotifywrapper/templates/spotifywrapper/wrapped.html:221
-msgid "Save Wrapped"
-msgstr "Enregistrer emballé"
+#~ msgid "Top Albums"
+#~ msgstr "Top Albums"
 
 #~ msgid "Your Top Song's"
 #~ msgstr "Votre Chanson Principale"
