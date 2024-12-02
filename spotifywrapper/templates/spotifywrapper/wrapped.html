@@ -1,503 +1,131 @@
 {% load static %}
-{% load i18n %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% trans "My Spotify Wrapped" %}</title>
+    <title>My Spotify Wrapped</title>
     <link rel="stylesheet" href="{% static 'spotifywrapped/wrapped.css' %}">
-    <script src="{% static 'spotifywrapped/confetti.js' %}"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <script src="{% static 'spotifywrapped/theme.js' %}" defer></script>
-
-
-
-
-
-
 </head>
 <body>
-    <header>
-       <div class="logo">
-           <a href="{% url 'home' %}">
-        <img src="{% static 'spotifywrapped/spotify.png' %}" alt="Spotify Logo">
-    </a>
-           <h1>{% trans "My Spotify Wrapped" %}</h1>
-       </div>
-       <div class="menu-icon" onclick="toggleMenu()">
-           <div class="line"></div>
-           <div class="line"></div>
-           <div class="line"></div>
-       </div>
-   </header>
+   <div class="wrapper">
+    <h1>My Spotify Wrapped</h1>
+   <!-- % include 'spotifywrapper/banner.html' %} -->
 
+    <!-- Form for selecting time range -->
+    <form method="get" action="{% url 'top_spotify_data' %}">
+        <label for="time_range">Select Time Range:</label>
+        <select name="time_range" id="time_range">
+            <option value="short_term" {% if selected_time_range == 'short_term' %}selected{% endif %}>Last 4 Weeks</option>
+            <option value="medium_term" {% if selected_time_range == 'medium_term' %}selected{% endif %}>Last 6 Months</option>
+            <option value="long_term" {% if selected_time_range == 'long_term' %}selected{% endif %}>Last Year</option>
+        </select>
+        <button type="submit">Apply</button>
+    </form>
 
-   <div class="dropdown-menu" id="dropdownMenu">
-       <ul>
-           <li><a href="{% url 'gamepage' %}" id="games">{% trans "Games" %}</a></li>
-           <li><a href="{% url 'wraps' %}" id="wraps">{% trans "My Wraps" %}</a></li>
-           <li><a href="{% url 'settings' %}" id="settingsLink">{% trans "Settings" %}</a></li>
-           <li><a href="{% url 'logout' %}">{% trans "Log Out" %}</a></li>
-       </ul>
-   </div>
+    <!-- Dynamic header based on selected time range -->
+    <h1>Spotify Wrapped for the last
+        {% if selected_time_range == 'short_term' %}4 weeks
+        {% elif selected_time_range == 'medium_term' %}6 months
+        {% elif selected_time_range == 'long_term' %}year
+        {% endif %}
+    </h1>
 
-
-
-    <div class="wrapper">
-        <h1>{% trans "My Spotify Wrapped" %}</h1>
-        <!-- % include 'spotifywrapper/banner.html' %} -->
-
-        <!-- Form for selecting time range -->
-        <form method="get" action="{% url 'top_spotify_data' %}">
-            <label for="time_range">{% trans "Selected Time Range" %}:</label>
-            <select name="time_range" id="time_range">
-                <option value="short_term" {% if selected_time_range == 'short_term' %}selected{% endif %}>
-                    {% trans "Last 4 Weeks" %}</option>
-                <option value="medium_term" {% if selected_time_range == 'medium_term' %}selected{% endif %}>
-                    {% trans "Last 6 Months" %}</option>
-                <option value="long_term" {% if selected_time_range == 'long_term' %}selected{% endif %}>
-                    {% trans "Last Year" %}</option>
-            </select>
-            <button type="submit">{% trans "Apply" %}</button>
-        </form>
-
-        <!-- Dynamic header based on selected time range -->
-        <h1>{% trans "Spotify Wrapped for the last" %}
-            {% if selected_time_range == 'short_term' %}{% trans "4 weeks" %}
-            {% elif selected_time_range == 'medium_term' %}{% trans "6 months" %}
-            {% elif selected_time_range == 'long_term' %}{% trans "year" %}
-            {% endif %}
-        </h1>
-
-        <!-- Displaying dynamic data like top artists, tracks, etc. -->
-        <div class="pic-container">
-            <div id="silver-squiggle">
-                <img src="../../static/spotifywrapped/silversquiggle.png" alt="Flower">
-            </div>
-            <div id="lavender">
-                <img src="../../static/spotifywrapped/lavender.png" alt="Flower">
-            </div>
+    <!-- Displaying dynamic data like top artists, tracks, etc. -->
+    <div class="pic-container">
+        <div id="silver-squiggle">
+            <img src="../../static/spotifywrapped/silversquiggle.png" alt="Flower">
         </div>
-
-        <div class="animation-container">
-            <div id="sun-or-moon"></div> <!-- The sun or moon image will appear here -->
-        </div>
-
-        <div class="carousel">
-            <button class="arrow left" onclick="moveCarousel('left')">&#10094;</button>
-            <div class="cards-container">
-                <div class="card">
-                    <h2>{% trans "Welcome to Your Spotify Wrapped!" %}!</h2>
-                    <p>{% trans "Here's to your music taste" %} {{ username }}!</p>
-                </div>
-
-                <div class="card">
-                    <h2>{% trans "Top Genre" %}</h2>
-                    <div id="cd-container">
-                        <div id="cd"></div>
-                        <div id="genre-name">{{ top_genre }}</div>
-                    </div>
-                </div>
-
-                <canvas id="confetti"></canvas>
-
-                <div class="card">
-                    <h2>{% trans "Top 3 Artists" %}</h2>
-                    <div class="artist-container">
-                        {% for artist in top_artists|slice:":3" %}
-                            <div class="artist-card">
-                                <img src="{{ artist.image }}" alt="{{ artist.name }}" class="artist-image">
-                                <p class="artist-name">{{ artist.name }}</p>
-                            </div>
-                        {% endfor %}
-                    </div>
-                </div>
-
-                <div class="card">
-                    <h2>{% trans "Top Album" %}</h2>
-                    <div class="album-card-container">
-                        <div class="album-card" id="album-card">
-                            <div class="album-front">
-                                <img src="{{ album_details.image }}" alt="Top Album" class="album-image">
-                                <p><strong>{% trans "Album" %}:</strong> {{ album_details.name }}</p>
-                            </div>
-                            <div class="album-back">
-                                <div class="album-details">
-                                    <p><strong>{% trans "Album" %}:</strong> {{ album_details.name }}</p>
-                                    <p><strong>{% trans "Release Date" %}:</strong> {{ album_details.release_date }}</p>
-                                    <p><strong>{% trans "Label" %}:</strong> {{ album_details.details }}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <h2>{% trans "Top Song" %}</h2>
-                    <p>{{ top_song }}</p>
-                    <div id="song-container">
-                        <canvas id="waveform-canvas" width="600" height="200"></canvas>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <h2>{% trans "My Classical Element!" %}</h2>
-                    <div id="playlist-pulse-container">
-                        <div id="pulse-circle">
-                            <span id="playlist-name">{{ user_element }}</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <h2>{% trans "Favorite Decade" %}</h2>
-                    <div id="vinyl-container">
-                        <div id="vinyl"></div>
-                        <div id="decade-number">{{ favorite_decade }}</div>
-                    </div>
-                </div>
-
-                <div class="card" id="favorite-mood">
-                    <h2>{% trans "Your Top Song's Popularity" %}</h2>
-                    <p>{{ popularity_level }}</p>
-                </div>
-
-                <div class="card">
-                    <div class="tracks-list">
-                    <h2>{% trans "Top 3 Tracks" %}</h2>
-                        {% for track in top_tracks|slice:":3" %}
-                        <div class="track-card">
-                            <div class="track-info">
-                                <h4><strong>Track:</strong> {{ track.name }}</h4>
-                                <h4><strong>Artist:</strong> {{ track.artist }}</h4>
-                            </div>
-                            <!-- Audio Player -->
-                            <div class="track-audio">
-                                <audio controls>
-                                    <source
-                                        {% if track.preview_url %}
-                                        src="{{ track.preview_url }}"
-                                        {% elif forloop.counter == 1 %}
-                                        src="{% static 'spotifywrapped/indie.mp3' %}"
-                                        {% elif forloop.counter == 2 %}
-                                        src="{% static 'spotifywrapped/jazz.mp3' %}"
-                                        {% elif forloop.counter == 3 %}
-                                        src="{% static 'spotifywrapped/orchestra.mp3' %}"
-                                        {% endif %}
-                                        type="audio/mpeg">
-                                </audio>
-                            </div>
-                            <!-- Original code to see the song clip preview -->
-                            {% comment %}
-                                {% if track.preview_url %}
-                                <audio controls>
-                                    <source src="{{ track.preview_url }}" type="audio/mpeg">
-                                    Your browser does not support the audio element.
-                                </audio>
-                                {% else %}
-                                <p class="no-preview">No preview available</p>
-                                {% endif %}
-                             {% endcomment %}
-                            </div>
-                        {% endfor %}
-                    </div>
-                </div>
-
-            </div>
-            <button class="arrow right" onclick="moveCarousel('right')">&#10095;</button>
+        <div id="lavender">
+            <img src="../../static/spotifywrapped/lavender.png" alt="Flower">
         </div>
     </div>
 
-    <audio id="preview-audio" style="display:none" controls>
-        Your browser does not support the audio element.
-    </audio>
+    <div class="carousel">
+        <button class="arrow left" onclick="moveCarousel('left')">&#10094;</button>
+        <div class="cards-container">
+            <div class="card">
+                <h2>Welcome to Your Spotify Wrapped!</h2>
+                <p>Here's to your music taste {{ username }}!</p>
+            </div>
 
-    <!-- Include JSON data safely using json_script -->
-    <script id="top_artists" type="application/json">
-        {{ top_artists|json_script:"top_artists" }}
-    </script>
-    <script id="top_tracks" type="application/json">
-        {{ top_tracks|json_script:"top_tracks" }}
-    </script>
+            <div class="card">
+                <h2>Top Genre</h2>
+                <p>{{ top_genre }}</p>
+            </div>
 
-    <!-- Form for saving data -->
-    <form id="saveForm" method="post" action="{% url 'save_wrap' %}">
-        {% csrf_token %}
-        <input type="hidden" name="time_range" value="{{ selected_time_range }}">
-        <button type="submit" id="saveButton">Save Wrapped</button>
-    </form>
-    <script>
-        function toggleMenu() {
-       const dropdown = document.getElementById("dropdownMenu");
-       dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
-   }
-        // Carousel Logic
-        let currentIndex = 0;
-        
-        document.addEventListener("DOMContentLoaded", function() {
-            // Hide the artist cards initially and apply the flip animation when the page loads
-            const artistCards = document.querySelectorAll('.artist-card');
-            artistCards.forEach(card => {
-                card.classList.remove('visible'); // Ensure cards are hidden on load
-            });
+            <div class="card">
+                <h2>Top 3 Artists</h2>
+                <div class="artist-container">
+                    {% for artist in top_artists %}
+                        <div class="artist-card">
+                            <img src="{{ artist.image }}" alt="{{ artist.name }}" class="artist-image">
+                            <p class="artist-name">{{ artist.name }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
 
-            // Initialize the confetti animation
-            const confetti = new Confetti("confetti");
-            confetti.start();
-        });
+            <div class="card">
+                <h2>Total Minutes Listened</h2>
+                <p>{{ total_minutes_listened }} minutes</p>
+            </div>
 
-        function moveCarousel(direction) {
-            const container = document.querySelector('.cards-container');
-            const cards = document.querySelectorAll('.card');
-            const totalCards = cards.length;
+            <div class="card">
+                <h2>Top Song</h2>
+                <p>{{ top_song }}</p>
+            </div>
 
-            const cardWidth = cards[0].offsetWidth;
+            <div class="card">
+                <h2>Top Playlist</h2>
+                <p>{{ top_playlist }}</p>
+            </div>
 
-            if (direction === 'right') {
-                currentIndex = (currentIndex + 1) % totalCards;
-            } else if (direction === 'left') {
-                currentIndex = (currentIndex - 1 + totalCards) % totalCards;
-            }
+            <div class="card">
+                <h2>Most Played Song</h2>
+                <p>{{ most_played_song }}</p>
+            </div>
 
-            container.style.transform = `translateX(-${currentIndex * (cardWidth + 18)}px)`;
+            <div class="card">
+                <h2>Top Artist of All Time</h2>
+                <p>{{ all_time_top_artist }}</p>
+            </div>
 
-            if (currentIndex === 2) {
-                animateArtistCards();
-            } else if (currentIndex === 3) {
-                animateAlbumCard();
-            } else if  (currentIndex === 4) {
-                animateWaveform(currentIndex);
-            } else if (currentIndex === 7) {
-                animatePopularityCard();
-            }
+            <div class="card">
+                <h2>Top Tracks</h2>
+                <ul>
+                    {% for track in top_tracks %}
+                        <li>{{ track.name }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        <button class="arrow right" onclick="moveCarousel('right')">&#10095;</button>
+    </div>
+</div>
 
+<script>
+    // Carousel Logic
+    let currentIndex = 0;
 
-            // Start the vinyl animation when the "Favorite Decade" card (card index 6) is shown
-            if (currentIndex === 6) {
-                startVinylAnimation();
-            } else {
-                stopVinylAnimation();
-            }
+    function moveCarousel(direction) {
+        const container = document.querySelector('.cards-container');
+        const cards = document.querySelectorAll('.card');
+        const totalCards = cards.length;
 
-            if (currentIndex === 1) {
-                startCdAnimation();
-            } else {
-                stopCdAnimation();
-            }
+        // Calculate card width dynamically (includes margins)
+        const cardWidth = cards[0].offsetWidth;
 
-            if (currentIndex === 5) { // Top Playlist
-                animateTopPlaylistCard(currentIndex);
-            } else {
-                togglePlaylistPulse(false); // Stop pulse animation for other cards
-            }
+        if (direction === 'right') {
+            currentIndex = (currentIndex + 1) % totalCards; // Wrap to first card
+        } else if (direction === 'left') {
+            currentIndex = (currentIndex - 1 + totalCards) % totalCards; // Wrap to last card
         }
 
-        // Use AJAX to submit the form without redirecting
-        $('#saveForm').on('submit', function(event) {
-            event.preventDefault();  // Prevent form submission
-            // Temporarily disable carousel movement
-            $(".arrow").prop("disabled", true);
-
-            $.ajax({
-                type: 'POST',
-                url: $(this).attr('action'),
-                data: {
-                    // form data
-                    'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val(),
-                },
-                success: function(response) {
-                    alert('Your wrapped data has been saved!');
-                    $(".arrow").prop("disabled", false); // Enable carousel buttons again
-                },
-                error: function(xhr, errmsg, err) {
-                    alert('Error saving your wrapped data. Please try again.');
-                    $(".arrow").prop("disabled", false); // Ensure carousel is still interactive on error
-                }
-            });
-        });
-
-
-        // Function to start the CD rotation animation
-        function startCdAnimation() {
-            const cd = document.querySelector('#cd');
-            cd.style.animationPlayState = 'running'; // Start spinning
-        }
-
-        // Function to stop the CD rotation animation
-        function stopCdAnimation() {
-            const cd = document.querySelector('#cd');
-            cd.style.animationPlayState = 'paused'; // Stop spinning
-        }
-
-        // Function to animate the artist cards with a delay
-        function animateArtistCards() {
-            const artistCards = document.querySelectorAll('.artist-card');
-
-            // First, ensure all artist cards are hidden initially
-            artistCards.forEach(card => {
-                card.classList.remove('visible'); // Remove visible class to reset
-            });
-
-            // Add the 'visible' class with delay to show cards one by one
-            artistCards.forEach((card, index) => {
-                setTimeout(() => {
-                    card.classList.add('visible');
-                }, index * 800); // Add delay of 300ms between each card
-            });
-        }
-
-        // Call the function when the page first loads to ensure the artist cards aren't visible initially
-        document.addEventListener('DOMContentLoaded', function () {
-            const artistCards = document.querySelectorAll('.artist-card');
-            artistCards.forEach(card => {
-                card.classList.remove('visible'); // Ensure cards are hidden on load
-            });
-        });
-
-        // Function to animate the album card when it reaches the Top Album card
-        function animateAlbumCard() {
-            const albumCard = document.querySelector('.album-card');
-            const front = albumCard.querySelector('.album-front');
-            const back = albumCard.querySelector('.album-back');
-
-            if (albumCard) {
-                // Step 1: Animate moving down
-                albumCard.style.animation = 'moveDown 1s forwards';
-
-                // Step 2: Flip to show the back after moving down
-                setTimeout(() => {
-                    albumCard.classList.add('animate'); // Apply flip animation
-                }, 1000); // Wait for 1 second (moveDown animation duration)
-
-                // Step 3: Flip back to the front after showing the back
-                setTimeout(() => {
-                    albumCard.classList.remove('animate'); // Reset flip animation
-                }, 3000); // Wait for 3 seconds (1s moveDown + 2s on back)
-            }
-        }
-
-        //Waveform for top song
-        function animateWaveform(currentIndex) {
-            if (currentIndex !== 4) return; // Ensure animation runs only for the "Top Song" card
-
-            const canvas = document.getElementById('waveform-canvas');
-            const ctx = canvas.getContext('2d');
-            const width = canvas.width;
-            const height = canvas.height;
-            const waveCount = 5; // Number of waveform layers
-            const waveHeight = 50; // Max height of waves
-            const speed = 0.02; // Speed of wave animation
-            const colors = ['#ff6f61', '#ffc107', '#8bc34a', '#03a9f4', '#673ab7']; // Gradient colors
-
-            let time = 0;
-
-            // Function to draw the waveform
-            function drawWaveform() {
-                ctx.clearRect(0, 0, width, height); // Clear canvas
-                for (let i = 0; i < waveCount; i++) {
-                    ctx.beginPath();
-                    ctx.strokeStyle = colors[i % colors.length];
-                    ctx.lineWidth = 2;
-                    for (let x = 0; x <= width; x++) {
-                        const y =
-                            height / 2 +
-                            Math.sin((x / 50) + (time + i)) * waveHeight * (1 - i / waveCount);
-                        if (x === 0) {
-                            ctx.moveTo(x, y);
-                        } else {
-                            ctx.lineTo(x, y);
-                        }
-                    }
-                    ctx.stroke();
-
-                }
-                time += speed;
-                requestAnimationFrame(drawWaveform); // Continue animation
-            }
-
-            // Start the animation
-            drawWaveform();
-        }
-
-        function togglePlaylistPulse(enable) {
-            const pulseContainer = document.getElementById('playlist-pulse-container');
-            if (enable) {
-                pulseContainer.style.display = 'block'; // Show pulse animation
-            } else {
-                pulseContainer.style.display = 'none'; // Hide pulse animation
-            }
-        }
-
-        function animateTopPlaylistCard(currentIndex) {
-            const elementCard = document.querySelector('#pulse-circle');
-            const element = "{{ user_element }}";
-
-            // Add the appropriate class based on the mood
-            if (element === 'water') {
-                elementCard.classList.add('water');
-            } else if (element === 'fire') {
-                elementCard.classList.add('fire');
-            } else if (element === 'earth') {
-                elementCard.classList.add('earth');
-            } else if (element === 'air') {
-                elementCard.classList.add('air');
-            }
-
-
-            if (currentIndex === 5) { // Assuming the "Top Playlist" card is at index 5
-                togglePlaylistPulse(true); // Start the pulse animation
-            } else {
-                togglePlaylistPulse(false); // Stop the pulse animation
-            }
-        }
-
-        // Function to start the vinyl spin animation
-        function startVinylAnimation() {
-            const vinyl = document.querySelector('#vinyl');
-            vinyl.style.animationPlayState = 'running'; // Start spinning
-        }
-
-        // Function to stop the vinyl spin animation
-        function stopVinylAnimation() {
-            const vinyl = document.querySelector('#vinyl');
-            vinyl.style.animationPlayState = 'paused'; // Stop spinning
-        }
-
-        // Function to animate the "Favorite Mood" card with a gradient transition
-        function animatePopularityCard() {
-            const moodCard = document.querySelector('#favorite-mood');
-            const mood = "{{ popularity_level }}"; // Get the mood value from the server
-
-            // Reset any previous mood styles
-            moodCard.classList.remove('High', 'Medium', 'Low');
-
-            // Add the appropriate class based on the mood
-            if (mood === 'High') {
-                moodCard.classList.add('euphoric');
-            } else if (mood === 'Medium') {
-                moodCard.classList.add('chill');
-            } else if (mood === 'Low') {
-                moodCard.classList.add('melancholic');
-            }
-
-            // Trigger the animation of the gradient (ensure it’s set after class change)
-            moodCard.style.backgroundPosition = "0 100%";
-        }
-
-
-        function playPreview(url) {
-            const audioPlayer = document.getElementById('preview-audio');
-
-            if (audioPlayer) {
-                audioPlayer.src = url;
-                audioPlayer.load();
-                audioPlayer.play();
-            } else {
-                console.error('Audio player or source element not found.')
-            }
-        }
-    </script>
+        // Slide the carousel by updating the `transform` property
+        container.style.transform = `translateX(-${currentIndex * (cardWidth + 18)}px)`;
+    }
+</script>
 
 </body>
 </html>

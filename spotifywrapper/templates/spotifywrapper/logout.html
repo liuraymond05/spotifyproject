@@ -1,30 +1,29 @@
 {% load static %}
-{% load i18n %}
 <!DOCTYPE html>
 
 <html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% trans "Logout!" %}</title>
+    <title>Reset Your Password!</title>
     <link rel="stylesheet" href="{% static 'spotifywrapped/style.css' %}">
 </head>
 <body>
 <div class="container">
     <div class="wrapper">
-        <div class="title"><span>{% trans "Logout!" %}</span></div>
+        <div class="title"><span>Logout!</span></div>
         {% if user.is_authenticated %}
             <form method="post" action="{% url 'logout' %}">
                 {% csrf_token %}
                 <div class="row button">
-                    <input type="submit" value="{% trans "Click here to logout!" %}">
+                    <input type="submit" value="Click here to logout!">
                 </div>
             </form>
         {% else %}
             <div class="messages">
-                <p>{% trans "You have successfully logged out!" %}</p>
+                <p>You have successfully logged out!</p>
                 <div class="row button">
-                    <a href="{% url 'login' %}"><button>{% trans "Login" %}</button></a>
+                    <a href="{% url 'login' %}"><button>Login</button></a>
                 </div>
             </div>
         {% endif %}

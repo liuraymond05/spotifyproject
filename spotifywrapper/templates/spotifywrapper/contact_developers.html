@@ -1,295 +1,43 @@
 {% load static %}
-{% load i18n %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% trans "Contact Developers" %}</title>
+    <title>My Spotify Wrapped</title>
     <link rel="stylesheet" href="{% static 'spotifywrapped/homestyle.css' %}">
-        <script src="{% static 'spotifywrapped/theme.js' %}" defer></script>
-
-
-    <style>
-        /* General Styles for Developers Page */
-        body#developers {
-            font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #ff5f6d, #ffc371, #43cea2);
-            color: #333;
-            text-align: center;
-            margin: 0;
-            padding-top: 100px; /* Adjust padding to leave space for the fixed banner */
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            overflow-x: hidden;
-        }
-
-
-
-        body#developers.dark-mode {
-            background: linear-gradient(135deg, #1db954, #191414, #0c0c0c);
-        }
-
-        body#developers.neon-mode {
-            background: linear-gradient(135deg, #ff00ff, #00ffff, #ffff00);
-        }
-
-        /* Updated Header Styling to Match Genre Page */
-        header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: black;
-            padding: 25px 20px;
-            box-sizing: border-box;
-            color: white;
-            z-index: 1000;
-        }
-
-        header .logo {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        header .logo img {
-            width: 40px;
-            height: auto;
-        }
-
-        header .logo h1 {
-            margin: 0;
-            font-size: 1.6em;
-        }
-
-        /* Dropdown Menu */
-        .dropdown-menu {
-            display: none;
-            position: absolute;
-            right: 20px;
-            top: 70px;
-            background-color: black;
-            border-radius: 5px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            z-index: 1001;
-            width: 150px;
-            text-align: left;
-        }
-
-        .dropdown-menu ul {
-            list-style: none;
-            margin: 0;
-            padding: 10px 0;
-        }
-
-        .dropdown-menu li {
-            padding: 10px;
-            cursor: pointer;
-            text-align: center;
-            transition: background-color 0.3s ease;
-        }
-
-        .dropdown-menu li:hover {
-            background-color: hotpink;
-        }
-
-        .dropdown-menu a {
-            color: white;
-            text-decoration: none;
-            font-size: 1em;
-            display: block;
-            transition: color 0.3s ease, text-shadow 0.3s ease;
-        }
-
-        .dropdown-menu a:hover {
-            color: hotpink;
-            text-shadow: 0 0 10px hotpink;
-        }
-
-        /* Meet the Team Header */
-        body#developers h2 {
-            font-size: 2.5em;
-            color: #fff;
-            margin-bottom: 50px;
-            text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-        }
-
-        /* Team Member List Container */
-        .team-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            max-width: 800px;
-        }
-
-        /* Team Member List Items */
-        .team-container ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            display: flex;
-            flex-wrap: wrap;
-            width: 100%;
-            justify-content: space-around;
-        }
-
-        .team-container ul li {
-            width: 30%;
-            margin-bottom: 40px;
-        }
-
-        /* Team Member Name (Bouncing Animation) */
-        .team-container ul li .team-member strong {
-            display: inline-block;
-            width: 150px;
-            height: 150px;
-            line-height: 150px;
-            border-radius: 50%;
-            font-size: 1.3em;
-            font-weight: bold;
-            color: #fff;
-            text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-            background-color: #ff7e5f; /* Default color */
-            animation: bounce 2s infinite ease-in-out;
-            transition: transform 0.3s ease;
-        }
-
-        /* Bounce Animation for Emails */
-        .team-container ul li .team-member a {
-            display: inline-block;
-            margin-top: 10px;
-            font-size: 1em;
-            color: #00f; /* Blue color */
-            text-decoration: underline;
-            animation: bounce 2s infinite ease-in-out;
-            animation-delay: 1s; /* Slight delay to distinguish from name bounce */
-        }
-
-        /* Team Member Role Styling */
-        .team-container ul li .team-member span {
-            display: block;
-            margin-top: 15px;
-            font-size: 1em;
-            color: #fff;
-        }
-
-        /* Different Colors for Each Team Member */
-        .team-container ul li:nth-child(1) .team-member strong {
-            background-color: #ff7e5f; /* Coral */
-        }
-
-        .team-container ul li:nth-child(2) .team-member strong {
-            background-color: #6a82fb; /* Light Blue */
-        }
-
-        .team-container ul li:nth-child(3) .team-member strong {
-            background-color: #fc5c7d; /* Pink */
-        }
-
-        .team-container ul li:nth-child(4) .team-member strong {
-            background-color: #42e695; /* Green */
-        }
-
-        .team-container ul li:nth-child(5) .team-member strong {
-            background-color: #ff9a9e; /* Light Coral */
-        }
-
-        /* Bounce Animation for Names and Emails */
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% {
-                transform: translateY(0);
-            }
-            40% {
-                transform: translateY(-15px);
-            }
-            60% {
-                transform: translateY(-10px);
-            }
-        }
-    </style>
-
 </head>
-<body id="developers">
+<body>
 
-    <header>
-        <div class="logo">
-            <a href="{% url 'home' %}">
-                <img src="{% static 'spotifywrapped/spotify.png' %}" alt="Spotify Logo">
-            </a>
-            <h1>{% trans "My Favorite Mood" %}</h1>
-        </div>
-        <div class="menu-icon" onclick="toggleMenu()">
-            <div class="line"></div>
-            <div class="line"></div>
-            <div class="line"></div>
-        </div>
-    </header>
+    <h2>Meet the Team</h2>
 
-    <div class="dropdown-menu" id="dropdownMenu">
-        <ul>
+    <ul>
+        <li>
+            <strong>Stuthi Bhat</strong>: Full Stack Developer
+            <br>
+            <a href="mailto:stuthibhat4@gmail.com">Email Stuthi</a>
+        </li>
+        <li>
+            <strong>Maya Blair</strong>: Front End Developer
+            <br>
+            <a href="mailto:maya@example.com">Email Maya</a>
+        </li>
+        <li>
+            <strong>Jordyn</strong>: Full Stack Developer
+            <br>
+            <a href="mailto:jordyn@example.com">Email Jordyn</a>
+        </li>
+        <li>
+            <strong>Raymond</strong>: Back End Developer
+            <br>
+            <a href="mailto:raymond@example.com">Email Raymond</a>
+        </li>
+        <li>
+            <strong>Jess</strong>: Game Developer
+            <br>
+            <a href="mailto:jess@example.com">Email Jess</a>
+        </li>
+    </ul>
 
-            <li><a href="{% url 'gamepage' %}" id="games">{% trans "Games" %}</a></li>
-            <li><a href="{% url 'wraps' %}" id="wraps">{% trans "My Wraps" %}</a></li>
-            <li><a href="{% url 'settings' %}" id="settingsLink">{% trans "Settings" %}</a></li>
-            <li><a href="{% url 'logout' %}">{% trans "Log Out" %}</a></li>
-        </ul>
-    </div>
-
-    <h2>{% trans "Meet the Team" %}</h2>
-
-    <div class="team-container">
-        <ul>
-            <li>
-                <div class="team-member">
-                    <strong>Stuthi Bhat</strong>
-                    <span>{% trans "Full Stack Developer" %}</span>
-                    <a href="mailto:stuthibhat4@gmail.com">{% trans "Email Stuthi" %}</a>
-                </div>
-            </li>
-            <li>
-                <div class="team-member">
-                    <strong>Maya Blair</strong>
-                    <span>{% trans "Front End Developer" %}</span>
-                    <a href="mailto:mayajblair@gmail.com">{% trans "Email Maya" %}</a>
-                </div>
-            </li>
-            <li>
-                <div class="team-member">
-                    <strong>Jordyn</strong>
-                    <span>{% trans "Full Stack Developer" %}</span>
-                    <a href="mailto:jordynh626@gmail.com">{% trans "Email Jordyn" %}</a>
-                </div>
-            </li>
-            <li>
-                <div class="team-member">
-                    <strong>Raymond</strong>
-                    <span>{% trans "Back End Developer" %}</span>
-                    <a href="mailto:raymond@example.com">{% trans "Email Raymond" %}</a>
-                </div>
-            </li>
-            <li>
-                <div class="team-member">
-                    <strong>Jess</strong>
-                    <span>{% trans "Game Developer" %}</span>
-                    <a href="mailto:jess@example.com">{% trans "Email Jess" %}</a>
-                </div>
-            </li>
-        </ul>
-    </div>
-
-    <script>
-        function toggleMenu() {
-            const dropdown = document.getElementById("dropdownMenu");
-            dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
-        }
-
-
-    </script>
 </body>
 </html>

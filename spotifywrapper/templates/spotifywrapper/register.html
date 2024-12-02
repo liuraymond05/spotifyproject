@@ -1,12 +1,11 @@
 {% load static %}
-{% load i18n %}
 <!DOCTYPE html>
 
 <html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% trans "Create Your Account!" %}</title>
+    <title>Create to Your Account!</title>
     <link rel="stylesheet" href="{% static 'spotifywrapped/style.css' %}">
     <script>
         function showHints() {
@@ -21,36 +20,31 @@
 <body>
 <div class="container">
     <div class="wrapper">
-        <div class="title"><span>{% trans "Create Your Account!" %}</span></div>
+        <div class="title"><span>Create Your Account!</span></div>
         <form name="RegisterForm" action="{% url 'register' %}" method="post">
             <div class="row">
                 <i class="fas fa-user"></i>
                 <label>
-                    <input type="text" id="id_username" name="username"
-                           placeholder="{% trans "Enter a username" %}" required>
+                    <input type="text" id="id_username" name="username" placeholder="Enter a username" required>
                 </label>
             </div>
             {% csrf_token %}
             <div class="row">
                 <i class="fas fa-user"></i>
                 <label>
-                    <input type="email" id="id_email" name="email"
-                           placeholder="{% trans "Enter your email" %}" required>
+                    <input type="email" id="id_email" name="email" placeholder="Enter your email" required>
                 </label>
             </div>
             <div class="row">
                 <i class="fas fa-lock"></i>
                 <label>
-                    <input type="password" id='id_password1' name="password1"
-                           placeholder="{% trans "Enter a password" %}" required onfocus="showHints()"
-                           onblur="hideHints()">
+                    <input type="password" id='id_password1' name="password1" placeholder="Enter a password" required onfocus="showHints()" onblur="hideHints()">
                 </label>
             </div>
             <div class="row">
                 <i class="fas fa-lock"></i>
                 <label>
-                    <input type="password" id='id_password2' name="password2"
-                           placeholder="{% trans "Confirm your password" %}" required>
+                    <input type="password" id='id_password2' name="password2" placeholder="Confirm your password" required>
                 </label>
             </div>
             <div class="row button">
@@ -63,20 +57,19 @@
             {% endif %}
             <div id="password-hints" class="hint">
                 <ul>
-                    <li>{% trans "Must be at least 8 characters long" %}</li>
-                    <li>{% trans "Must include letters and numbers" %}</li>
-                    <li>{% trans "Must be different from username" %}</li>
+                    <li>Must be at least 8 characters long</li>
+                    <li>Must include letters and numbers</li>
+                    <li>Must be different from username</li>
                 </ul>
             </div>
-             <div class="signup-link">{% trans "Already have an account?" %}? <a href="{% url 'login' %}">
-                 {% trans "Login here!!" %}!</a></div>
+             <div class="signup-link">Already have an account? <a href="{% url 'login' %}">Login here!!</a></div>
         </form>
         <div class="mode-switcher">
-            <label for="modeSwitch">{% trans "Choose Mode" %}:</label>
+            <label for="modeSwitch">ChooseMode:</label>
             <select id="modeSwitch">
-                <option value="light">{% trans "Light Mode" %}</option>
-                <option value="dark">{% trans "Dark Mode" %}</option>
-                <option value="neon">{% trans "Neon Mode" %}e</option>
+                <option value="light">Light Mode</option>
+                <option value="dark">Dark Mode</option>
+                <option value="neon">Neon Mode</option>
             </select>
         </div>
 
