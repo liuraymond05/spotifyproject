@@ -168,30 +168,114 @@ body {
     margin: 0;
     padding: 0;
 }
-#blue-squiggle {
+
+/* Squiggles */
+#blue-squiggle, #silver-squiggle, #lavender, #flower {
     position: absolute;
-    z-index: 1;
-    left: -50px; /* Bring it closer to the viewport */
-    top: 40%; /* Align the flower halfway down */
-    transform: translateY(-50%);
+    z-index: -1; /* Ensure squiggles stay behind the text */
+    opacity: 0.8;
+    pointer-events: none; /* Prevent interaction with squiggles */
 }
 
-#silver-squiggle {
-    position: absolute;
-    z-index: 1;
-    right: -50px; /* Bring it closer to the viewport */
-    top: 70%; /* Adjusted so it remains visible */
+#blue-squiggle {
+    left: -300px;
+    top: 32%;
     transform: translateY(-50%);
 }
 
 #lavender {
-    position: absolute;
-    z-index: 1;
-    left: 0; /* Bring it into the viewport */
-    top: 90%; /* Ensure visibility */
+    left: -50px;
+    top: 90%;
     transform: translateY(-50%);
 }
 
+#silver-squiggle {
+    right: -230px;
+    top: 43%;
+    transform: translateY(-50%) scale(0.75);
+}
+
+#flower {
+    right: -85px;
+    top: 93%;
+    transform: translateY(-50%) scale(1.2);
+}
+
+/* Media Queries */
+@media (max-width: 1024px) {
+    #blue-squiggle {
+        left: -700px; /* Move farther off-screen */
+    }
+
+    #silver-squiggle {
+        right: -600px;
+    }
+
+    #lavender {
+        left: -100px;
+    }
+
+    #flower {
+        right: -150px;
+    }
+}
+
+@media (max-width: 768px) {
+    #blue-squiggle {
+        left: -600px;
+    }
+
+    #silver-squiggle {
+        right: -700px;
+    }
+
+    #lavender {
+        left: -200px;
+    }
+
+    #flower {
+        right: -250px;
+    }
+}
+
+@media (max-width: 1200px) {
+    #blue-squiggle {
+        left: -500px; /* Move completely off-screen */
+        top: 200px;
+    }
+
+    #silver-squiggle {
+        right: -400px;
+        top: 200px;
+
+    }
+
+    #lavender {
+        left: -300px;
+    }
+
+    #flower {
+        right: -350px;
+    }
+}
+
+@media (max-width: 800px) {
+    #blue-squiggle {
+        display: none; /* Hide completely */
+    }
+
+    #silver-squiggle {
+        display: none;
+    }
+
+    #lavender {
+        display: none;
+    }
+
+    #flower {
+        display: none;
+    }
+}
 
 
 /* Wrapper styling */
@@ -213,6 +297,20 @@ body {
     border-radius: 15px; /* Rounded corners for a soft feel */
     background-color: #fff; /* White background to contrast */
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+.carousel {
+    width: 100%; /* Allow it to scale with the screen */
+    max-width: 400px; /* Set a reasonable maximum width */
+    height: auto; /* Let height adjust */
+    overflow: hidden;
+    margin: 0 auto;
+}
+
+.cards-container {
+    display: flex;
+    transition: transform 0.3s ease-in-out;
+    width: calc(100% + 20px); /* Adjust to prevent shrinking */
 }
 
 
@@ -242,6 +340,22 @@ body {
     flex-direction: column; /* Stack content vertically */
     overflow: hidden; /* Prevent overflow */
 }
+
+
+
+@media (max-width: 600px) {
+    .carousel {
+        width: 100%;
+        max-width: 300px; /* Smaller width for small screens */
+    }
+
+    .card {
+        width: 100%; /* Cards take up most of the carousel width */
+        margin-right: 10px; /* Smaller gap between cards */
+    }
+}
+
+
 
 /* Hover effect for cards */
 .card:hover {
