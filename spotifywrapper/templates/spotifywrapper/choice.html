@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Select Term</title>
+    <title>{% trans "Select Term" %}</title>
        <link rel="stylesheet" href="{% static 'spotifywrapped/homestyle.css' %}">
 
         <script src="{% static 'spotifywrapped/theme.js' %}" defer></script>
@@ -208,12 +208,12 @@ form {
 
 
     <main>
-    <h1>Select a Time Range</h1>
+    <h1>{% trans "Select a Time Range" %}</h1>
     <form method="POST" action="{% url 'choice' %}">
         {% csrf_token %}
-        <button type="submit" name="term" value="long">Long-Term</button>
-        <button type="submit" name="term" value="medium">Medium-Term</button>
-        <button type="submit" name="term" value="short">Short-Term</button>
+        <button type="submit" name="term" value="long">{% trans "Long-Term" %}</button>
+        <button type="submit" name="term" value="medium">{% trans "Medium-Term" %}</button>
+        <button type="submit" name="term" value="short">{% trans "Short-Term" %}</button>
     </form>
 </main>
 

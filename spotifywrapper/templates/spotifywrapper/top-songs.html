@@ -270,12 +270,13 @@
                             <p class="song-name">{{ song.name }}</p>
                             <p class="song-artist">{% trans "By" %}: {{ song.artist }}</p>
                             <p class="song-album">{% trans "Album" %}: {{ song.album }}</p>
-                            <a href="{{ song.url }}" target="_blank" class="song-link">{% trans "Listen on Spotify" %}</a>
+                            <a href="{{ song.url }}" target="_blank" class="song-link">
+                                {% trans "Listen on Spotify" %}</a>
                         </div>
                     </div>
                 {% endfor %}
             {% else %}
-                <p>No top songs found.</p>
+                <p>{% trans "No top songs found." %}</p>
             {% endif %}
         </div>
 

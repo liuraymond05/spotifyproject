@@ -253,9 +253,12 @@
                 <form method="POST" action="{% url 'set_language' %}">
                     {% csrf_token %}
                     <select id="language-select" name="language" onchange="this.form.submit()">
-                        <option value="en" {% if LANGUAGE_CODE == 'en' %}selected{% endif %}>{% trans "English" %}</option>
-                        <option value="es" {% if LANGUAGE_CODE == 'es' %}selected{% endif %}>{% trans "Spanish" %}</option>
-                        <option value="fr" {% if LANGUAGE_CODE == 'fr' %}selected{% endif %}>{% trans "French" %}</option>
+                        <option value="en" {% if LANGUAGE_CODE == 'en' %}selected{% endif %}>
+                            {% trans "English" %}</option>
+                        <option value="es" {% if LANGUAGE_CODE == 'es' %}selected{% endif %}>
+                            {% trans "Spanish" %}</option>
+                        <option value="fr" {% if LANGUAGE_CODE == 'fr' %}selected{% endif %}>
+                            {% trans "French" %}</option>
                     </select>
                 </form>
             </div>

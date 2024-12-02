@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Saved Spotify Wrapped</title>
+    <title>{% trans "Saved Spotify Wrapped" %}</title>
     <script src="{% static 'spotifywrapped/confetti.js' %}"></script>
        <link rel="stylesheet" href="{% static 'spotifywrapped/save_wrapped.css' %}">
         <script src="{% static 'spotifywrapped/theme.js' %}" defer></script>
@@ -41,17 +41,17 @@
 
 
     <div class="wrapper">
-        <h1>Saved Spotify Wrapped</h1>
+        <h1>{% trans "Saved Spotify Wrapped" %}</h1>
 
         {% for wrap in wraps %}
         <div class="carousel-wrapper">
-            <h2>Your Spotify Wrapped:
+            <h2>{% trans "Your Spotify Wrapped" %}:
                 {% if wrap.time_range == "long_term" %}
-                    Long Term
+                    {% trans "Long-Term" %}
                 {% elif wrap.time_range == "short_term" %}
-                    Short Term
+                    {% trans "Short-Term" %}
                 {% elif wrap.time_range == "medium_term" %}
-                    Medium Term
+                    {% trans "Medium-Term" %}
                 {% else %}
                     {{ wrap.time_range }}
                 {% endif %}
@@ -69,7 +69,7 @@
 
                     <!-- Card 1: Top Genre -->
                     <div class="card">
-                        <h3>Top Genre</h3>
+                        <h3>{% trans "Top Genre" %}</h3>
                         <div id="cd-container">
                             <div id="cd"></div>
                             <div id="genre-name">{{ wrap.top_genre }}</div>
@@ -79,7 +79,7 @@
 
                     <!-- Card 2: Top Artists -->
                     <div class="card">
-                        <h3>Top 3 Artists</h3>
+                        <h3>{% trans "Top 3 Artists" %}</h3>
                         <div class="artist-container">
                             {% for artist in wrap.top_artists|slice:":3" %}
                             <div class="artist-card">
@@ -87,7 +87,7 @@
                                 <p class="artist-name">{{ artist.name }}</p>
                             </div>
                             {% empty %}
-                            <p>No top artists found.</p>
+                            <p>{% trans "No top artists found." %}</p>
                             {% endfor %}
                         </div>
                     </div>
@@ -95,7 +95,7 @@
 
                     <!-- Card 4: Top Album -->
                     <div class="card">
-                        <h3>Top Album</h3>
+                        <h3>{% trans "Top Album" %}</h3>
                         {% if wrap.top_album and wrap.top_album.image %}
                             <img src="{{ wrap.top_album.image }}" alt="Album Image" class="album-image">
                         {% else %}
@@ -108,7 +108,7 @@
 
                     <!-- Card 3: Top Song -->
                     <div class="card">
-                        <h3>Top Song</h3>
+                        <h3>{% trans "Top Song" %}</h3>
                         {% if wrap.top_tracks and wrap.top_tracks|length > 0 %}
                             <p><strong>Song:</strong> {{ wrap.top_tracks.0.name }}</p>
                             <p><strong>Artist:</strong> {{ wrap.top_tracks.0.artist }}</p>
@@ -116,7 +116,7 @@
                                 <canvas id="waveform-canvas-{{ forloop.counter0 }}" width="600" height="200"></canvas>
                             </div>
                         {% else %}
-                            <p>No top song found.</p>
+                            <p>{% trans "No top song found." %}</p>
                         {% endif %}
                     </div>
 
@@ -125,7 +125,7 @@
                     <!-- Card 5: User Element -->
 
                     <div class="card">
-                        <h3>Your Classical Element!</h3>
+                        <h3>{% trans "Your Classical Element!" %}</h3>
                         <div id="playlist-pulse-container">
                             <div id="pulse-circle" class="{{ wrap.user_element|lower }}">
                                 <span id="playlist-name">{{ wrap.user_element|default:"Unknown Element" }}</span>
@@ -136,7 +136,7 @@
 
                     <!-- Card 5: Favorite Decade -->
                     <div class="card">
-                        <h3>Favorite Decade</h3>
+                        <h3>{% trans "Favorite Decade" %}</h3>
                         <div id="vinyl-container">
                             <div id="vinyl"></div>
                             <div id="decade-number">{{ wrap.favorite_decade }}</div>
@@ -147,19 +147,19 @@
 
                     <!-- Card 6: Top Song Popularity -->
                     <div class="card">
-                        <h3>Top Song Popularity</h3>
+                        <h3>{% trans "My Top Song's Popularity" %}</h3>
                         <p>{{ wrap.top_song_popularity }}</p>
                     </div>
 
 
                     <div class="card">
-                        <h3>Top 3 Tracks</h3>
+                        <h3>{% trans "Top 3 Tracks" %}</h3>
                         <div class="tracks-container">
                             {% for track in wrap.top_tracks|slice:":3" %}
                             <div class="track-card">
                                 <div class="track-info">
-                                    <p><strong>Track:</strong> {{ track.name }}</p>
-                                    <p><strong>Artist:</strong> {{ track.artist }}</p>
+                                    <p><strong>{% trans "Track" %}:</strong> {{ track.name }}</p>
+                                    <p><strong>{% trans "Artist" %}:</strong> {{ track.artist }}</p>
                                 </div>
                                 <div class="track-audio">
                                     <audio controls>
@@ -178,7 +178,7 @@
                                 </div>
                             </div>
                             {% empty %}
-                            <p>No tracks found.</p>
+                            <p>{% trans "No track found." %}</p>
                             {% endfor %}
                         </div>
                     </div>
@@ -195,11 +195,11 @@
             <!-- Delete button -->
             <form method="post" action="{% url 'delete_wrap' wrap.id %}">
                 {% csrf_token %}
-                <button type="submit" class="delete-button">Delete This Wrapped</button>
+                <button type="submit" class="delete-button">{% trans "Delete This Wrapped" %}</button>
             </form>
         </div>
         {% empty %}
-        <p>No wraps found.</p>
+        <p>{% trans "No wraps found." %}</p>
         {% endfor %}
     </div>
 

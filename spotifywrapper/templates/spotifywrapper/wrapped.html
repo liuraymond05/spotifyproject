@@ -126,7 +126,6 @@
                                 <div class="album-details">
                                     <p><strong>{% trans "Album" %}:</strong> {{ album_details.name }}</p>
                                     <p><strong>{% trans "Release Date" %}:</strong> {{ album_details.release_date }}</p>
-                                    <p><strong>{% trans "Label" %}:</strong> {{ album_details.details }}</p>
                                 </div>
                             </div>
                         </div>
@@ -134,7 +133,7 @@
                 </div>
 
                 <div class="card">
-                    <h2>{% trans "Top Song" %}</h2>
+                    <h2>{% trans "My Top Song" %}</h2>
                     <p>{{ top_song }}</p>
                     <div id="song-container">
                         <canvas id="waveform-canvas" width="600" height="200"></canvas>
@@ -142,7 +141,7 @@
                 </div>
 
                 <div class="card">
-                    <h2>{% trans "My Classical Element!" %}</h2>
+                    <h2>{% trans "My Classical Element" %}</h2>
                     <div id="playlist-pulse-container">
                         <div id="pulse-circle">
                             <span id="playlist-name">{{ user_element }}</span>
@@ -159,7 +158,7 @@
                 </div>
 
                 <div class="card" id="favorite-mood">
-                    <h2>{% trans "Your Top Song's Popularity" %}</h2>
+                    <h2>{% trans "My Top Song's Popularity" %}</h2>
                     <p>{{ popularity_level }}</p>
                 </div>
 
@@ -169,8 +168,8 @@
                         {% for track in top_tracks|slice:":3" %}
                         <div class="track-card">
                             <div class="track-info">
-                                <h4><strong>Track:</strong> {{ track.name }}</h4>
-                                <h4><strong>Artist:</strong> {{ track.artist }}</h4>
+                                <h4><strong>{% trans "Track" %}:</strong> {{ track.name }}</h4>
+                                <h4><strong>{% trans "Artist" %}:</strong> {{ track.artist }}</h4>
                             </div>
                             <!-- Audio Player -->
                             <div class="track-audio">
@@ -225,7 +224,7 @@
     <form id="saveForm" method="post" action="{% url 'save_wrap' %}">
         {% csrf_token %}
         <input type="hidden" name="time_range" value="{{ selected_time_range }}">
-        <button type="submit" id="saveButton">Save Wrapped</button>
+        <button type="submit" id="saveButton">{% trans "Save Wrapped" %}</button>
     </form>
     <script>
         function toggleMenu() {
