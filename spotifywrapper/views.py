@@ -1,6 +1,7 @@
 from collections import Counter
 from django.conf import settings
 import os
+import random
 import json
 from urllib.parse import quote_plus
 from django.contrib.auth.models import User
@@ -133,6 +134,73 @@ def spotify_login(request):
         )
         return redirect(auth_url)
     return redirect('home')
+
+def gamepage(request):
+    """
+    Game view that fetches the user's top tracks and selects three random tracks for the game.
+    """
+    # Retrieve the access token from the user profile
+    user_profile = UserProfile.objects.filter(user=request.user).first()
+    if not user_profile or not user_profile.spotify_access_token:
+        messages.error(request, "No Spotify access token found. Please log in to play the game.")
+        return redirect('login')  # Redirect to login page
+
+    access_token = user_profile.spotify_access_token
+
+    # Check if the token has expired
+    if user_profile.token_expires and timezone.now() >= user_profile.token_expires:
+        messages.error(request, "Your Spotify session has expired. Please log in again.")
+        return redirect('login')  # Redirect to login page
+
+    # Call Spotify API to get user's top tracks
+    headers = {"Authorization": f"Bearer {access_token}"}
+    top_tracks_url = "https://api.spotify.com/v1/me/top/tracks?limit=50"
+    response = requests.get(top_tracks_url, headers=headers)
+
+    # Handle API response
+    if response.status_code == 401:  # 401 Unauthorized - token invalid
+        messages.error(request, "Your session has expired or is invalid. Please log in again.")
+        return redirect('login')  # Redirect to login page
+    elif response.status_code != 200:  # Other API errors
+        messages.error(request, "Failed to load tracks from Spotify. Please try again later.")
+        return redirect('home')  # Redirect to home page
+
+    # Parse and format the tracks data
+    tracks_data = response.json().get("items", [])
+    tracks = [
+        {
+            "title": track["name"],
+            "artist": track["artists"][0]["name"],
+            "album_cover": track["album"]["images"][0]["url"] if track["album"]["images"] else "/static/spotifywrapped/placeholderimage.jpg",
+            "id": track["id"],
+            "album_id": track["album"]["id"],  # Include album ID for grouping
+        }
+        for track in tracks_data
+    ]
+
+    if not tracks:
+        messages.error(request, "No top tracks found on Spotify. Please listen to more music and try again!")
+        return redirect('home')
+
+    # Prepare game data
+    game_data = []
+    for track in tracks:
+        correct_song = track["title"]
+        album_cover = track["album_cover"]
+
+        # Generate distractors (other tracks not from the same album)
+        other_tracks = [t["title"] for t in tracks if t["album_id"] != track["album_id"]]
+        distractors = random.sample(other_tracks, 2) if len(other_tracks) >= 2 else []
+
+        # Add round data
+        game_data.append({
+            "album_cover": album_cover,
+            "correct_song": correct_song,
+            "options": random.sample([correct_song] + distractors, len(distractors) + 1),
+        })
+
+    # Pass tracks and game data to the template
+    return render(request, "spotifywrapper/games.html", {"game_data": game_data, "tracks": tracks})
 
 @login_required
 def spotify_callback(request):
