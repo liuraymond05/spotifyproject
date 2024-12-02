@@ -1,187 +1,459 @@
-
 {% load static %}
-
-
-
+{% load i18n %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Spotify Wrapped</title>
-    <link rel="stylesheet" href="{% static 'spotifywrapped/homestyle.css' %}">
-    <script src="script.js" defer></script> <!-- Include the JavaScript file -->
-</head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>{% trans "My Spotify Wrapped" %}</title>
 
-<script>
-    function toggleMenu() {
-        const dropdown = document.getElementById("dropdownMenu");
-        dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+
+   <link rel="stylesheet" href="{% static 'spotifywrapped/homestyle.css' %}">
+    <script src="{% static 'spotifywrapped/theme.js' %}" defer></script>
+
+
+   <style>
+   /* Base styles for the page */
+   body {
+       font-family: Arial, sans-serif;
+       margin: 0;
+       background-color: #d529f0;
+       color: #333;
+       display: flex;
+       flex-direction: column;
+       align-items: center;
+       overflow-x: hidden;
+       transition: background-color 0.3s ease, color 0.3s ease;
+   }
+
+
+   /* Dark Mode */
+   body.dark-mode {
+       background-color: #121212;
+       color: #ccc;
+   }
+
+
+   /* Neon Mode */
+   body.neon-mode {
+       background-color: #000;
+       color: white;
+   }
+
+
+   body.neon-mode h1, body.neon-mode h2, body.neon-mode p {
+       text-shadow: 0 0 5px #0ff, 0 0 10px #0ff, 0 0 15px #0ff;
+   }
+
+
+   body.neon-mode a {
+       color: #0ff;
+       text-shadow: 0 0 5px #0ff, 0 0 10px #0ff;
+   }
+
+
+   /* Header */
+   header {
+       display: flex;
+       justify-content: space-between;
+       align-items: center;
+       background-color: black;
+       padding: 25px 20px;
+       width: 100%;
+       box-sizing: border-box;
+       color: white;
+       z-index: 10;
+       position: relative;
+   }
+
+
+   header .logo {
+       display: flex;
+       align-items: center;
+   }
+
+
+   header .logo img {
+       width: 40px;
+       height: auto;
+       margin-right: 10px;
+   }
+
+
+   .menu-icon {
+       display: flex;
+       flex-direction: column;
+       cursor: pointer;
+   }
+
+
+   .line {
+       width: 25px;
+       height: 3px;
+       background-color: white;
+       margin: 3px 0;
+   }
+
+
+   /* Dropdown Menu */
+   .dropdown-menu {
+       display: none;
+       position: absolute;
+       right: 20px;
+       top: 70px;
+       background-color: black;
+       border-radius: 5px;
+       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+       z-index: 10;
+   }
+
+
+   body.dark-mode .dropdown-menu {
+       background-color: #121212;
+   }
+
+
+   body.neon-mode .dropdown-menu {
+       background-color: #0f0f0f;
+       border: 1px solid #0ff;
+   }
+
+
+   .dropdown-menu ul {
+       padding: 0;
+       margin: 0;
+       list-style-type: none;
+   }
+
+
+   .dropdown-menu li {
+       padding: 10px 20px;
+   }
+
+
+   .dropdown-menu li:hover {
+       background-color: hotpink;
+   }
+
+
+   /* Intro Section */
+   .intro {
+       display: flex;
+       justify-content: center;
+       align-items: center;
+       flex-direction: column;
+       height: 120vh;
+       margin: 0;
+       background: none;
+       color: black;
+       text-align: center;
+       position: relative;
+       transform: translateY(-10%);
+   }
+
+
+   body.dark-mode .intro {
+       color: #f5f5f5;
+   }
+
+
+   .intro h2 {
+       font-size: 2.5em;
+       margin: 0;
+   }
+
+
+   .intro p {
+       font-size: 1.8em;
+       margin: 5px 0;
+   }
+
+
+   /* Navigation Buttons */
+   .navigation-buttons {
+       display: flex;
+       justify-content: center;
+       flex-wrap: wrap;
+       gap: 20px;
+       margin-top: 20px;
+   }
+
+
+   .btn {
+       background-color: hotpink;
+       color: white;
+       font-size: 1.5em;
+       font-weight: bold;
+       text-decoration: none;
+       padding: 10px 20px;
+       border-radius: 20px;
+       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+       transition: background-color 0.3s ease, transform 0.3s ease;
+       text-align: center;
+       margin-top: 20px;
+   }
+
+
+   .btn:hover {
+       transform: translateY(-5px);
+       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+   }
+
+
+   /* Image Links */
+   .image-link {
+       display: inline-block;
+       width: 250px;
+       height: 250px;
+       border-radius: 10px;
+       overflow: hidden;
+       position: relative;
+       transition: transform 0.3s ease, box-shadow 0.3s ease;
+   }
+
+
+   /* Image Link - Default Mode */
+   .image-link img {
+       position: absolute;
+       top: 0;
+       left: 0;
+       width: 100%;
+       height: 100%;
+       object-fit: cover;
+   }
+
+
+   /* Image Link - Dark Mode */
+   body.dark-mode .image-link img[data-dark] {
+       content: attr(data-dark);
+   }
+
+
+   /* Image Link - Neon Mode */
+   body.neon-mode .image-link img[data-neon] {
+       content: attr(data-neon);
+   }
+
+
+   .image-link:hover {
+       transform: scale(1.1);
+       box-shadow: 0 8px 15px rgba(0, 0, 0, 0.4);
+   }
+
+
+   /* Squiggles */
+#blue-squiggle, #silver-squiggle, #lavender, #flower {
+    position: absolute;
+    z-index: -1; /* Ensure squiggles stay behind the text */
+    opacity: 0.8;
+    pointer-events: none; /* Prevent interaction with squiggles */
+}
+
+#blue-squiggle {
+    left: -300px;
+    top: 32%;
+    transform: translateY(-50%);
+}
+
+#lavender {
+    left: -50px;
+    top: 90%;
+    transform: translateY(-50%);
+}
+
+#silver-squiggle {
+    right: -230px;
+    top: 43%;
+    transform: translateY(-50%) scale(0.75);
+}
+
+#flower {
+    right: -85px;
+    top: 93%;
+    transform: translateY(-50%) scale(1.2);
+}
+
+/* Media Queries */
+@media (max-width: 1024px) {
+    #blue-squiggle {
+        left: -700px; /* Move farther off-screen */
     }
 
+    #silver-squiggle {
+        right: -600px;
+    }
 
-    document.addEventListener("DOMContentLoaded", function() {
-        const cards = document.querySelectorAll(".card");
+    #lavender {
+        left: -100px;
+    }
 
-        function revealCards() {
-            cards.forEach(card => {
-                const cardTop = card.getBoundingClientRect().top;
-                const windowHeight = window.innerHeight;
+    #flower {
+        right: -150px;
+    }
+}
 
-                if (cardTop < windowHeight - 50) {
-                    card.classList.add("visible"); // Add visible class to animate
-                } else {
-                    card.classList.remove("visible"); // Remove visible class if scrolled past
-                }
-            });
-        }
+@media (max-width: 768px) {
+    #blue-squiggle {
+        left: -600px;
+    }
 
-        // Trigger the reveal on scroll
-        window.addEventListener("scroll", revealCards);
+    #silver-squiggle {
+        right: -700px;
+    }
 
-        // Initial check to reveal cards already in view on load
-        revealCards();
-    });
+    #lavender {
+        left: -200px;
+    }
 
+    #flower {
+        right: -250px;
+    }
+}
+
+@media (max-width: 1200px) {
+    #blue-squiggle {
+        left: -500px; /* Move completely off-screen */
+        top: 200px;
+    }
+
+    #silver-squiggle {
+        right: -400px;
+        top: 200px;
+
+    }
+
+    #lavender {
+        left: -300px;
+    }
+
+    #flower {
+        right: -350px;
+    }
+}
+
+@media (max-width: 800px) {
+    #blue-squiggle {
+        display: none; /* Hide completely */
+    }
+
+    #silver-squiggle {
+        display: none;
+    }
+
+    #lavender {
+        display: none;
+    }
+
+    #flower {
+        display: none;
+    }
+}
+
+
+
+   </style>
+</head>
+
+
+<script>
+   function toggleMenu() {
+       const dropdown = document.getElementById("dropdownMenu");
+       dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+   }
+
+
+
+   function updateImageLinks() {
+       const imageLinks = document.querySelectorAll(".image-link img");
+       imageLinks.forEach(img => {
+           const defaultSrc = img.getAttribute("src");
+           const darkSrc = img.getAttribute("data-dark");
+           const neonSrc = img.getAttribute("data-neon");
+
+
+           if (document.body.classList.contains("neon-mode")) {
+               img.setAttribute("src", neonSrc || defaultSrc);
+           } else if (document.body.classList.contains("dark-mode")) {
+               img.setAttribute("src", darkSrc || defaultSrc);
+           } else {
+               img.setAttribute("src", defaultSrc);
+           }
+       });
+   }
+
+
+   // Ensure the correct image is shown on page load
+   document.addEventListener("DOMContentLoaded", updateImageLinks);
 </script>
 
 
 <body>
-<header>
-    <div class="logo">
-        <!-- Make the logo clickable and redirect to home -->
-        <a href="{% url 'home' %}">
-            <img src="{% static 'spotifywrapped/spotify.png' %}" alt="Spotify Logo">
-        </a>
-        <h1>My Spotify Wrapped</h1>
-         </div>
-
-        <div class="menu-icon" onclick="toggleMenu()">
-            <div class="line"></div>
-            <div class="line"></div>
-            <div class="line"></div>
-        </div>
-    </header>
+   <header>
+       <div class="logo">
+           <img src="{% static 'spotifywrapped/spotify.png' %}" alt="Spotify Logo">
+           <h1>{% trans "My Spotify Wrapped" %}</h1>
+       </div>
+       <div class="menu-icon" onclick="toggleMenu()">
+           <div class="line"></div>
+           <div class="line"></div>
+           <div class="line"></div>
+       </div>
+   </header>
 
 
-    <div class="dropdown-menu" id="dropdownMenu">
-        <ul>
-            <li><a href="{% url 'gamepage' %}" id="games">Games</a></li>
-            <li><a href="{% url 'wraps' %}" id="wraps">My Wraps</a></li>
-            <li><a href="{% url 'settings' %}" id="settingsLink">Settings</a></li>
-            <li><a href="{% url 'logout' %}">Log Out</a></li>
-        </ul>
-    </div>
-
-    <section class="intro">
+   <div class="dropdown-menu" id="dropdownMenu">
+       <ul>
+           <li><a href="{% url 'gamepage' %}" id="games">{% trans "Games" %}</a></li>
+           <li><a href="{% url 'wraps' %}" id="wraps">{% trans "My Wraps" %}</a></li>
+           <li><a href="{% url 'settings' %}" id="settingsLink">{% trans "Settings" %}</a></li>
+           <li><a href="{% url 'logout' %}">{% trans "Log Out" %}</a></li>
+       </ul>
+   </div>
 
 
-        <h2>Your 2024 Wrapped is Here!</h2>
-        <p>You’ve had a long year and we have your soundtrack to go with it...</p>
-        <a href="{% url 'wrapped' %}">Go to My Spotify Wrapped</a>
+   <section class="intro">
+       <h2>{% trans "Your 2024 Wrapped is Here!" %}</h2>
+       <p>{% trans "You’ve had a long year, and we have your soundtrack to go with it..." %}</p>
 
 
+       <div class="navigation-buttons">
+           <a href="{% url 'wrapped' %}" class="btn">{% trans "Full Wrapped" %}</a>
+           <a href="{% url 'choice' %}" class="btn">{% trans "Wrapped Breakdown" %}</a>
+       </div>
 
 
-    </section>
+       <div class="navigation-buttons">
+           <a href="{% url 'savedwraps' %}" class="image-link">
+               <img
+                   src="{% static 'spotifywrapped/wrapsLM.PNG' %}"
+                   data-dark="{% static 'spotifywrapped/wrapsDM.PNG' %}"
+                   data-neon="{% static 'spotifywrapped/wrapsNM.PNG' %}"
+                   alt="Saved Wraps">
+           </a>
+           <a href="{% url 'gamepage' %}" class="image-link">
+               <img
+                   src="{% static 'spotifywrapped/gamesLM.PNG' %}"
+                   data-dark="{% static 'spotifywrapped/gamesDM.PNG' %}"
+                   data-neon="{% static 'spotifywrapped/gamesNM.PNG' %}"
+                   alt="Play Game">
+           </a>
+       </div>
+   </section>
 
 
-    <div class="pic-container">
-        <div id="blue-squiggle">
-                <img src="../../static/spotifywrapped/bluesquiggle.png" alt="Flower">
-        </div>
-
-        <div id="silver-squiggle">
-            <img src="../../static/spotifywrapped/silversquiggle.png" alt="Flower">
-        </div>
-
-        <div id="lavender">
-            <img src="../../static/spotifywrapped/lavender.png" alt="Flower">
-        </div>
-
-    </div>
-
-
-
-    <section class="content">
-        <div class="card hidden" id="artist">
-            <p>My Top Artists</p>
-        </div>
-
-        <!-- Loop through artists -->
-        <div class="spotify-section">
-            <h3>Top 3 Artists</h3>
-            <ul>
-                {% for artist in top_artists %}
-                    <li>{{ artist.name }}</li>
-                {% endfor %}
-            </ul>
-        </div>
-
-
-
-        <div class="card hidden" id="songs">
-            <p>My Top Songs</p>
-        </div>
-
-
-
-        <div class="spotify-section">
-            <h3>Top 10 Songs</h3>
-            <ul>
-                {% for track in top_tracks %}
-                    <li>
-                        {{ track.name }} by {{ track.artist }}
-                        {% if track.preview_url %}
-                            <audio controls>
-                                <source src="{{ track.preview_url }}" type="audio/mpeg">
-                                Your browser does not support the audio element.
-                            </audio>
-                        {% else %}
-                            <br>No preview available for this track.
-                        {% endif %}
-                    </li>
-                {% endfor %}
-            </ul>
-        </div>
-
-        <div class="card hidden" id="albums">
-            <p>My Top Albums</p>
-        </div>
-
-
-
-
-
-        <!-- Loop through albums -->
-        <div class="spotify-section">
-            <h3>Top 3 Albums</h3>
-            <ul>
-                {% for album in top_albums %}
-                    <li>{{ album.name }} by {{ album.artists|join:", " }}</li>
-                {% endfor %}
-            </ul>
-        </div>
-
-        <div class="card hidden" id="minutes">
-            <p>Minutes Listened</p>
-        </div>
-    </section>
-
-
-
-    <div class="spotify-section">
-        <h3>Minutes Listened</h3>
-        <p>{{ minutes_listened }}</p>
-    </div>
-
-
-
-
-    <section class="rating">
-        <h3>2024</h3>
-        <p>We give you 5 stars for your music taste this year!!</p>
-        <div class="stars">★ ★ ★ ★ ★</div>
-    </section>
+   <div class="pic-container">
+       <div id="blue-squiggle">
+           <img src="{% static 'spotifywrapped/bluesquiggle.png' %}" alt="Blue squiggle">
+       </div>
+       <div id="silver-squiggle">
+           <img src="{% static 'spotifywrapped/silversquiggle.png' %}" alt="Silver squiggle">
+       </div>
+       <div id="lavender">
+           <img src="{% static 'spotifywrapped/lavender.png' %}" alt="Lavender">
+       </div>
+       <div id="flower">
+           <img src="{% static 'spotifywrapped/flower.png' %}" alt="Flower">
+       </div>
+   </div>
 </body>
 </html>

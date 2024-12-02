@@ -1,0 +1,376 @@
+{% load static %}
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>{% trans "My Top Three Tracks" %}</title>
+   <link rel="stylesheet" href="{% static 'spotifywrapped/breakdown.css' %}">
+   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+   <script src="{% static 'spotifywrapped/theme.js' %}" defer></script>
+
+   <style>
+       /* Base Styles */
+       body {
+           margin: 0;
+           font-family: 'Helvetica', sans-serif;
+           color: white;
+           background: linear-gradient(135deg, #1DB954, #121212);
+           background-size: 400% 400%;
+           animation: gradientBackground 8s ease infinite;
+           overflow-y: auto;
+           display: flex;
+           flex-direction: column;
+           align-items: center;
+           height: auto;
+           min-height: 100vh;
+           transition: background 0.5s ease, color 0.5s ease;
+       }
+
+       @keyframes gradientBackground {
+           0% { background-position: 0% 50%; }
+           50% { background-position: 100% 50%; }
+           100% { background-position: 0% 50%; }
+       }
+
+        /* Updated Header Styling to Match Genre Page */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: black;
+            padding: 25px 20px;
+            box-sizing: border-box;
+            color: white;
+            z-index: 1000;
+        }
+
+
+        header .logo {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+
+        header .logo img {
+            width: 40px;
+            height: auto;
+        }
+
+
+        header .logo h1 {
+            margin: 0;
+            font-size: 1.6em;
+        }
+
+
+        /* Dropdown Menu */
+        .dropdown-menu {
+            display: none; /* Ensure it starts hidden */
+            position: absolute;
+            right: 20px;
+            top: 90px;
+            background-color: black;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1001;
+            width: 200px;
+            text-align: center;
+        }
+
+
+        .dropdown-menu ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+
+        .dropdown-menu li {
+            padding: 10px 0;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+
+        .dropdown-menu li:hover {
+            background-color: hotpink;
+        }
+
+
+        .dropdown-menu a {
+            color: white;
+            text-decoration: none;
+            font-size: 1em;
+            display: block;
+            text-align: center;
+        }
+
+
+        .show-menu {
+            display: block;
+        }
+
+
+       /* Podium Section */
+       .podium-container {
+           display: flex;
+           align-items: flex-end;
+           justify-content: center;
+           flex-wrap: nowrap;
+           gap: 20px;
+           margin-top: 250px;
+           width: 100%;
+           max-width: 900px;
+           padding: 20px;
+       }
+
+       .podium-step {
+           background: linear-gradient(135deg, #ffcc00, #ff007b);
+           border-radius: 15px;
+           display: flex;
+           flex-direction: column;
+           align-items: center;
+           justify-content: flex-end;
+           color: white;
+           box-shadow: 0 8px 20px rgba(255, 0, 123, 0.5);
+           width: 200px;
+           padding: 15px;
+           position: relative;
+       }
+
+       .podium-step:nth-child(3) {
+           height: 300px;
+           margin-top: 50px;
+       }
+
+       .podium-step:nth-child(1) {
+           height: 400px;
+       }
+
+       .podium-step:nth-child(2) {
+           height: 350px;
+           margin-top: 25px;
+       }
+
+       .podium-step img {
+           width: 150px;
+           height: 150px;
+           border-radius: 50%;
+           position: absolute;
+           top: -75px;
+       }
+
+       .track-info {
+           text-align: center;
+           padding: 15px;
+           font-size: 1.2rem;
+       }
+
+       .track-audio audio {
+           width: 140px;
+           max-width: 180px;
+           height: 40px;
+           margin-top: 10px;
+       }
+
+       /* Responsive Design */
+       @media (max-width: 768px) {
+           .podium-container {
+               flex-direction: column;
+               align-items: center;
+           }
+
+           .podium-step {
+               width: 90%;
+               max-width: 300px;
+           }
+
+           .podium-step img {
+               width: 120px;
+               height: 120px;
+               top: -40px;
+           }
+
+           .podium-step:nth-child(1),
+           .podium-step:nth-child(3) {
+               margin-top: 0;
+           }
+       }
+
+       /* Buttons Styling */
+       .buttons-container {
+           position: fixed;
+           bottom: 20px;
+           left: 0;
+           right: 0;
+           display: flex;
+           justify-content: center;
+           gap: 20px;
+           z-index: 1000;
+       }
+
+
+       .btn {
+           display: inline-block;
+           padding: 15px 25px;
+           font-size: 1em;
+           font-weight: bold;
+           text-decoration: none;
+           border-radius: 25px;
+           box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+           transition: background-color 0.3s ease, transform 0.3s ease;
+       }
+
+
+       .btn:hover {
+           transform: translateY(-5px);
+           box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+       }
+
+   </style>
+</head>
+
+<body>
+    <header>
+        <div class="logo">
+            <a href="{% url 'home' %}">
+                <img src="{% static 'spotifywrapped/spotify.png' %}" alt="Spotify Logo">
+            </a>
+            <h1>{% trans "My Top Three Tracks" %}</h1>
+        </div>
+        <div class="menu-icon" onclick="toggleMenu()">
+            <div class="line"></div>
+            <div class="line"></div>
+            <div class="line"></div>
+        </div>
+    </header>
+
+    <div class="dropdown-menu" id="dropdownMenu">
+        <ul>
+            <li><a href="{% url 'gamepage' %}">{% trans "Games" %}</a></li>
+            <li><a href="{% url 'wraps' %}">{% trans "My Wraps" %}</a></li>
+            <li><a href="{% url 'settings' %}">{% trans "Settings" %}</a></li>
+            <li><a href="{% url 'logout' %}">{% trans "Log Out" %}</a></li>
+        </ul>
+    </div>
+
+    <div class="podium-container">
+        {% if tracks %}
+            <div class="podium-step">
+                <img src="{{ tracks.0.album.images.0.url }}" alt="{{ tracks.0.name }}">
+                <div class="track-info">
+                    <p class="track-name">{{ tracks.0.name }}</p>
+                    <p>by {{ tracks.0.artists.0.name }}</p>
+                    <div class="track-audio">
+                        <audio controls>
+                            <source src="{% static 'spotifywrapped/jazz.mp3' %}">
+                            Your browser does not support the audio element.
+                        </audio>
+                    </div>
+                </div>
+            </div>
+
+            <div class="podium-step">
+                <img src="{{ tracks.1.album.images.0.url }}" alt="{{ tracks.1.name }}">
+                <div class="track-info">
+                    <p class="track-name">{{ tracks.1.name }}</p>
+                    <p>by {{ tracks.1.artists.0.name }}</p>
+                    <div class="track-audio">
+                        <audio controls>
+                            <source src="{% static 'spotifywrapped/indie.mp3' %}" type="audio/mpeg">
+                            Your browser does not support the audio element.
+                        </audio>
+                    </div>
+                </div>
+            </div>
+
+            <div class="podium-step">
+                <img src="{{ tracks.2.album.images.0.url }}" alt="{{ tracks.2.name }}">
+                <div class="track-info">
+                    <p class="track-name">{{ tracks.2.name }}</p>
+                    <p>by {{ tracks.2.artists.0.name }}</p>
+                    <div class="track-audio">
+                        <audio controls>
+                            <source src="{% static 'spotifywrapped/orchestra.mp3' %}">
+                            Your browser does not support the audio element.
+                        </audio>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+
+     <!-- Buttons Section -->
+    <div class="buttons-container">
+        <a href="{% url 'favorite_mood' %}" class="btn">{% trans "Back" %}</a>
+        <a href="{% url 'home' %}" class="btn">{% trans "Home" %}</a>
+        <a href="{% url 'end_wrapped' %}" class="btn">{% trans "Next" %}</a>
+    </div>
+
+
+    <script>
+        function toggleMenu() {
+            const dropdownMenu = document.getElementById("dropdownMenu");
+            dropdownMenu.style.display = dropdownMenu.style.display === "block" ? "none" : "block";
+        }
+
+        document.addEventListener("click", (event) => {
+            const dropdownMenu = document.getElementById("dropdownMenu");
+            const menuIcon = document.querySelector(".menu-icon");
+            if (!menuIcon.contains(event.target) && !dropdownMenu.contains(event.target)) {
+                dropdownMenu.style.display = "none";
+            }
+        });
+
+
+         // Play button logic
+        let currentPlaying = null; // To track the currently playing audio
+
+
+        function toggleAudio(button, trackIndex) {
+            const audio = document.getElementById(`audio-${trackIndex}`);
+            console.log(`Toggling audio for track ${trackIndex}. Currently playing:`, currentPlaying);
+
+
+            // If another audio is playing, stop it
+            if (currentPlaying && currentPlaying !== audio) {
+                console.log(`Stopping current audio.`);
+                currentPlaying.pause();
+                currentPlaying.currentTime = 0; // Reset to the beginning
+                const currentButton = document.querySelector('.play-button[data-playing="true"]');
+                if (currentButton) {
+                    currentButton.textContent = "{% trans 'Play Me' %}";
+                    currentButton.removeAttribute("data-playing");
+                }
+            }
+
+
+            // Toggle play/pause for the clicked audio
+            if (audio.paused) {
+                console.log(`Playing audio for track ${trackIndex}`);
+                audio.play();
+                button.textContent = "{% trans 'Stop' %}";
+                button.setAttribute("data-playing", "true");
+                currentPlaying = audio;
+            } else {
+                console.log(`Pausing audio for track ${trackIndex}`);
+                audio.pause();
+                button.textContent = "{% trans 'Play Me' %}";
+                button.removeAttribute("data-playing");
+                currentPlaying = null;
+            }
+        }
+
+
+
+    </script>
+</body>
+</html>
