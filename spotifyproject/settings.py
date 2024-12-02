@@ -28,16 +28,17 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'spotifywrapper.apps.SpotifywrapperConfig',  # Your app for handling Spotify logic
+    'django.conf.locale'
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
+    'django.middleware.locale.LocaleMiddleware',  # This is needed for language handling
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.locale.LocaleMiddleware',  # This is needed for language handling
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
@@ -61,6 +62,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.i18n',  # For translation
             ],
         },
     },
@@ -88,7 +90,12 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
+USE_L10N = True
 USE_TZ = True
+
+LOCALE_PATHS = (
+    BASE_DIR / 'locale',
+)
 
 # Static files settings
 STATIC_URL = 'static/'

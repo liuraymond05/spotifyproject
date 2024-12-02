@@ -1,5 +1,4 @@
-/* General Styling */
-
+/* Base Styles (Light Mode) */
 body {
     font-family: Arial, sans-serif;
     margin: 0;
@@ -8,8 +7,167 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    overflow-x: hidden; /* Prevent horizontal overflow */
+    overflow-x: hidden;
 }
+
+/* Neon mode styles */
+body.neon-mode {
+    background-color: #1a1a1a;
+    color: #0ff; /* Neon text color */
+    font-family: 'Courier New', Courier, monospace;
+}
+
+body.neon-mode h1, body.neon-mode h2, body.neon-mode h3, body.neon-mode h4 {
+    text-shadow: 0 0 5px #0ff, 0 0 10px #0ff, 0 0 15px #0ff; /* Neon glow effect */
+}
+
+body.neon-mode a {
+    color: #0ff; /* Neon link color */
+    text-shadow: 0 0 5px #0ff, 0 0 10px #0ff;
+    transition: color 0.3s ease;
+}
+
+body.neon-mode p {
+    color: white; /* Neon link color */
+    text-shadow: 0 0 5px #0ff, 0 0 10px #0ff;
+    transition: color 0.3s ease;
+}
+
+body.neon-mode a:hover {
+    color: #fff;
+    text-shadow: 0 0 15px #0ff, 0 0 20px #0ff, 0 0 30px #0ff;
+}
+
+body.neon-mode .menu-icon div {
+    background-color: #0ff; /* Neon color for menu lines */
+}
+
+body.neon-mode .btn {
+    background-color: #0ff;
+    color: #1a1a1a;
+    border: 1px solid #0ff;
+    transition: background-color 0.3s ease;
+}
+
+body.neon-mode .btn:hover {
+    background-color: #1a1a1a;
+    color: #0ff;
+}
+
+/* Neon Menu styles */
+body.neon-mode .dropdown-menu {
+    background-color: #1a1a1a;
+    border: 1px solid #0ff;
+}
+
+body.neon-mode .dropdown-menu a {
+    color: #0ff;
+    transition: color 0.3s ease;
+}
+
+body.neon-mode .dropdown-menu a:hover {
+    color: #fff;
+}
+
+
+/* Dark Mode */
+body.dark-mode {
+    background-color: #400763;
+    color: #f5f5f5;
+}
+
+
+
+/* Squiggles */
+#blue-squiggle, #silver-squiggle, #lavender {
+    flex: 1;
+}
+
+#blue-squiggle {
+    position: absolute;
+    z-index: 1; /* This will appear beneath the menu */
+    left: -300px;
+    top: 32%;
+    transform: translateY(-50%);
+}
+
+#lavender {
+    position: absolute;
+    z-index: 1; /* This will appear beneath the menu */
+    left: -50px;
+    top: 90%;
+    transform: translateY(-50%);
+}
+
+#silver-squiggle {
+    position: absolute;
+    z-index: 1; /* This will appear beneath the menu */
+    right: -230px;
+    top: 40%;
+    transform: translateY(-50%) scale(0.75);
+}
+
+#flower {
+    position: absolute;
+    z-index: 1; /* This will appear beneath the menu */
+    right: -85px;
+    top: 92%;
+    transform: translateY(-50%) scale(1.2); /* Add scaling */
+}
+
+/* Dropdown Menu */
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    right: 20px;
+    top: 70px; /* Adjusted to make it appear below the header */
+    background-color: black;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 10; /* Ensures the menu appears above the squiggles */
+}
+
+
+.dropdown-menu button {
+    background-color: #333;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-size: 1em;
+    cursor: pointer;
+    width: 100%;
+    text-align: center;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.dropdown-menu button:hover {
+    background-color: #555;
+    transform: scale(1.05);
+}
+
+body.dark-mode .dropdown-menu button {
+    background-color: #ccc;
+    color: #333;
+}
+
+body.dark-mode .dropdown-menu button:hover {
+    background-color: #ddd;
+}
+
+/* Style adjustments for dropdown items */
+.dropdown-menu ul {
+    padding: 0;
+    margin: 0;
+}
+
+.dropdown-menu li {
+    padding: 10px 0;
+    text-align: center;
+}
+
+
+
 
 header {
     display: flex;
@@ -20,6 +178,10 @@ header {
     width: 100%;
     box-sizing: border-box;
     color: white;
+}
+
+body.dark-mode header {
+    background-color: black;
 }
 
 header .logo {
@@ -40,13 +202,6 @@ header .logo h1 {
     font-size: 1.6em;
 }
 
-header .profile-icon img {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-}
-
-
 .menu-icon {
     display: flex;
     flex-direction: column;
@@ -54,49 +209,63 @@ header .profile-icon img {
 }
 
 .line {
-    width: 25px; /* Width of the lines */
-    height: 3px; /* Height of the lines */
-    background-color: white; /* Color of the lines */
-    margin: 3px 0; /* Spacing between lines */
+    width: 25px;
+    height: 3px;
+    background-color: white;
+    margin: 3px 0;
 }
 
 .dropdown-menu {
-    display: none; /* Hidden by default */
-    position: absolute; /* Position it to appear over other content */
-    right: 20px; /* Adjust as needed */
-    top: 70px; /* Adjust to place below the header */
-    background-color: black; /* Same color as header */
+    display: none;
+    position: absolute;
+    right: 20px;
+    top: 70px;
+    background-color: black;
     border-radius: 5px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    z-index: 1; /* Make sure it appears above other elements */
+    z-index: 1;
+}
+
+body.dark-mode .dropdown-menu {
+    background-color: black;
 }
 
 .dropdown-menu ul {
-    list-style-type: none; /* Remove default list styles */
-    padding: 10px 0; /* Padding around the menu */
-    margin: 0; /* Remove default margin */
+    list-style-type: none;
+    padding: 10px 0;
+    margin: 0;
 }
 
 .dropdown-menu li {
-    padding: 10px 20px; /* Spacing for menu items */
+    padding: 10px 20px;
 }
 
 .dropdown-menu li a {
-    color: white; /* Text color for links */
-    text-decoration: none; /* Remove underline from links */
+    color: white;
+    text-decoration: none;
 }
 
 .dropdown-menu li:hover {
-    background-color: hotpink; /* Change background on hover */
+    background-color: hotpink;
 }
 
-
+/* Intro Section */
 .intro {
-    background-color: #f029a0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 100vh; /* Full viewport height */
+    margin: 0;
+    background: none; /* Remove the pink background */
     color: black;
     text-align: center;
-    padding: 50px;
-    width: 100%;
+    position: relative; /* Enables positioning adjustments */
+    transform: translateY(-10%); /* Moves the intro section slightly up */
+}
+
+body.dark-mode .intro {
+    color: #f5f5f5; /* Adjust for dark mode */
 }
 
 .intro h2 {
@@ -110,154 +279,269 @@ header .profile-icon img {
 }
 
 
-
-#blue-squiggle, #silver-squiggle, #lavender {
-    flex: 1; /* Allow them to grow within the space */
-}
-
-
-#blue-squiggle {
-    position: absolute; /* Allow the flower to overlap */
-    z-index: 1; /* Ensure it overlaps other content */
-    left: -300px; /* Adjust this value to move the flower more to the right */
-    top: 40%; /* Align the flower halfway down */
-    transform: translateY(-50%); /* Center the flower vertically */
-}
-
-#silver-squiggle {
-    position: absolute; /* Allow the flower to overlap */
-    z-index: 1; /* Ensure it overlaps other content */
-    right: -200px; /* Adjust this value to move the flower more to the right */
-    top: 90%; /* Align the flower halfway down */
-    transform: translateY(-50%); /* Center the flower vertically */
-}
-
-#lavender {
-    position: absolute; /* Allow the flower to overlap */
-    z-index: 1; /* Ensure it overlaps other content */
-    left: -50px; /* Adjust this value to move the flower more to the right */
-    top: 130%; /* Align the flower halfway down */
-    transform: translateY(-50%); /* Center the flower vertically */
-}
-
-
-
-/* Content Section */
-.content {
-    display: flex; /* Use flexbox to stack cards */
-    flex-direction: column; /* Stack cards vertically */
-    gap: 40px; /* Space between the cards */
-    padding: 40px; /* Adjusted padding */
-    width: 100%; /* Full width of the page */
-    max-width: 1200px; /* Set a maximum width for the content */
-    margin: 0 auto; /* Center the content horizontally */
-    box-sizing: border-box; /* Include padding in width */
-}
-
-.card {
-    background-color: #45c3f5;
-    padding: 30px; /* Padding inside the card */
-    border-radius: 10px;
-    height: auto; /* Allow the height to adjust based on content */
-    text-align: center;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    width: 95%; /* Set width to 95% of the parent container */
-    max-width: 1200px; /* Optional: set a maximum width for larger screens */
-    margin: 10px auto; /* Center the cards and add some vertical spacing */
-}
-
-
-/* Enlarge on Hover */
-.card {
-    transition: transform 0.5s ease, opacity 0.5s ease; /* Smooth hover effect */
-    transform: scale(1); /* Initial scale */
-    opacity: 0; /* Initially hidden for scroll animation */
-}
-
-.card:hover {
-    transform: scale(1.05); /* Slightly enlarge on hover */
-}
-
-/* Scroll Animation - Initial State */
-.card.hidden {
-    opacity: 0;
-    transform: translateY(140px); /* Offset position for slide-in effect */
-}
-
-/* Scroll Animation - Visible State */
-.card.visible {
-    opacity: 1;
-    transform: translateY(0);
-    transition: opacity 0.6s ease-out, transform 0.6s ease-out; /* Smooth animation */
-}
-
-#artist {
-    background-color: #cdff8c;
-}
-
-#songs {
-    background-color: #f7bb54;
-}
-
-#albums {
-    background-color: #47afff;
-}
-
-#minutes {
-    background-color: #fafc83;
-}
-
-.card p {
-    margin-top: 10px;
-    font-size: 1.8em;
-    color: black;
-    flex-grow: 1; /* Allow paragraph to grow and take available space */
-    font-weight: bold; /* Make text bold */
-}
-
-/* Rating Section */
-.rating {
-    background-color: #44c968;
-    color: black;
-    text-align: center;
-    padding: 30px;
-    border-top-left-radius: 100px;
-    border-top-right-radius: 100px;
-    margin-top: 30px;
+.navigation-buttons {
+    margin-top: 20px; /* Adjust spacing below intro */
+    display: flex;
+    justify-content: center; /* Center the button horizontally */
     width: 100%;
 }
 
-.rating h3 {
-    font-size: 3em;
+.btn {
+    background-color: hotpink;
+    color: white;
+    font-size: 1.5em;
+    font-weight: bold;
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    text-align: center;
+    margin-top: 20px;
+}
+
+.btn:hover {
+    background-color: #ff69b4; /* Slightly lighter pink on hover */
+    transform: scale(1.05); /* Slight zoom effect */
+}
+
+body.dark-mode .btn {
+    background-color: #d17fd1;
+    color: #222;
+}
+
+body.dark-mode .btn:hover {
+    background-color: #c95fc9;
+}
+
+
+
+/* Squiggles */
+#blue-squiggle, #silver-squiggle, #lavender {
+    flex: 1;
+}
+
+#blue-squiggle {
+    position: absolute;
+    z-index: 1;
+    left: -300px;
+    top: 32%;
+    transform: translateY(-50%);
+}
+
+#lavender {
+    position: absolute;
+    z-index: 1;
+    left: -50px;
+    top: 90%;
+    transform: translateY(-50%);
+}
+
+#silver-squiggle {
+    position: absolute;
+    z-index: 1;
+    right: -230px;
+    top: 40%;
+    transform: translateY(-50%) scale(0.75);
+}
+
+#flower {
+    position: absolute;
+    z-index: 1;
+    right: -85px;
+    top: 92%;
+    transform: translateY(-50%) scale(1.2); /* Add scaling */
+}
+
+
+/* Styling for Top Songs List */
+.top-tracks-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 20px auto;
+    max-width: 600px;
+    text-align: center;
+}
+
+.top-tracks-list li {
+    background-color: rgba(255, 255, 255, 0.8);
+    color: #333;
+    margin: 10px 0;
+    padding: 10px 15px;
+    border-radius: 20px;
+    font-size: 1.5em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+body.dark-mode .top-tracks-list li {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #f5f5f5;
+}
+
+.top-tracks-list li:hover {
+    transform: scale(1.05);
+    background-color: #ff69b4;
+    color: white;
+}
+
+body.dark-mode .top-tracks-list li:hover {
+    background-color: #c95fc9;
+}
+
+
+/* Squiggles */
+#blue-squiggle, #silver-squiggle, #lavender {
+    flex: 1;
+}
+
+#blue-squiggle {
+    position: absolute;
+    z-index: 1; /* This will appear beneath the menu */
+    left: -300px;
+    top: 32%;
+    transform: translateY(-50%);
+}
+
+#lavender {
+    position: absolute;
+    z-index: 1; /* This will appear beneath the menu */
+    left: -50px;
+    top: 90%;
+    transform: translateY(-50%);
+}
+
+#silver-squiggle {
+    position: absolute;
+    z-index: 1; /* This will appear beneath the menu */
+    right: -230px;
+    top: 40%;
+    transform: translateY(-50%) scale(0.75);
+}
+
+#flower {
+    position: absolute;
+    z-index: 1; /* This will appear beneath the menu */
+    right: -85px;
+    top: 92%;
+    transform: translateY(-50%) scale(1.2); /* Add scaling */
+}
+
+/* Dropdown Menu */
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    right: 20px;
+    top: 70px; /* Adjusted to make it appear below the header */
+    background-color: black;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 10; /* Ensures the menu appears above the squiggles */
+}
+
+
+/*----------------------------- contact developers page -------------------------------------------------*/
+
+/* General Styles for Developers Page */
+body#developers {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #ff5f6d, #ffc371, #43cea2);
+    color: #333;
+    text-align: center;
+    margin: 0;
+    padding: 50px 20px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow-x: hidden;
+}
+
+
+
+/* Meet the Team Header */
+body#developers h2 {
+    font-size: 2.5em;
+    color: #fff;
+    margin-bottom: 50px;
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+/* Team Member List */
+body#developers ul {
+    list-style: none;
+    padding: 0;
     margin: 0;
 }
 
-.rating p {
-    font-size: 1.8em;
+body#developers ul li {
+    margin: 30px 0;
+    position: relative;
 }
 
-.stars {
-    font-size: 2em;
-    color: #ffc700;
-    margin-top: 10px;
+/* Team Member Name in Circle */
+body#developers ul li strong {
+    display: inline-block;
+    width: 150px;
+    height: 150px;
+    line-height: 150px;
+    border-radius: 50%;
+    font-size: 1.3em;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    transition: transform 0.3s ease;
 }
 
-.spotify-section {
-    display: flex;             /* Enables Flexbox */
-    flex-direction: column;    /* Stack the items vertically */
-    align-items: center;       /* Center items horizontally */
-    justify-content: center;   /* Optional: Centers vertically */
-    text-align: center;        /* Ensures text inside is centered */
-    margin: 0 auto;            /* Optional: Centers section within the page */
-    padding: 20px;             /* Optional: Adds space around the section */
+/* Different Colors for Each Team Member */
+body#developers ul li:nth-child(1) strong {
+    background-color: #ff7e5f; /* Coral */
 }
 
-.spotify-section ul {
-    list-style: none;          /* Remove list bullet points */
-    padding: 0;                /* Remove padding */
-    margin: 0;                 /* Remove margin */
+body#developers ul li:nth-child(2) strong {
+    background-color: #6a82fb; /* Light Blue */
 }
 
-.spotify-section li {
-    margin: 10px 0;            /* Add spacing between each list item */
+body#developers ul li:nth-child(3) strong {
+    background-color: #fc5c7d; /* Pink */
 }
+
+body#developers ul li:nth-child(4) strong {
+    background-color: #42e695; /* Green */
+}
+
+body#developers ul li:nth-child(5) strong {
+    background-color: #ff9a9e; /* Light Coral */
+}
+
+/* Email Link Styling */
+body#developers ul li a {
+    display: inline-block;
+    margin-top: 15px;
+    font-size: 1em;
+    color: #fff;
+    text-decoration: none;
+    animation: bounce 2s infinite ease-in-out;
+}
+
+/* Bounce Animation for Email Links */
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-15px);
+    }
+    60% {
+        transform: translateY(-10px);
+    }
+}
+
+/* Email Hover Effect */
+body#developers ul li a:hover {
+    color: #ffc371;
+    text-shadow: 0 0 10px #ffc371;
+    transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+

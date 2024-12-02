@@ -1,0 +1,254 @@
+{% load static %}
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>{% trans "Song Popularity" %}</title>
+   <link rel="stylesheet" href="{% static 'spotifywrapped/breakdown.css' %}">
+        <script src="{% static 'spotifywrapped/theme.js' %}" defer></script>
+
+
+   <style>
+        /* Base Styles */
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            color: black;
+            background-color: #7d0a7b;
+            display: grid;
+            grid-template-rows: 1fr auto; /* Content and footer */
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+
+        /* Dark Mode */
+        body.dark-mode {
+            background-color: black;
+            color: #ccc;
+        }
+
+        /* Neon Mode */
+        body.neon-mode {
+            background-color: #000;
+            color: white;
+            text-shadow: 0 0 10px #ff00ff, 0 0 20px #00ffff, 0 0 30px #ff33ff;
+        }
+
+        /* Updated Header Styling to Match Genre Page */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: black;
+            padding: 25px 20px;
+            box-sizing: border-box;
+            color: white;
+            z-index: 1000;
+        }
+
+        header .logo {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        header .logo img {
+            width: 40px;
+            height: auto;
+        }
+
+        header .logo h1 {
+            margin: 0;
+            font-size: 1.6em;
+        }
+
+        /* Dropdown Menu */
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 20px;
+            top: 90px;
+            background-color: black;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1001;
+            width: 200px;
+            text-align: center;
+        }
+
+        .dropdown-menu ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .dropdown-menu li {
+            padding: 10px 0;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .dropdown-menu li:hover {
+            background-color: hotpink;
+        }
+
+        .dropdown-menu a {
+            color: white;
+            text-decoration: none;
+            font-size: 1em;
+            display: block;
+            text-align: center;
+        }
+
+        /* Repeated Favorite Mood Background */
+        .repeated-mood {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr; /* Three columns */
+            z-index: -1;
+            overflow: hidden;
+            background: none;
+        }
+
+        .repeated-mood .column {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .repeated-mood span {
+            font-size: 6rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            line-height: 0.9;
+            color: rgba(255, 255, 255, 0.1);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Content Box */
+        .content-box {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1;
+            padding: 30px 40px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 10px;
+            color: white;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        .content-box p {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 0;
+            background: linear-gradient(135deg, #ff007b, #ffcc00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Buttons Section */
+        .buttons-container {
+            grid-column: 1 / 3;
+            grid-row: 2 / 3;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding: 20px 0;
+            z-index: 1;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 15px 30px;
+            font-size: 1rem;
+            font-weight: bold;
+            text-decoration: none;
+            border-radius: 25px;
+            color: white;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        }
+   </style>
+</head>
+
+<body>
+   <header>
+        <div class="logo">
+            <a href="{% url 'home' %}">
+            <img src="{% static 'spotifywrapped/spotify.png' %}" alt="Spotify Logo">
+        </a>
+            <h1>{% trans "My Top Song's Popularity" %}</h1>
+        </div>
+        <div class="menu-icon" onclick="toggleMenu()">
+            <div class="line"></div>
+            <div class="line"></div>
+            <div class="line"></div>
+        </div>
+    </header>
+
+    <div class="dropdown-menu" id="dropdownMenu">
+        <ul>
+            <li><a href="{% url 'gamepage' %}" id="games">{% trans "Games" %}</a></li>
+            <li><a href="{% url 'wraps' %}" id="wraps">{% trans "My Wraps" %}</a></li>
+            <li><a href="{% url 'settings' %}" id="settingsLink">{% trans "Settings" %}</a></li>
+            <li><a href="{% url 'logout' %}">{% trans "Log Out" %}</a></li>
+        </ul>
+    </div>
+
+    <div class="repeated-mood">
+        <div class="column">
+            {% for i in "12345678901234567890" %}
+                <span>{{ popularity_level }}</span>
+            {% endfor %}
+        </div>
+        <div class="column">
+            {% for i in "12345678901234567890" %}
+                <span>{{ popularity_level }}</span>
+            {% endfor %}
+        </div>
+        <div class="column">
+            {% for i in "12345678901234567890" %}
+                <span>{{ popularity_level }}</span>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="content-box">
+        <p>{% trans "My Top Song's Popularity" %}: {{ popularity_level }}</p>
+    </div>
+
+    <div class="buttons-container">
+        <a href="{% url 'favorite_decade' %}" class="btn">{% trans "Back" %}</a>
+        <a href="{% url 'home' %}" class="btn">{% trans "Home" %}</a>
+        <a href="{% url 'top_three_tracks' %}" class="btn">{% trans "Next" %}</a>
+    </div>
+
+    <script>
+        function toggleMenu() {
+            const dropdown = document.getElementById("dropdownMenu");
+            dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+        }
+
+    </script>
+</body>
+</html>
