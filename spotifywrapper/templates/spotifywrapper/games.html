@@ -16,7 +16,7 @@
   <!-- Title Screen -->
   <div id="title-screen" class="title-container">
 <!--    <h1>Match That Song!</h1>-->
-    <img src="{% static 'spotifywrapped/match-that-song.gif' %}" alt="Game Start GIF" class="start-gif">
+    <img src="{% static 'spotifywrapped/match-that-song.png' %}" alt="Game Start GIF" class="start-gif">
     {% if message %}
       <div class="error-message">{{ message }}</div>
     {% endif %}
@@ -77,7 +77,7 @@
   <!-- End Page -->
   <div id="end-page" class="end-container" style="display: none;">
 <!--    <h1>Game Over!</h1>-->
-    <img src="{% static 'spotifywrapped/game-over.gif' %}" alt="Game Over GIF" class="end-gif">
+    <img src="{% static 'spotifywrapped/game-over.png' %}" alt="Game Over GIF" class="end-gif">
     <p id="final-score">Your Score: 0</p>
     <p id="high-score">High Score: 0</p>
     <button id="play-again">Play Again</button>
