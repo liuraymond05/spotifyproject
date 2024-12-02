@@ -5,7 +5,7 @@
 <head>
    <meta charset="UTF-8">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>{% trans "My Favorite Mood" %}</title>
+   <title>{% trans "My Top Three Tracks" %}</title>
    <link rel="stylesheet" href="{% static 'spotifywrapped/breakdown.css' %}">
    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
    <script src="{% static 'spotifywrapped/theme.js' %}" defer></script>
@@ -243,7 +243,7 @@
             <a href="{% url 'home' %}">
                 <img src="{% static 'spotifywrapped/spotify.png' %}" alt="Spotify Logo">
             </a>
-            <h1>{% trans "My Favorite Mood" %}</h1>
+            <h1>{% trans "My Top Three Tracks" %}</h1>
         </div>
         <div class="menu-icon" onclick="toggleMenu()">
             <div class="line"></div>
