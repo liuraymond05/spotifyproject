@@ -45,18 +45,6 @@
 
         {% for wrap in wraps %}
         <div class="carousel-wrapper">
-            <h2>{% trans "Your Spotify Wrapped" %}:
-                {% if wrap.time_range == "long_term" %}
-                    {% trans "Long-Term" %}
-                {% elif wrap.time_range == "short_term" %}
-                    {% trans "Short-Term" %}
-                {% elif wrap.time_range == "medium_term" %}
-                    {% trans "Medium-Term" %}
-                {% else %}
-                    {{ wrap.time_range }}
-                {% endif %}
-            </h2>
-
             <div class="carousel">
                 <button class="arrow left" onclick="moveCarousel('{{ forloop.counter0 }}', 'left')">&#10094;</button>
                 <div class="cards-container" id="carousel-{{ forloop.counter0 }}">

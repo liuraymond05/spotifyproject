@@ -464,6 +464,7 @@ def top_spotify_data(request):
             })
     else:
         return redirect('home')  # Redirect back if there was an error fetching top artists
+    
 
 
     # Get the top genre (most frequent genre from top artists)
@@ -603,6 +604,7 @@ def save_wrap(request):
         top_song_popularity=popularity_data  # Should be 'High', 'Medium', or 'Low'
     )
     saved_wrap.save()
+    print(saved_wrap)
 
     return redirect('savedwraps')
 
