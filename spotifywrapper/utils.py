@@ -10,13 +10,35 @@ from django.conf import settings
 
 
 def get_spotify_access_token(user_profile):
-    """Retrieve the access token for the given user profile."""
+    """
+    Retrieve the access token for the given user profile.
+
+    Args:
+        user_profile (UserProfile): The user profile instance containing the Spotify credentials.
+
+    Returns:
+        str: The Spotify access token.
+    """
     return user_profile.spotify_access_token
 
 
 def generate_wrap_summary_image(user_data):
-    """Generate a visually styled Spotify Wrapped summary image."""
+    """
+    Generate a visually styled Spotify Wrapped summary image.
 
+    This function creates an image summarizing Spotify Wrapped data, including
+    information such as top genre, favorite decade, and top artists. It fetches
+    and displays album covers and artist images when available.
+
+    Args:
+        user_data (dict): Dictionary containing user Spotify data. 
+                          Expected keys include 'top_genre', 'listening_element', 
+                          'favorite_decade', 'popularity_level', 'top_album', 
+                          and optional keys like 'top_album_cover', 'artist_images'.
+
+    Returns:
+        BytesIO: An in-memory file containing the generated image in PNG format.
+    """
     # Define canvas size and colors
     image_width, image_height = 1080, 1080
     gradient_start = (30, 30, 50)  # Dark purple
@@ -50,7 +72,7 @@ def generate_wrap_summary_image(user_data):
         ("Listening Element", user_data["listening_element"]),
         ("Favorite Decade", user_data.get("favorite_decade", "N/A")),
         ("Popularity Level", user_data.get("popularity_level", "N/A")),
-        ("Top Album", user_data["top_artists"]),
+        ("Top Album", user_data["top_album"]),
     ]
 
     y_offset = 150
@@ -96,7 +118,15 @@ def generate_wrap_summary_image(user_data):
 
 
 def save_wrap_summary_image(image_io):
-    """Save the generated image to the server."""
+    """
+    Save the generated Spotify Wrapped summary image to the server.
+
+    Args:
+        image_io (BytesIO): In-memory file containing the generated image.
+
+    Returns:
+        str: Path to the saved image file on the server.
+    """
     # Define the path where the image will be saved
     file_name = f"wrap_summary_{datetime.now().strftime('%Y%m%d%H%M%S')}.png"
     image_path = os.path.join(settings.MEDIA_ROOT, 'wrap_summaries', file_name)
