@@ -359,7 +359,6 @@ def user_settings(request):
 
 @login_required
 def delete_account(request):
-    """Handles the deletion of an account."""
     if request.method == 'POST':
         user = request.user
         user.delete()  # This will delete the user from the database
@@ -378,7 +377,6 @@ def contact_developers(request):
 
 
 def set_language(request):
-    """Handles changing the language in settings."""
 
     if request.method == 'POST':
         #Get the current language
@@ -557,10 +555,8 @@ def top_spotify_data(request):
     })
 
 def gamepage(request):
-    """Renders the gamepage."""
     return render(request, 'games.html')
 def wraps(request):
-    """Renders the savedwraps page."""
     return render(request, 'savedwraps.html')
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -614,18 +610,30 @@ def save_wrap(request):
 
 
 def get_top_song(top_tracks):
-    """Fetches the top song."""
     return top_tracks[0]['name']
 
 def get_top_tracks(access_token, time_range='long_term', limit=3):
-    """Fetches the user's top tracks."""
     response = requests.get(
         f'https://api.spotify.com/v1/me/top/tracks?time_range={time_range}&limit={limit}',
         headers={'Authorization': f'Bearer {access_token}'}
     )
+    top_tracks = []
     if response.status_code == 200:
-        return response.json()['items']
-    return []
+        top_tracks = response.json()['items']
+
+    top_tracks_data = []
+    for track in top_tracks:
+        top_tracks_data.append({
+            'name': track['name'],
+            'artist': ', '.join([artist['name'] for artist in track['artists']]),
+            'album': track['album']['name'],
+            'image': track['album']['images'][0]['url'] if track['album']['images'] else None,
+            'preview_url': track['preview_url'],
+            'popularity': track['popularity'],
+            'release_date': track['album'].get('release_date')
+
+        })
+    return top_tracks_data
 
 def get_top_artists(access_token, time_range='long_term', limit=3):
     """
@@ -696,33 +704,57 @@ def get_top_genre(access_token, time_range='long_term'):
 
 
 def get_top_album(top_tracks):
-    """Fetches the user's top album, as well as album information."""
     album_count = {}
     album_details = {}
-    for track in top_tracks:
-        album_name = track['album']['name']
-        album_image = track['album']['images'][0]['url'] if track['album']['images'] else None
-        album_release_date = track['album']['release_date']
 
+    for track in top_tracks:
+        album_name = track['album']
+        album_image = track['image']
+        album_release_date = 'Unknown'  # No release date is provided in the `get_top_tracks` output
+
+        # Count occurrences of each album
         album_count[album_name] = album_count.get(album_name, 0) + 1
+
+        # Store album details
         if album_name not in album_details:
             album_details[album_name] = {
                 'name': album_name,
                 'image': album_image,
                 'release_date': album_release_date,
-                'details': track['album'].get('label', 'Unknown')
+                'details': 'Unknown'  # Details like label are not included in `get_top_tracks`
             }
+
+    # Determine the top album
     top_album = max(album_count, key=album_count.get) if album_count else None
     return album_details.get(top_album, None)
 
 def get_favorite_decade(top_tracks):
-    """Determines a user's favorite decade for listening."""
-    decades = [int(track['album']['release_date'][:4]) // 10 * 10 for track in top_tracks if 'release_date' in track['album']]
-    favorite_decade = max(set(decades), key=decades.count) if decades else None
-    return f"{favorite_decade}" if favorite_decade else None
+    # Initialize an empty list to hold the decades
+    decades = []
 
+    # Extract decades from release dates
+    for track in top_tracks:
+        # Ensure 'release_date' exists
+        release_date = track.get('release_date')
+        if release_date:
+            try:
+                # Extract the year from the release date and calculate the decade
+                year = int(release_date[:4])  # Extract year (first 4 characters)
+                decade = (year // 10) * 10  # Calculate the decade
+                decades.append(decade)
+            except ValueError:
+                # Handle cases where the year is invalid
+                continue
+
+    # If no valid decades were found, return None
+    if not decades:
+        return None
+
+    # Calculate the most frequent decade
+    favorite_decade = max(set(decades), key=decades.count)
+
+    return str(favorite_decade)  # Return the favorite decade as a string
 def get_popularity_level(top_tracks):
-    """Determines the popularity of a user's favorite song."""
     top_song = None
     top_popularity = None
     popularity_level = None
@@ -745,7 +777,6 @@ def get_popularity_level(top_tracks):
 
 
 def get_user_element(top_genre):
-    """Determines a user's classical element depending on their favorite genre."""
     genre_to_element = {
         'country': 'earth', 'folk': 'earth', 'bluegrass': 'earth', 'americana': 'earth', 'indie folk': 'earth',
         'acoustic': 'earth', 'blues': 'earth', 'soul': 'earth', 'reggae': 'earth', 'alternative rock': 'earth', 'indie': 'earth',
@@ -767,7 +798,6 @@ from django.shortcuts import render
 from .models import SavedWrap
 
 def saved_wraps(request):
-    """Renders the SavedWrap objects onto the savedwrap page."""
     saved_wraps = SavedWrap.objects.filter(username=request.user.username)
     print(saved_wraps)
     return render(request, 'spotifywrapper/savedwraps.html', {'wraps': saved_wraps})
@@ -1388,7 +1418,6 @@ def share_wrap(request):
 
 
 def choice(request):
-    """Determines the term selected by the user."""
     if request.method == "POST":
         term = request.POST.get("term")  # Get the term selected by the user
         if term in ["long", "medium", "short"]:  # Validate term

@@ -45,6 +45,18 @@
 
         {% for wrap in wraps %}
         <div class="carousel-wrapper">
+            <h2>{% trans "Your Spotify Wrapped" %}:
+                {% if wrap.time_range == "long_term" %}
+                    {% trans "Long-Term" %}
+                {% elif wrap.time_range == "short_term" %}
+                     {% trans "Short-Term" %}
+                {% elif wrap.time_range == "medium_term" %}
+                    {% trans "Medium-Term" %}
+                {% else %}
+                    {{ wrap.time_range }}
+                {% endif %}
+            </h2>
+
             <div class="carousel">
                 <button class="arrow left" onclick="moveCarousel('{{ forloop.counter0 }}', 'left')">&#10094;</button>
                 <div class="cards-container" id="carousel-{{ forloop.counter0 }}">
@@ -99,7 +111,6 @@
                         <h3>{% trans "Top Song" %}</h3>
                         {% if wrap.top_tracks and wrap.top_tracks|length > 0 %}
                             <p><strong>Song:</strong> {{ wrap.top_tracks.0.name }}</p>
-                            <p><strong>Artist:</strong> {{ wrap.top_tracks.0.artist }}</p>
                             <div id="song-container">
                                 <canvas id="waveform-canvas-{{ forloop.counter0 }}" width="600" height="200"></canvas>
                             </div>

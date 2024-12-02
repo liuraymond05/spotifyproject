@@ -747,7 +747,7 @@ audio {
 #waveform-canvas {
     display: block;
     margin: 0 auto;
-    background-color: #e9ecef; /* Subtle background */
+    background-color: steelblue; /* Subtle background */
     border-radius: 10px;
 }
 #waveform-canvas {
